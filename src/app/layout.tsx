@@ -1,13 +1,9 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
-import { Providers } from './providers'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'FarmaZi - Sistema de Farmacia',
-  description: 'Sistema integral para gestión de farmacias',
+  description: 'Sistema POS para farmacias',
 }
 
 export default function RootLayout({
@@ -16,11 +12,9 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={inter.className}>
-        <Providers>
-          {children}
-        </Providers>
+    <html lang="es">
+      <body>
+        {children}
       </body>
     </html>
   )
