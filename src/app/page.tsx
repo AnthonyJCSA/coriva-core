@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import InventoryModule from './InventoryModule'
 import ReportsModule from './ReportsModule'
+import { productService, authService, saleService } from '../lib/database'
 
 interface Product {
   id: string
@@ -70,41 +71,70 @@ export default function FarmaciaPOS() {
   const [paymentMethod, setPaymentMethod] = useState('EFECTIVO')
   const [receiptType, setReceiptType] = useState('BOLETA')
 
-  // Generar ventas demo
+  // Cargar productos al iniciar
   useEffect(() => {
-    const demoSales: Sale[] = [
-      { id: '1', sale_number: 'BOLETA-001', total: 34.20, created_at: new Date().toISOString(), customer_name: 'Ana García', payment_method: 'EFECTIVO', items_count: 2 },
-      { id: '2', sale_number: 'BOLETA-002', total: 15.80, created_at: new Date(Date.now() - 3600000).toISOString(), customer_name: 'Carlos López', payment_method: 'YAPE', items_count: 1 },
-      { id: '3', sale_number: 'FACTURA-001', total: 89.40, created_at: new Date(Date.now() - 7200000).toISOString(), customer_name: 'Farmacia San Juan', payment_method: 'TARJETA', items_count: 4 }
-    ]
-    setSales(demoSales)
-  }, [])
+    if (isAuthenticated) {
+      loadProducts()
+    }
+  }, [isAuthenticated])
 
-  const handleLogin = (e: React.FormEvent) => {
+  const loadProducts = async () => {
+    try {
+      const data = await productService.getAll()
+      setProducts(data)
+    } catch (error) {
+      console.error('Error loading products:', error)
+      // Usar productos demo como fallback
+      setProducts(INITIAL_PRODUCTS)
+    }
+  }
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
-    const user = USERS[username as keyof typeof USERS]
-    if (user && user.password === password) {
-      setCurrentUser({ username, ...user })
+    setLoginError('')
+    
+    try {
+      // Intentar login con Supabase
+      const user = await authService.login(username, password)
+      if (user) {
+        setCurrentUser({ username, name: user.name, role: user.role })
+        setIsAuthenticated(true)
+        return
+      }
+    } catch (error) {
+      console.log('Supabase login failed, using demo users')
+    }
+    
+    // Fallback a usuarios demo
+    const demoUser = USERS[username as keyof typeof USERS]
+    if (demoUser && demoUser.password === password) {
+      setCurrentUser({ username, ...demoUser })
       setIsAuthenticated(true)
-      setLoginError('')
     } else {
       setLoginError('Usuario o contraseña incorrectos')
     }
   }
 
-  const handleSearch = (e: React.KeyboardEvent) => {
+  const handleSearch = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchCode.trim()) {
-      const results = products.filter(p => 
-        p.code.toLowerCase().includes(searchCode.toLowerCase()) ||
-        p.name.toLowerCase().includes(searchCode.toLowerCase()) ||
-        p.active_ingredient?.toLowerCase().includes(searchCode.toLowerCase())
-      )
-      setSearchResults(results)
-      
-      if (results.length === 1) {
-        addToCart(results[0])
-        setSearchCode('')
-        setSearchResults([])
+      try {
+        const results = await productService.searchIntelligent(searchCode)
+        setSearchResults(results)
+        
+        if (results.length === 1) {
+          addToCart(results[0])
+          setSearchCode('')
+          setSearchResults([])
+        }
+      } catch (error) {
+        console.error('Search error:', error)
+        // Fallback a búsqueda local
+        const localResults = products.filter(p => 
+          p.code.toLowerCase().includes(searchCode.toLowerCase()) ||
+          p.name.toLowerCase().includes(searchCode.toLowerCase()) ||
+          p.active_ingredient?.toLowerCase().includes(searchCode.toLowerCase())
+        )
+        setSearchResults(localResults)
       }
     }
   }
@@ -148,42 +178,66 @@ export default function FarmaciaPOS() {
   const tax = subtotal * 0.18
   const total = subtotal + tax
 
-  const processSale = () => {
+  const processSale = async () => {
     if (cart.length === 0) {
       alert('Carrito vacío')
       return
     }
 
-    // Crear nueva venta
-    const newSale: Sale = {
-      id: Date.now().toString(),
-      sale_number: `${receiptType}-${Date.now()}`,
-      total,
-      created_at: new Date().toISOString(),
-      customer_name: customerName || 'Cliente General',
-      payment_method: paymentMethod,
-      items_count: cart.reduce((sum, item) => sum + item.quantity, 0)
-    }
-
-    // Actualizar stock
-    setProducts(products.map(product => {
-      const cartItem = cart.find(item => item.id === product.id)
-      if (cartItem) {
-        return { ...product, stock: product.stock - cartItem.quantity }
+    try {
+      // Crear nueva venta en Supabase
+      const saleData = {
+        customer_id: undefined,
+        user_id: currentUser?.id,
+        receipt_type: receiptType,
+        subtotal,
+        tax,
+        discount: 0,
+        total,
+        payment_method: paymentMethod,
+        items: cart.map(item => ({
+          product_id: item.id,
+          quantity: item.quantity,
+          unit_price: item.price,
+          subtotal: item.price * item.quantity
+        }))
       }
-      return product
-    }))
 
-    // Agregar venta
-    setSales([newSale, ...sales])
+      const sale = await saleService.create(saleData)
+      
+      // Actualizar stock local
+      setProducts(products.map(product => {
+        const cartItem = cart.find(item => item.id === product.id)
+        if (cartItem) {
+          return { ...product, stock: product.stock - cartItem.quantity }
+        }
+        return product
+      }))
 
-    const receipt = generateReceipt(newSale)
-    printReceipt(receipt)
-    
-    setCart([])
-    setCustomerDoc('')
-    setCustomerName('')
-    setSearchResults([])
+      // Agregar venta a la lista local
+      const newSale: Sale = {
+        id: sale.id,
+        sale_number: sale.sale_number,
+        total,
+        created_at: sale.created_at,
+        customer_name: customerName || 'Cliente General',
+        payment_method: paymentMethod,
+        items_count: cart.reduce((sum, item) => sum + item.quantity, 0)
+      }
+      setSales([newSale, ...sales])
+
+      const receipt = generateReceipt(newSale)
+      printReceipt(receipt)
+      
+      setCart([])
+      setCustomerDoc('')
+      setCustomerName('')
+      setSearchResults([])
+      
+    } catch (error) {
+      console.error('Sale error:', error)
+      alert('Error al procesar la venta')
+    }
   }
 
   const generateReceipt = (sale: Sale) => {
@@ -266,6 +320,16 @@ Pago: ${paymentMethod}
     }
     setProducts([...products, product])
   }
+
+  // Generar ventas demo
+  useEffect(() => {
+    const demoSales: Sale[] = [
+      { id: '1', sale_number: 'BOLETA-001', total: 34.20, created_at: new Date().toISOString(), customer_name: 'Ana García', payment_method: 'EFECTIVO', items_count: 2 },
+      { id: '2', sale_number: 'BOLETA-002', total: 15.80, created_at: new Date(Date.now() - 3600000).toISOString(), customer_name: 'Carlos López', payment_method: 'YAPE', items_count: 1 },
+      { id: '3', sale_number: 'FACTURA-001', total: 89.40, created_at: new Date(Date.now() - 7200000).toISOString(), customer_name: 'Farmacia San Juan', payment_method: 'TARJETA', items_count: 4 }
+    ]
+    setSales(demoSales)
+  }, [])
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
