@@ -1,9 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useAuthStore } from '@/lib/store/auth'
-import LoginForm from '@/components/auth/LoginForm'
-import { productService, saleService } from '@/lib/database'
 
 interface Product {
   id: string
@@ -14,16 +11,36 @@ interface Product {
   is_generic?: boolean
   price: number
   stock: number
-  category?: string
 }
 
 interface CartItem extends Product {
   quantity: number
 }
 
+// Mock data para BOTICAS BELLAFARMA
+const PRODUCTS: Product[] = [
+  { id: '1', code: 'AMX001', name: 'Amoxidal 500mg', active_ingredient: 'Amoxicilina', brand: 'Amoxidal', is_generic: false, price: 25.50, stock: 50 },
+  { id: '2', code: 'AMX002', name: 'Amoxicilina Genérica 500mg', active_ingredient: 'Amoxicilina', brand: 'Genérico', is_generic: true, price: 15.80, stock: 80 },
+  { id: '3', code: 'PAR001', name: 'Panadol 500mg', active_ingredient: 'Paracetamol', brand: 'Panadol', is_generic: false, price: 8.50, stock: 100 },
+  { id: '4', code: 'PAR002', name: 'Paracetamol Genérico 500mg', active_ingredient: 'Paracetamol', brand: 'Genérico', is_generic: true, price: 4.20, stock: 150 },
+  { id: '5', code: 'IBU001', name: 'Advil 400mg', active_ingredient: 'Ibuprofeno', brand: 'Advil', is_generic: false, price: 18.90, stock: 60 },
+  { id: '6', code: 'IBU002', name: 'Ibuprofeno Genérico 400mg', active_ingredient: 'Ibuprofeno', brand: 'Genérico', is_generic: true, price: 9.50, stock: 90 }
+]
+
+const USERS = {
+  admin: { password: 'admin123', name: 'Administrador', role: 'ADMINISTRADOR' },
+  farmaceutico: { password: 'farm123', name: 'Juan Pérez', role: 'FARMACEUTICO' },
+  vendedor: { password: 'vend123', name: 'María García', role: 'VENDEDOR' }
+}
+
 export default function FarmaciaPOS() {
-  const { isAuthenticated, user } = useAuthStore()
-  const [products, setProducts] = useState<Product[]>([])
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [loginError, setLoginError] = useState('')
+  
+  const [products] = useState<Product[]>(PRODUCTS)
   const [searchResults, setSearchResults] = useState<Product[]>([])
   const [cart, setCart] = useState<CartItem[]>([])
   const [searchCode, setSearchCode] = useState('')
@@ -31,58 +48,36 @@ export default function FarmaciaPOS() {
   const [customerName, setCustomerName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('EFECTIVO')
   const [receiptType, setReceiptType] = useState('BOLETA')
-  const [loading, setLoading] = useState(false)
 
-  // Cargar productos al iniciar
-  useEffect(() => {
-    if (isAuthenticated) {
-      loadProducts()
-    }
-  }, [isAuthenticated])
-
-  const loadProducts = async () => {
-    try {
-      const data = await productService.getAll()
-      setProducts(data)
-    } catch (error) {
-      console.error('Error loading products:', error)
-      // Fallback a productos demo
-      setProducts([
-        { id: '1', code: 'AMX001', name: 'Amoxidal 500mg', active_ingredient: 'Amoxicilina', brand: 'Amoxidal', is_generic: false, price: 25.50, stock: 50 },
-        { id: '2', code: 'AMX002', name: 'Amoxicilina Genérica 500mg', active_ingredient: 'Amoxicilina', brand: 'Genérico', is_generic: true, price: 15.80, stock: 80 },
-        { id: '3', code: 'PAR001', name: 'Panadol 500mg', active_ingredient: 'Paracetamol', brand: 'Panadol', is_generic: false, price: 8.50, stock: 100 },
-        { id: '4', code: 'PAR002', name: 'Paracetamol Genérico 500mg', active_ingredient: 'Paracetamol', brand: 'Genérico', is_generic: true, price: 4.20, stock: 150 }
-      ])
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault()
+    const user = USERS[username as keyof typeof USERS]
+    if (user && user.password === password) {
+      setCurrentUser({ username, ...user })
+      setIsAuthenticated(true)
+      setLoginError('')
+    } else {
+      setLoginError('Usuario o contraseña incorrectos')
     }
   }
 
-  // Búsqueda inteligente
-  const handleSearch = async (e: React.KeyboardEvent) => {
+  const handleSearch = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && searchCode.trim()) {
-      try {
-        const results = await productService.searchIntelligent(searchCode)
-        setSearchResults(results)
-        
-        // Si hay un resultado exacto, agregarlo automáticamente
-        if (results.length === 1) {
-          addToCart(results[0])
-          setSearchCode('')
-          setSearchResults([])
-        }
-      } catch (error) {
-        console.error('Search error:', error)
-        // Fallback a búsqueda local
-        const localResults = products.filter(p => 
-          p.code.toLowerCase().includes(searchCode.toLowerCase()) ||
-          p.name.toLowerCase().includes(searchCode.toLowerCase()) ||
-          p.active_ingredient?.toLowerCase().includes(searchCode.toLowerCase())
-        )
-        setSearchResults(localResults)
+      const results = products.filter(p => 
+        p.code.toLowerCase().includes(searchCode.toLowerCase()) ||
+        p.name.toLowerCase().includes(searchCode.toLowerCase()) ||
+        p.active_ingredient?.toLowerCase().includes(searchCode.toLowerCase())
+      )
+      setSearchResults(results)
+      
+      if (results.length === 1) {
+        addToCart(results[0])
+        setSearchCode('')
+        setSearchResults([])
       }
     }
   }
 
-  // Agregar al carrito
   const addToCart = (product: Product) => {
     const existing = cart.find(item => item.id === product.id)
     const currentQty = existing ? existing.quantity : 0
@@ -102,7 +97,6 @@ export default function FarmaciaPOS() {
     }
   }
 
-  // Cambiar cantidad
   const updateQuantity = (productId: string, newQty: number) => {
     if (newQty <= 0) {
       setCart(cart.filter(item => item.id !== productId))
@@ -119,63 +113,69 @@ export default function FarmaciaPOS() {
     }
   }
 
-  // Calcular totales
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
   const tax = subtotal * 0.18
   const total = subtotal + tax
 
-  // Procesar venta
-  const processSale = async () => {
+  const processSale = () => {
     if (cart.length === 0) {
       alert('Carrito vacío')
       return
     }
 
-    setLoading(true)
-    try {
-      const saleData = {
-        customer_id: undefined,
-        user_id: user?.id,
-        receipt_type: receiptType,
-        subtotal,
-        tax,
-        total,
-        payment_method: paymentMethod,
-        items: cart.map(item => ({
-          product_id: item.id,
-          quantity: item.quantity,
-          unit_price: item.price,
-          subtotal: item.price * item.quantity
-        }))
-      }
-
-      const sale = await saleService.create(saleData)
-      
-      // Generar e imprimir comprobante térmico
-      const receipt = saleService.generateThermalReceipt({
-        ...sale,
-        sale_items: cart.map(item => ({ ...item, product: item }))
-      }, customerName ? { name: customerName, document_number: customerDoc } : null)
-      
-      printThermalReceipt(receipt)
-      
-      // Limpiar venta
-      setCart([])
-      setCustomerDoc('')
-      setCustomerName('')
-      setSearchResults([])
-      await loadProducts() // Recargar para actualizar stock
-      
-    } catch (error) {
-      console.error('Sale error:', error)
-      alert('Error al procesar la venta')
-    } finally {
-      setLoading(false)
-    }
+    const receipt = generateReceipt()
+    printReceipt(receipt)
+    
+    setCart([])
+    setCustomerDoc('')
+    setCustomerName('')
+    setSearchResults([])
   }
 
-  // Imprimir comprobante térmico
-  const printThermalReceipt = (receipt: string) => {
+  const generateReceipt = () => {
+    const now = new Date()
+    const date = now.toLocaleDateString('es-PE')
+    const time = now.toLocaleTimeString('es-PE')
+    
+    return `
+================================
+      BOTICAS BELLAFARMA
+================================
+Av. Perú N°3699, Cdra. 36,
+Lado Izquierdo, Zona 4, Sector 46
+Urb. Perú - S.M.P.
+RUC: 10473232583
+Tel: 962257626
+⭐ Atención 24 horas ⭐
+================================
+${receiptType}: ${receiptType}-${Date.now()}
+Fecha: ${date} ${time}
+${customerName ? `Cliente: ${customerName}` : ''}
+${customerDoc ? `DNI: ${customerDoc}` : ''}
+
+================================
+CANT  DESCRIPCIÓN      PRECIO
+================================
+${cart.map(item => {
+  const qty = item.quantity.toString().padEnd(4)
+  const name = item.name.substring(0, 20).padEnd(20)
+  const price = `S/ ${item.price.toFixed(2)}`.padStart(8)
+  return `${qty} ${name} ${price}`
+}).join('\n')}
+================================
+Subtotal:           S/ ${subtotal.toFixed(2)}
+IGV (18%):          S/ ${tax.toFixed(2)}
+TOTAL:              S/ ${total.toFixed(2)}
+Pago: ${paymentMethod}
+
+================================
+    ¡Gracias por su compra!
+   Consulte a nuestro farmacéutico
+     para mayor información
+================================`
+  }
+
+  const printReceipt = (receipt: string) => {
     const printWindow = window.open('', '_blank')
     if (printWindow) {
       printWindow.document.write(`
@@ -191,9 +191,6 @@ export default function FarmaciaPOS() {
                 padding: 10px;
                 white-space: pre-line;
               }
-              @media print {
-                body { margin: 0; padding: 5px; }
-              }
             </style>
           </head>
           <body>${receipt}</body>
@@ -204,7 +201,6 @@ export default function FarmaciaPOS() {
     }
   }
 
-  // Atajos de teclado
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.key === 'F1') {
@@ -231,14 +227,79 @@ export default function FarmaciaPOS() {
   }, [cart])
 
   if (!isAuthenticated) {
-    return <LoginForm />
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 bg-green-600 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <span className="text-white text-2xl font-bold">BF</span>
+            </div>
+            <h1 className="text-2xl font-bold text-gray-800 mb-2">BOTICAS BELLAFARMA</h1>
+            <p className="text-gray-600">Sistema FarmaZi POS</p>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Usuario</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Ingrese su usuario"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                placeholder="Ingrese su contraseña"
+                required
+              />
+            </div>
+
+            {loginError && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                {loginError}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+            >
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+            <p className="text-sm text-gray-600 mb-2">Usuarios de prueba:</p>
+            <div className="text-xs space-y-1">
+              <div><strong>Admin:</strong> admin / admin123</div>
+              <div><strong>Farmacéutico:</strong> farmaceutico / farm123</div>
+              <div><strong>Vendedor:</strong> vendedor / vend123</div>
+            </div>
+          </div>
+
+          <div className="mt-6 text-center text-xs text-gray-500">
+            <p>Av. Perú N°3699, Cdra. 36, S.M.P.</p>
+            <p>RUC: 10473232583 | Tel: 962257626</p>
+            <p className="font-medium text-green-600">Atención 24 horas</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 p-4">
       <div className="max-w-7xl mx-auto">
         
-        {/* Header */}
         <div className="bg-gradient-to-r from-green-600 to-blue-600 text-white p-4 rounded-t-lg">
           <div className="flex justify-between items-center">
             <div>
@@ -246,8 +307,14 @@ export default function FarmaciaPOS() {
               <p className="text-sm opacity-90">F1: Nueva Venta | F2: Procesar | ESC: Limpiar</p>
             </div>
             <div className="text-right">
-              <p className="text-sm">Usuario: {user?.name}</p>
-              <p className="text-xs opacity-75">{user?.role}</p>
+              <p className="text-sm">Usuario: {currentUser?.name}</p>
+              <p className="text-xs opacity-75">{currentUser?.role}</p>
+              <button
+                onClick={() => setIsAuthenticated(false)}
+                className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded mt-1 hover:bg-opacity-30"
+              >
+                Cerrar Sesión
+              </button>
             </div>
           </div>
         </div>
@@ -255,10 +322,8 @@ export default function FarmaciaPOS() {
         <div className="bg-white rounded-b-lg shadow-lg p-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            {/* Panel de Búsqueda y Productos */}
             <div className="lg:col-span-2">
               
-              {/* Búsqueda Inteligente */}
               <div className="mb-6">
                 <label className="block text-sm font-bold mb-2 text-green-700">
                   BÚSQUEDA INTELIGENTE (Código, Nombre o Principio Activo)
@@ -274,7 +339,6 @@ export default function FarmaciaPOS() {
                 />
               </div>
 
-              {/* Resultados de Búsqueda */}
               {searchResults.length > 0 && (
                 <div className="mb-6">
                   <h3 className="font-bold mb-3 text-green-700">Resultados de búsqueda:</h3>
@@ -317,11 +381,10 @@ export default function FarmaciaPOS() {
                 </div>
               )}
 
-              {/* Lista de Productos Populares */}
               <div>
                 <h3 className="font-bold mb-3 text-green-700">Productos Populares:</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
-                  {products.slice(0, 10).map((product) => (
+                  {products.slice(0, 6).map((product) => (
                     <div
                       key={product.id}
                       onClick={() => addToCart(product)}
@@ -357,10 +420,8 @@ export default function FarmaciaPOS() {
               </div>
             </div>
 
-            {/* Panel de Venta */}
             <div className="bg-gradient-to-b from-green-50 to-blue-50 p-4 rounded border-2 border-green-200">
               
-              {/* Datos del Cliente */}
               <div className="mb-4">
                 <h3 className="font-bold mb-2 text-green-700">CLIENTE</h3>
                 <input
@@ -379,7 +440,6 @@ export default function FarmaciaPOS() {
                 />
               </div>
 
-              {/* Tipo de Comprobante */}
               <div className="mb-4">
                 <h3 className="font-bold mb-2 text-green-700">COMPROBANTE</h3>
                 <select
@@ -393,7 +453,6 @@ export default function FarmaciaPOS() {
                 </select>
               </div>
 
-              {/* Carrito */}
               <div className="mb-4">
                 <h3 className="font-bold mb-2 text-green-700">CARRITO ({cart.length} items)</h3>
                 <div className="max-h-60 overflow-y-auto">
@@ -428,7 +487,6 @@ export default function FarmaciaPOS() {
                 </div>
               </div>
 
-              {/* Totales */}
               {cart.length > 0 && (
                 <div className="mb-4 p-3 bg-white rounded border border-green-200">
                   <div className="flex justify-between text-sm">
@@ -446,7 +504,6 @@ export default function FarmaciaPOS() {
                 </div>
               )}
 
-              {/* Método de Pago */}
               <div className="mb-4">
                 <h3 className="font-bold mb-2 text-green-700">PAGO</h3>
                 <select
@@ -461,14 +518,13 @@ export default function FarmaciaPOS() {
                 </select>
               </div>
 
-              {/* Botones de Acción */}
               <div className="space-y-2">
                 <button
                   onClick={processSale}
-                  disabled={cart.length === 0 || loading}
+                  disabled={cart.length === 0}
                   className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white p-3 rounded font-bold hover:from-green-700 hover:to-green-800 disabled:bg-gray-400 transition-all"
                 >
-                  {loading ? '⏳ Procesando...' : '🖨️ PROCESAR VENTA (F2)'}
+                  🖨️ PROCESAR VENTA (F2)
                 </button>
                 
                 <button
