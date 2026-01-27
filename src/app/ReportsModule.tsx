@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { saleService } from '../lib/aws-dynamodb'
 
 interface Sale {
   id: string
@@ -16,8 +17,27 @@ interface ReportsProps {
   sales: Sale[]
 }
 
-export default function ReportsModule({ sales }: ReportsProps) {
+export default function ReportsModule({ sales: initialSales }: ReportsProps) {
+  const [sales, setSales] = useState<Sale[]>(initialSales)
   const [dateRange, setDateRange] = useState('today')
+  const [loading, setLoading] = useState(false)
+
+  // Load sales from DynamoDB
+  useEffect(() => {
+    loadSales()
+  }, [])
+
+  const loadSales = async () => {
+    setLoading(true)
+    try {
+      const data = await saleService.getAll()
+      setSales(data as Sale[])
+    } catch (error) {
+      console.error('Error loading sales:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]

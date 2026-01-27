@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { productService } from '../lib/aws-dynamodb'
 
 interface Product {
   id: string
@@ -23,10 +24,12 @@ interface InventoryProps {
   onAddProduct: (product: Omit<Product, 'id'>) => void
 }
 
-export default function InventoryModule({ products, onUpdateProduct, onAddProduct }: InventoryProps) {
+export default function InventoryModule({ products: initialProducts, onUpdateProduct, onAddProduct }: InventoryProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts)
   const [showAddForm, setShowAddForm] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('all')
+  const [loading, setLoading] = useState(false)
 
   const [newProduct, setNewProduct] = useState({
     code: '',
@@ -42,6 +45,23 @@ export default function InventoryModule({ products, onUpdateProduct, onAddProduc
     laboratory: ''
   })
 
+  // Load products from DynamoDB
+  useEffect(() => {
+    loadProducts()
+  }, [])
+
+  const loadProducts = async () => {
+    setLoading(true)
+    try {
+      const data = await productService.getAll()
+      setProducts(data as Product[])
+    } catch (error) {
+      console.error('Error loading products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const categories = ['Analgésicos', 'Antibióticos', 'Antiinflamatorios', 'Vitaminas', 'Digestivos', 'Respiratorios']
 
   const filteredProducts = products.filter(product => {
@@ -56,29 +76,53 @@ export default function InventoryModule({ products, onUpdateProduct, onAddProduc
 
   const lowStockProducts = products.filter(p => p.stock <= p.min_stock)
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
-    onAddProduct(newProduct as Product)
-    setNewProduct({
-      code: '',
-      name: '',
-      active_ingredient: '',
-      brand: '',
-      is_generic: false,
-      price: 0,
-      cost: 0,
-      stock: 0,
-      min_stock: 5,
-      category: '',
-      laboratory: ''
-    })
-    setShowAddForm(false)
+    setLoading(true)
+    try {
+      const createdProduct = await productService.createProduct(newProduct)
+      setProducts([...products, createdProduct])
+      onAddProduct(newProduct as Product)
+      setNewProduct({
+        code: '',
+        name: '',
+        active_ingredient: '',
+        brand: '',
+        is_generic: false,
+        price: 0,
+        cost: 0,
+        stock: 0,
+        min_stock: 5,
+        category: '',
+        laboratory: ''
+      })
+      setShowAddForm(false)
+    } catch (error) {
+      console.error('Error adding product:', error)
+      alert('Error al agregar producto')
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleUpdateStock = (productId: string, newStock: number) => {
-    const product = products.find(p => p.id === productId)
-    if (product) {
-      onUpdateProduct({ ...product, stock: newStock })
+  const handleUpdateStock = async (productId: string, newStock: number) => {
+    setLoading(true)
+    try {
+      await productService.updateStock(productId, newStock)
+      const updatedProducts = products.map(p => 
+        p.id === productId ? { ...p, stock: newStock } : p
+      )
+      setProducts(updatedProducts)
+      
+      const product = products.find(p => p.id === productId)
+      if (product) {
+        onUpdateProduct({ ...product, stock: newStock })
+      }
+    } catch (error) {
+      console.error('Error updating stock:', error)
+      alert('Error al actualizar stock')
+    } finally {
+      setLoading(false)
     }
   }
 

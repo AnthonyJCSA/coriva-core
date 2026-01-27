@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import InventoryModule from './InventoryModule'
 import ReportsModule from './ReportsModule'
-import { productService, authService, saleService } from '../lib/database'
+import { productService, authService, saleService } from '../lib/aws-dynamodb'
 
 interface Product {
   id: string
@@ -71,21 +71,30 @@ export default function FarmaciaPOS() {
   const [paymentMethod, setPaymentMethod] = useState('EFECTIVO')
   const [receiptType, setReceiptType] = useState('BOLETA')
 
-  // Cargar productos al iniciar
+  // Cargar productos y ventas al iniciar
   useEffect(() => {
     if (isAuthenticated) {
       loadProducts()
+      loadSales()
     }
   }, [isAuthenticated])
 
   const loadProducts = async () => {
     try {
       const data = await productService.getAll()
-      setProducts(data)
+      setProducts(data as Product[])
     } catch (error) {
       console.error('Error loading products:', error)
-      // Usar productos demo como fallback
       setProducts(INITIAL_PRODUCTS)
+    }
+  }
+
+  const loadSales = async () => {
+    try {
+      const data = await saleService.getAll()
+      setSales(data as Sale[])
+    } catch (error) {
+      console.error('Error loading sales:', error)
     }
   }
 
@@ -119,10 +128,10 @@ export default function FarmaciaPOS() {
     if (e.key === 'Enter' && searchCode.trim()) {
       try {
         const results = await productService.searchIntelligent(searchCode)
-        setSearchResults(results)
+        setSearchResults(results as Product[])
         
         if (results.length === 1) {
-          addToCart(results[0])
+          addToCart(results[0] as Product)
           setSearchCode('')
           setSearchResults([])
         }
@@ -199,13 +208,21 @@ export default function FarmaciaPOS() {
           product_id: item.id,
           quantity: item.quantity,
           unit_price: item.price,
-          subtotal: item.price * item.quantity
+          subtotal: item.price * item.quantity,
+          current_stock: products.find(p => p.id === item.id)?.stock || 0
         }))
       }
 
       const sale = await saleService.create(saleData)
       
-      // Actualizar stock local
+      // Actualizar stock localmente
+      for (const item of cart) {
+        const currentProduct = products.find(p => p.id === item.id);
+        if (currentProduct) {
+          await productService.updateStock(item.id, currentProduct.stock - item.quantity);
+        }
+      }
+      
       setProducts(products.map(product => {
         const cartItem = cart.find(item => item.id === product.id)
         if (cartItem) {
@@ -214,7 +231,7 @@ export default function FarmaciaPOS() {
         return product
       }))
 
-      // Agregar venta a la lista local
+      // Crear objeto de venta
       const newSale: Sale = {
         id: sale.id,
         sale_number: sale.sale_number,
@@ -224,7 +241,10 @@ export default function FarmaciaPOS() {
         payment_method: paymentMethod,
         items_count: cart.reduce((sum, item) => sum + item.quantity, 0)
       }
+
+      // Agregar venta a la lista local y recargar desde DB
       setSales([newSale, ...sales])
+      await loadSales()
 
       const receipt = generateReceipt(newSale)
       printReceipt(receipt)
@@ -309,16 +329,22 @@ Pago: ${paymentMethod}
     }
   }
 
-  const updateProduct = (updatedProduct: Product) => {
-    setProducts(products.map(p => p.id === updatedProduct.id ? updatedProduct : p))
+  const updateProduct = async (updatedProduct: Product) => {
+    try {
+      await productService.updateProduct(updatedProduct)
+      setProducts(products.map(p => p.id === updatedProduct.id ? updatedProduct : p))
+    } catch (error) {
+      console.error('Error updating product:', error)
+    }
   }
 
-  const addProduct = (newProduct: Omit<Product, 'id'>) => {
-    const product: Product = {
-      ...newProduct,
-      id: Date.now().toString()
+  const addProduct = async (newProduct: Omit<Product, 'id'>) => {
+    try {
+      const product = await productService.createProduct(newProduct)
+      setProducts([...products, product])
+    } catch (error) {
+      console.error('Error adding product:', error)
     }
-    setProducts([...products, product])
   }
 
   // Generar ventas demo
