@@ -300,6 +300,14 @@ ${currentOrg?.settings.receipt_footer || ''}
       await productService.decreaseStock(item.id, item.quantity)
     }
     
+    // Update cash session
+    const currentSession = await cashService.getCurrentSession()
+    if (currentSession) {
+      await cashService.updateSession(currentSession.id, {
+        total_sales: (currentSession.total_sales || 0) + total
+      })
+    }
+    
     await loadProducts()
     await loadSales()
     
