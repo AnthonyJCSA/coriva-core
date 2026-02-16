@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import InventoryModule from './InventoryModule'
 import ReportsModule from './ReportsModule'
-import { productService, authService, saleService } from '../lib/aws-dynamodb'
+import CashRegisterModule from './CashRegisterModule'
+import { productService, authService, saleService } from '../lib/bellafarma-dynamo'
 
 interface Product {
   id: string
@@ -53,6 +54,21 @@ const USERS = {
   vendedor: { password: 'vend123', name: 'María García', role: 'VENDEDOR' }
 }
 
+// Función para obtener fecha/hora de Perú
+const getPeruDateTime = () => {
+  const now = new Date()
+  // Perú es UTC-5 (sin horario de verano)
+  const peruTime = new Date(now.getTime() - (5 * 60 * 60 * 1000))
+  return peruTime
+}
+
+// Función para formatear fecha en zona horaria de Perú
+const formatPeruDate = (dateString: string) => {
+  const utcDate = new Date(dateString)
+  const peruDate = new Date(utcDate.getTime() - (5 * 60 * 60 * 1000))
+  return peruDate
+}
+
 export default function FarmaciaPOS() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [currentUser, setCurrentUser] = useState<any>(null)
@@ -70,6 +86,8 @@ export default function FarmaciaPOS() {
   const [customerName, setCustomerName] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('EFECTIVO')
   const [receiptType, setReceiptType] = useState('BOLETA')
+  const [amountPaid, setAmountPaid] = useState('')
+  const [showChange, setShowChange] = useState(false)
 
   // Cargar productos y ventas al iniciar
   useEffect(() => {
@@ -151,8 +169,11 @@ export default function FarmaciaPOS() {
   const addToCart = (product: Product) => {
     const existing = cart.find(item => item.id === product.id)
     const currentQty = existing ? existing.quantity : 0
+    const availableStock = Number(product.stock)
     
-    if (currentQty < product.stock) {
+    console.log('Add to cart debug:', { productId: product.id, availableStock, currentQty, productStock: product.stock })
+    
+    if (currentQty < availableStock) {
       if (existing) {
         setCart(cart.map(item =>
           item.id === product.id
@@ -163,7 +184,7 @@ export default function FarmaciaPOS() {
         setCart([...cart, { ...product, quantity: 1 }])
       }
     } else {
-      alert('Stock insuficiente')
+      alert(`Stock insuficiente. Disponible: ${availableStock}`)
     }
   }
 
@@ -173,19 +194,31 @@ export default function FarmaciaPOS() {
       return
     }
     
+    // Buscar en productos actuales Y en el carrito
     const product = products.find(p => p.id === productId)
-    if (product && newQty <= product.stock) {
+    const cartItem = cart.find(item => item.id === productId)
+    
+    // Usar el stock más actualizado
+    const availableStock = Number(product?.stock || cartItem?.stock || 0)
+    
+    console.log('Debug stock:', { productId, availableStock, newQty, product: product?.stock, cartItem: cartItem?.stock })
+    
+    if (availableStock > 0 && newQty <= availableStock) {
       setCart(cart.map(item =>
         item.id === productId
           ? { ...item, quantity: newQty }
           : item
       ))
+    } else {
+      alert(`Stock insuficiente. Disponible: ${availableStock}`)
     }
   }
 
   const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-  const tax = subtotal * 0.18
-  const total = subtotal + tax
+  const opGravadas = subtotal / 1.18
+  const tax = subtotal - opGravadas
+  const total = subtotal
+  const change = amountPaid ? Number(amountPaid) - total : 0
 
   const processSale = async () => {
     if (cart.length === 0) {
@@ -194,9 +227,22 @@ export default function FarmaciaPOS() {
     }
 
     try {
-      // Crear nueva venta en Supabase
+      // Mostrar indicador de carga
+      const loadingAlert = document.createElement('div')
+      loadingAlert.innerHTML = `
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); 
+                    z-index: 9999; text-align: center;">
+          <div style="font-size: 18px; margin-bottom: 10px;">🔄 Procesando venta...</div>
+          <div style="font-size: 14px; color: #666;">Guardando en AWS DynamoDB</div>
+        </div>
+      `
+      document.body.appendChild(loadingAlert)
+
+      // Crear nueva venta en DynamoDB
       const saleData = {
         customer_id: undefined,
+        customer_name: customerName.trim() || undefined, // Solo enviar si hay nombre
         user_id: currentUser?.id,
         receipt_type: receiptType,
         subtotal,
@@ -204,32 +250,27 @@ export default function FarmaciaPOS() {
         discount: 0,
         total,
         payment_method: paymentMethod,
-        items: cart.map(item => ({
-          product_id: item.id,
-          quantity: item.quantity,
-          unit_price: item.price,
-          subtotal: item.price * item.quantity,
-          current_stock: products.find(p => p.id === item.id)?.stock || 0
-        }))
+        items: cart.map(item => {
+          const currentProduct = products.find(p => p.id === item.id);
+          return {
+            product_id: item.id,
+            quantity: Number(item.quantity),
+            unit_price: Number(item.price),
+            subtotal: Number(item.price) * Number(item.quantity),
+            current_stock: Number(currentProduct?.stock || 0)
+          };
+        })
       }
 
       const sale = await saleService.create(saleData)
       
-      // Actualizar stock localmente
+      // Actualizar stock usando decreaseStock para mejor tracking
       for (const item of cart) {
-        const currentProduct = products.find(p => p.id === item.id);
-        if (currentProduct) {
-          await productService.updateStock(item.id, currentProduct.stock - item.quantity);
-        }
+        await productService.decreaseStock(item.id, Number(item.quantity), 'Venta POS');
       }
       
-      setProducts(products.map(product => {
-        const cartItem = cart.find(item => item.id === product.id)
-        if (cartItem) {
-          return { ...product, stock: product.stock - cartItem.quantity }
-        }
-        return product
-      }))
+      // Recargar productos desde DynamoDB
+      await loadProducts()
 
       // Crear objeto de venta
       const newSale: Sale = {
@@ -246,6 +287,30 @@ export default function FarmaciaPOS() {
       setSales([newSale, ...sales])
       await loadSales()
 
+      // Remover indicador de carga
+      document.body.removeChild(loadingAlert)
+
+      // Mostrar éxito
+      const successAlert = document.createElement('div')
+      successAlert.innerHTML = `
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background: #10B981; color: white; padding: 20px; border-radius: 10px; 
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center;">
+          <div style="font-size: 20px; margin-bottom: 10px;">✅ ¡Venta Exitosa!</div>
+          <div style="font-size: 16px; margin-bottom: 5px;">Boleta: ${sale.sale_number}</div>
+          <div style="font-size: 16px; margin-bottom: 10px;">Total: S/ ${total.toFixed(2)}</div>
+          <div style="font-size: 12px;">💾 Guardado en AWS DynamoDB</div>
+        </div>
+      `
+      document.body.appendChild(successAlert)
+      
+      // Auto-cerrar después de 3 segundos
+      setTimeout(() => {
+        if (document.body.contains(successAlert)) {
+          document.body.removeChild(successAlert)
+        }
+      }, 3000)
+
       const receipt = generateReceipt(newSale)
       printReceipt(receipt)
       
@@ -253,17 +318,37 @@ export default function FarmaciaPOS() {
       setCustomerDoc('')
       setCustomerName('')
       setSearchResults([])
+      setAmountPaid('')
+      setShowChange(false)
       
     } catch (error) {
       console.error('Sale error:', error)
-      alert('Error al procesar la venta')
+      
+      // Remover loading si existe
+      const loadingAlert = document.querySelector('div[style*="Procesando venta"]')?.parentElement
+      if (loadingAlert) document.body.removeChild(loadingAlert)
+      
+      // Mostrar error
+      const errorAlert = document.createElement('div')
+      errorAlert.innerHTML = `
+        <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                    background: #EF4444; color: white; padding: 20px; border-radius: 10px; 
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.3); z-index: 9999; text-align: center;">
+          <div style="font-size: 18px; margin-bottom: 10px;">❌ Error en la venta</div>
+          <div style="font-size: 14px;">No se pudo guardar en AWS DynamoDB</div>
+          <button onclick="this.parentElement.parentElement.remove()" 
+                  style="margin-top: 10px; padding: 5px 15px; background: white; color: #EF4444; 
+                         border: none; border-radius: 5px; cursor: pointer;">Cerrar</button>
+        </div>
+      `
+      document.body.appendChild(errorAlert)
     }
   }
 
   const generateReceipt = (sale: Sale) => {
-    const now = new Date()
-    const date = now.toLocaleDateString('es-PE')
-    const time = now.toLocaleTimeString('es-PE')
+    const peruDate = formatPeruDate(sale.created_at)
+    const date = peruDate.toLocaleDateString('es-PE')
+    const time = peruDate.toLocaleTimeString('es-PE')
     
     return `
 ================================
@@ -287,14 +372,15 @@ CANT  DESCRIPCIÓN      PRECIO
 ${cart.map(item => {
   const qty = item.quantity.toString().padEnd(4)
   const name = item.name.substring(0, 20).padEnd(20)
-  const price = `S/ ${item.price.toFixed(2)}`.padStart(8)
+  const price = `S/ ${item.price.toFixed(3)}`.padStart(10)
   return `${qty} ${name} ${price}`
 }).join('\n')}
 ================================
-Subtotal:           S/ ${subtotal.toFixed(2)}
-IGV (18%):          S/ ${tax.toFixed(2)}
-TOTAL:              S/ ${total.toFixed(2)}
-Pago: ${paymentMethod}
+Subtotal:           S/ ${subtotal.toFixed(3)}
+OP. GRAVADAS:       S/ ${opGravadas.toFixed(3)}
+IGV (18%):          S/ ${tax.toFixed(3)}
+TOTAL:              S/ ${total.toFixed(3)}
+Pago: ${paymentMethod}${amountPaid ? `\nRecibido:           S/ ${Number(amountPaid).toFixed(3)}` : ''}${change > 0 ? `\nVuelto:             S/ ${change.toFixed(3)}` : ''}
 
 ================================
     ¡Gracias por su compra!
@@ -307,41 +393,107 @@ Pago: ${paymentMethod}
     const printWindow = window.open('', '_blank')
     if (printWindow) {
       printWindow.document.write(`
+        <!DOCTYPE html>
         <html>
           <head>
-            <title>Comprobante BOTICAS BELLAFARMA</title>
+            <meta charset="utf-8">
+            <title>Ticket</title>
             <style>
-              body { 
-                font-family: 'Courier New', monospace; 
-                font-size: 12px;
-                line-height: 1.2;
-                margin: 0;
-                padding: 10px;
-                white-space: pre-line;
+              * {
+                margin: 0 !important;
+                padding: 0 !important;
+                box-sizing: border-box;
+              }
+              
+              html {
+                width: 80mm;
+                height: auto;
+              }
+              
+              body {
+                width: 80mm;
+                height: auto;
+                font-family: 'Courier New', monospace;
+                font-size: 9px;
+                line-height: 1.1;
+                color: #000;
+                background: #fff;
+                text-align: center;
+              }
+              
+              .receipt {
+                width: 80mm;
+                height: auto;
+                padding: 2mm;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+                text-align: center;
+                display: inline-block;
+              }
+              
+              @media print {
+                html, body {
+                  width: 80mm !important;
+                  height: auto !important;
+                  margin: 0 !important;
+                  padding: 0 !important;
+                }
+                
+                .receipt {
+                  width: 80mm !important;
+                  height: auto !important;
+                  margin: 0 auto !important;
+                  padding-left: 0 !important;
+                  padding-right: 0 !important;
+                  box-sizing: border-box;
+                }
+                
+                @page {
+                  size: 80mm auto;
+                  margin: 0;
+                  padding: 0;
+                }
               }
             </style>
           </head>
-          <body>${receipt}</body>
+          <body>
+            <div class="receipt">${receipt}</div>
+          </body>
         </html>
       `)
       printWindow.document.close()
-      printWindow.print()
+      
+      setTimeout(() => {
+        printWindow.print()
+        setTimeout(() => printWindow.close(), 1000)
+      }, 500)
     }
   }
 
   const updateProduct = async (updatedProduct: Product) => {
     try {
-      await productService.updateProduct(updatedProduct)
-      setProducts(products.map(p => p.id === updatedProduct.id ? updatedProduct : p))
+      await productService.updateProduct(updatedProduct, currentUser?.id, currentUser?.name)
+      await loadProducts()
     } catch (error) {
       console.error('Error updating product:', error)
+    }
+  }
+
+  const deleteProduct = async (id: string) => {
+    try {
+      await productService.deleteProduct(id, currentUser?.id, currentUser?.name)
+      await loadProducts()
+    } catch (error) {
+      console.error('Error deleting product:', error)
     }
   }
 
   const addProduct = async (newProduct: Omit<Product, 'id'>) => {
     try {
       const product = await productService.createProduct(newProduct)
-      setProducts([...products, product])
+      // Recargar productos desde DynamoDB inmediatamente
+      await loadProducts()
+      console.log('Product added, products reloaded:', products.length)
     } catch (error) {
       console.error('Error adding product:', error)
     }
@@ -366,6 +518,8 @@ Pago: ${paymentMethod}
           setCustomerDoc('')
           setCustomerName('')
           setSearchResults([])
+          setAmountPaid('')
+          setShowChange(false)
         }
         
         if (e.key === 'F2') {
@@ -435,15 +589,6 @@ Pago: ${paymentMethod}
             </button>
           </form>
 
-          <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600 mb-2">Usuarios de prueba:</p>
-            <div className="text-xs space-y-1">
-              <div><strong>Admin:</strong> admin / admin123</div>
-              <div><strong>Farmacéutico:</strong> farmaceutico / farm123</div>
-              <div><strong>Vendedor:</strong> vendedor / vend123</div>
-            </div>
-          </div>
-
           <div className="mt-6 text-center text-xs text-gray-500">
             <p>Av. Perú N°3699, Cdra. 36, S.M.P.</p>
             <p>RUC: 10473232583 | Tel: 962257626</p>
@@ -457,16 +602,20 @@ Pago: ${paymentMethod}
   // Renderizar módulo activo
   const renderActiveModule = () => {
     switch (activeModule) {
+      case 'cash':
+        return <CashRegisterModule currentUser={currentUser} />
       case 'inventory':
         return (
           <InventoryModule 
             products={products}
             onUpdateProduct={updateProduct}
             onAddProduct={addProduct}
+            onDeleteProduct={deleteProduct}
+            currentUser={currentUser}
           />
         )
       case 'reports':
-        return <ReportsModule sales={sales} />
+        return <ReportsModule sales={sales} currentUser={currentUser} />
       default:
         return renderPOSModule()
     }
@@ -479,9 +628,17 @@ Pago: ${paymentMethod}
         <div className="lg:col-span-2">
           
           <div className="mb-6">
-            <label className="block text-sm font-bold mb-2 text-green-700">
-              BÚSQUEDA INTELIGENTE (Código, Nombre o Principio Activo)
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-bold text-green-700">
+                BÚSQUEDA INTELIGENTE (Código, Nombre o Principio Activo)
+              </label>
+              <button
+                onClick={loadProducts}
+                className="text-xs bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600"
+              >
+                🔄 Recargar Productos
+              </button>
+            </div>
             <input
               type="text"
               value={searchCode}
@@ -510,7 +667,7 @@ Pago: ${paymentMethod}
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <p className="font-bold text-sm">[{product.code}] {product.name}</p>
-                        <p className="text-green-600 font-bold text-lg">S/ {product.price.toFixed(2)}</p>
+                        <p className="text-green-600 font-bold text-lg">S/ {product.price.toFixed(3)}</p>
                         {product.active_ingredient && (
                           <p className="text-xs text-blue-600">P.A: {product.active_ingredient}</p>
                         )}
@@ -549,7 +706,7 @@ Pago: ${paymentMethod}
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="font-bold text-sm">[{product.code}] {product.name}</p>
-                      <p className="text-green-600 font-bold">S/ {product.price.toFixed(2)}</p>
+                      <p className="text-green-600 font-bold">S/ {product.price.toFixed(3)}</p>
                       {product.active_ingredient && (
                         <p className="text-xs text-blue-600">P.A: {product.active_ingredient}</p>
                       )}
@@ -617,7 +774,7 @@ Pago: ${paymentMethod}
                   <div key={item.id} className="flex justify-between items-center mb-2 p-2 bg-white rounded border border-green-200">
                     <div className="flex-1">
                       <p className="font-medium text-sm">{item.name}</p>
-                      <p className="text-xs text-green-600">S/ {item.price.toFixed(2)} c/u</p>
+                      <p className="text-xs text-green-600">S/ {item.price.toFixed(3)} c/u</p>
                       {item.is_generic && <span className="text-xs bg-green-100 text-green-800 px-1 rounded">Genérico</span>}
                     </div>
                     <div className="flex items-center space-x-2">
@@ -645,16 +802,53 @@ Pago: ${paymentMethod}
             <div className="mb-4 p-3 bg-white rounded border border-green-200">
               <div className="flex justify-between text-sm">
                 <span>Subtotal:</span>
-                <span>S/ {subtotal.toFixed(2)}</span>
+                <span>S/ {subtotal.toFixed(3)}</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-sm text-gray-600">
+                <span>OP. Gravadas:</span>
+                <span>S/ {opGravadas.toFixed(3)}</span>
+              </div>
+              <div className="flex justify-between text-sm text-gray-600">
                 <span>IGV (18%):</span>
-                <span>S/ {tax.toFixed(2)}</span>
+                <span>S/ {tax.toFixed(3)}</span>
               </div>
               <div className="flex justify-between font-bold text-lg border-t pt-2 text-green-700">
                 <span>TOTAL:</span>
-                <span>S/ {total.toFixed(2)}</span>
+                <span>S/ {total.toFixed(3)}</span>
               </div>
+              
+              {/* Campo para monto pagado */}
+              {paymentMethod === 'EFECTIVO' && (
+                <div className="mt-3 pt-3 border-t">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Monto Recibido:</label>
+                  <input
+                    type="number"
+                    step="0.001"
+                    value={amountPaid}
+                    onChange={(e) => {
+                      setAmountPaid(e.target.value)
+                      setShowChange(e.target.value !== '')
+                    }}
+                    className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500"
+                    placeholder="0.000"
+                  />
+                  {showChange && amountPaid && Number(amountPaid) >= total && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded">
+                      <div className="flex justify-between font-bold text-blue-700">
+                        <span>VUELTO:</span>
+                        <span>S/ {change.toFixed(3)}</span>
+                      </div>
+                    </div>
+                  )}
+                  {showChange && amountPaid && Number(amountPaid) < total && (
+                    <div className="mt-2 p-2 bg-red-50 rounded">
+                      <div className="text-red-700 text-sm">
+                        Falta: S/ {(total - Number(amountPaid)).toFixed(3)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -675,7 +869,7 @@ Pago: ${paymentMethod}
           <div className="space-y-2">
             <button
               onClick={processSale}
-              disabled={cart.length === 0}
+              disabled={cart.length === 0 || (paymentMethod === 'EFECTIVO' && (!amountPaid || Number(amountPaid) < total))}
               className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white p-3 rounded font-bold hover:from-green-700 hover:to-green-800 disabled:bg-gray-400 transition-all"
             >
               🖨️ PROCESAR VENTA (F2)
@@ -687,10 +881,22 @@ Pago: ${paymentMethod}
                 setCustomerDoc('')
                 setCustomerName('')
                 setSearchResults([])
+                setAmountPaid('')
+                setShowChange(false)
               }}
               className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white p-2 rounded hover:from-red-700 hover:to-red-800 transition-all"
             >
               🗑️ LIMPIAR (F1)
+            </button>
+            
+            <button
+              onClick={() => {
+                localStorage.removeItem('printer-configured')
+                alert('Configuración de impresora reiniciada. La próxima venta mostrará el diálogo de impresión.')
+              }}
+              className="w-full bg-gray-500 text-white p-1 rounded text-sm hover:bg-gray-600 transition-all"
+            >
+              ⚙️ Reconfigurar Impresora
             </button>
           </div>
         </div>
@@ -735,6 +941,19 @@ Pago: ${paymentMethod}
             >
               💰 Punto de Venta
             </button>
+            
+            {(currentUser?.role === 'ADMINISTRADOR' || currentUser?.role === 'FARMACEUTICO') && (
+              <button
+                onClick={() => setActiveModule('cash')}
+                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
+                  activeModule === 'cash' 
+                    ? 'bg-white text-green-600' 
+                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
+                }`}
+              >
+                💵 Caja
+              </button>
+            )}
             
             {(currentUser?.role === 'ADMINISTRADOR' || currentUser?.role === 'FARMACEUTICO') && (
               <button

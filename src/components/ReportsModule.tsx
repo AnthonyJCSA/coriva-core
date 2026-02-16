@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { saleService, bellafarmaProductService } from '@/lib/bellafarma-dynamo'
 
 interface Sale {
   id: string
@@ -10,16 +11,58 @@ interface Sale {
   customer_name?: string
   payment_method: string
   items_count: number
+  status?: string
+  items?: any[]
 }
 
 interface ReportsProps {
   sales: Sale[]
+  currentUser: any
 }
 
-export default function ReportsModule({ sales }: ReportsProps) {
+export default function ReportsModule({ sales, currentUser }: ReportsProps) {
   const [dateRange, setDateRange] = useState('today')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
+  const [cancellationReason, setCancellationReason] = useState('')
+  const [showCancelModal, setShowCancelModal] = useState(false)
+
+  const handleCancelSale = async () => {
+    if (!selectedSale || !cancellationReason.trim()) {
+      alert('Debe ingresar un motivo de anulación')
+      return
+    }
+
+    try {
+      await saleService.cancel(
+        selectedSale.id,
+        currentUser?.id || 'unknown',
+        currentUser?.name || 'Usuario',
+        cancellationReason
+      )
+
+      if (selectedSale.items) {
+        for (const item of selectedSale.items) {
+          const products = await bellafarmaProductService.getAll()
+          const prod = products.find((p: any) => p.id === item.product_id)
+          if (prod) {
+            const newStock = Number(prod.stock) + Number(item.quantity)
+            await bellafarmaProductService.updateStock(item.product_id, newStock)
+          }
+        }
+      }
+
+      alert('✅ Venta anulada exitosamente')
+      setShowCancelModal(false)
+      setSelectedSale(null)
+      setCancellationReason('')
+      window.location.reload()
+    } catch (error) {
+      console.error('Error cancelling sale:', error)
+      alert('❌ Error al anular venta')
+    }
+  }
 
   const today = new Date().toISOString().split('T')[0]
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0]
@@ -230,6 +273,7 @@ export default function ReportsModule({ sales }: ReportsProps) {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pago</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Acción</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -246,6 +290,19 @@ export default function ReportsModule({ sales }: ReportsProps) {
                   <td className="px-6 py-4 text-sm text-gray-500">{sale.payment_method}</td>
                   <td className="px-6 py-4 text-sm font-medium text-green-600">
                     S/ {sale.total.toFixed(2)}
+                  </td>
+                  <td className="px-6 py-4 text-center">
+                    {(currentUser?.role === 'ADMINISTRADOR' || currentUser?.role === 'FARMACEUTICO') && (
+                      <button
+                        onClick={() => {
+                          setSelectedSale(sale)
+                          setShowCancelModal(true)
+                        }}
+                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-xs"
+                      >
+                        Anular
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -326,6 +383,61 @@ export default function ReportsModule({ sales }: ReportsProps) {
           </button>
         </div>
       </div>
+
+      {/* Modal Anulación */}
+      {showCancelModal && selectedSale && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4 text-red-600">⚠️ Anular Venta</h2>
+            
+            <div className="mb-4 p-4 bg-gray-50 rounded">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-600">N° Venta</p>
+                  <p className="font-bold">{selectedSale.sale_number}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Total</p>
+                  <p className="font-bold text-green-600">S/ {selectedSale.total.toFixed(2)}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Motivo de Anulación *
+              </label>
+              <textarea
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                className="w-full p-3 border border-gray-300 rounded focus:ring-2 focus:ring-red-500"
+                rows={3}
+                placeholder="Ingrese el motivo de la anulación..."
+                autoFocus
+              />
+            </div>
+
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={() => {
+                  setShowCancelModal(false)
+                  setSelectedSale(null)
+                  setCancellationReason('')
+                }}
+                className="px-4 py-2 text-gray-600 border border-gray-300 rounded hover:bg-gray-50"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleCancelSale}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+              >
+                Confirmar Anulación
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
