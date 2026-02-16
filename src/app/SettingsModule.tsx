@@ -213,7 +213,7 @@ export default function SettingsModule({ currentOrg, onUpdate }: SettingsModuleP
             </div>
 
             <a
-              href="https://wa.me/51962257626?text=Hola,%20necesito%20ayuda%20con%20Coriva%20Core"
+              href="https://wa.me/51913916967?text=Hola,%20necesito%20ayuda%20con%20Coriva%20Core"
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-lg font-medium transition-colors mb-3"
