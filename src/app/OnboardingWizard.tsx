@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Organization } from '../types'
+import { supabase } from '../lib/supabase'
 
 interface OnboardingWizardProps {
   onComplete: (org: Organization, products: any[]) => void
@@ -86,7 +87,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     setManualProduct({ code: '', name: '', price: 0, stock: 0 })
   }
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     if (step === 1) {
       if (!businessData.name || !businessData.business_type) {
         alert('Complete los campos obligatorios')
@@ -105,6 +106,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         return
       }
 
+      setLoading(true)
+
       const newOrg: Organization = {
         id: `org_${Date.now()}`,
         slug: businessData.name.toLowerCase().replace(/\s+/g, '-'),
@@ -115,6 +118,36 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         updated_at: new Date().toISOString()
       }
 
+      // Save to Supabase
+      if (supabase) {
+        try {
+          const { error } = await supabase
+            .from('organizations')
+            .insert({
+              id: newOrg.id,
+              name: newOrg.name,
+              slug: newOrg.slug,
+              business_type: newOrg.business_type,
+              ruc: newOrg.ruc,
+              address: newOrg.address,
+              phone: newOrg.phone,
+              email: newOrg.email,
+              settings: newOrg.settings,
+              is_active: newOrg.is_active
+            })
+
+          if (error) {
+            console.error('Error saving to Supabase:', error)
+            alert('⚠️ Registro guardado localmente. Conexión con servidor limitada.')
+          } else {
+            console.log('✅ Organization saved to Supabase')
+          }
+        } catch (err) {
+          console.error('Supabase error:', err)
+        }
+      }
+
+      setLoading(false)
       onComplete(newOrg, products)
     }
   }
