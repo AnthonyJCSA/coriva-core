@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'FarmaZi - Sistema de Farmacia',
-  description: 'Sistema POS para farmacias',
+  title: 'Coriva Core - Sistema POS Multi-Tenant',
+  description: 'Sistema POS adaptable para cualquier tipo de negocio',
 }
 
 export default function RootLayout({
