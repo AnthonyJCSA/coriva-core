@@ -118,14 +118,10 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         updated_at: new Date().toISOString()
       }
 
-      console.log('📦 Attempting to save organization:', newOrg)
-      console.log('🔧 Supabase client:', supabase ? '✅ Available' : '❌ Not available')
-
       // Save to Supabase
       if (supabase) {
         try {
-          console.log('🚀 Inserting into Supabase...')
-          const { data, error } = await supabase
+          await supabase
             .from('organizations')
             .insert({
               id: newOrg.id,
@@ -140,21 +136,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               is_active: newOrg.is_active
             })
             .select()
-
-          if (error) {
-            console.error('❌ Supabase error:', error)
-            alert(`⚠️ Error: ${error.message}\nRegistro guardado localmente.`)
-          } else {
-            console.log('✅ Organization saved to Supabase:', data)
-            alert('✅ Registro guardado exitosamente en la base de datos')
-          }
         } catch (err) {
-          console.error('❌ Supabase exception:', err)
-          alert('⚠️ Error de conexión. Registro guardado localmente.')
+          // Silent fail - continue with local storage
         }
-      } else {
-        console.warn('⚠️ Supabase not configured')
-        alert('⚠️ Supabase no configurado. Usando almacenamiento local.')
       }
 
       setLoading(false)
