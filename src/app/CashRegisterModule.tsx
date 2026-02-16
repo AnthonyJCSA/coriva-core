@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { cashService } from '@/lib/bellafarma-dynamo'
+import { cashService } from '../lib/storage'
 
 interface CashSession {
   id: string
@@ -52,15 +52,12 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
       return
     }
 
-    const peruTime = new Date()
-    peruTime.setHours(peruTime.getHours() - 5)
-
     const newSession: CashSession = {
       id: `cash_${Date.now()}`,
       user_id: currentUser?.id || 'unknown',
-      user_name: currentUser?.name || 'Usuario',
+      user_name: currentUser?.full_name || 'Usuario',
       opening_amount: Number(openingAmount),
-      opening_date: peruTime.toISOString(),
+      opening_date: new Date().toISOString(),
       status: 'ABIERTA',
       total_sales: 0,
       total_cancelled: 0,
@@ -77,7 +74,7 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
       alert('✅ Caja aperturada exitosamente')
     } catch (error) {
       console.error('Error opening cash:', error)
-      alert('❌ Error al aperturar caja: ' + error)
+      alert('❌ Error al aperturar caja')
     } finally {
       setLoading(false)
     }
@@ -97,12 +94,9 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
 
     try {
       setLoading(true)
-      const peruTime = new Date()
-      peruTime.setHours(peruTime.getHours() - 5)
-
       await cashService.updateSession(currentSession.id, {
         closing_amount: Number(closingAmount),
-        closing_date: peruTime.toISOString(),
+        closing_date: new Date().toISOString(),
         status: 'CERRADA',
         difference
       })
@@ -113,7 +107,7 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
       alert('✅ Caja cerrada exitosamente')
     } catch (error) {
       console.error('Error closing cash:', error)
-      alert('❌ Error al cerrar caja: ' + error)
+      alert('❌ Error al cerrar caja')
     } finally {
       setLoading(false)
     }
@@ -124,7 +118,7 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Gestión de Caja</h1>
-          <p className="text-gray-600">BOTICAS BELLAFARMA</p>
+          <p className="text-gray-600">Control de apertura y cierre</p>
         </div>
       </div>
 
@@ -177,7 +171,7 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
               <div className="bg-white p-4 rounded-lg">
                 <p className="text-sm text-gray-600">Apertura</p>
                 <p className="text-lg font-bold text-gray-900">
-                  {new Date(new Date(currentSession.opening_date).getTime() + (5 * 60 * 60 * 1000)).toLocaleString('es-PE', { timeZone: 'America/Lima' })}
+                  {new Date(currentSession.opening_date).toLocaleString('es-PE')}
                 </p>
               </div>
             </div>

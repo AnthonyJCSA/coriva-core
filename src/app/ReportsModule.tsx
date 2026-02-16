@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { saleService, bellafarmaProductService, cashService } from '../lib/bellafarma-dynamo'
+import { saleService, productService, cashService } from '../lib/storage'
+import { exportSalesToCSV } from '../lib/export'
 
 interface Sale {
   id: string
@@ -10,9 +11,8 @@ interface Sale {
   created_at: string
   customer_name?: string
   payment_method: string
-  items_count: number
   items?: any[]
-  status?: 'ACTIVA' | 'ANULADA' | 'COMPLETED' | 'CANCELLED'
+  status?: 'COMPLETED' | 'CANCELLED'
   annulment_reason?: string
   annulled_by?: string
   annulled_at?: string
@@ -33,10 +33,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
   const [annulmentReason, setAnnulmentReason] = useState('')
 
   useEffect(() => {
-    const now = new Date()
-    const peruTime = new Date(now.getTime() - (5 * 60 * 60 * 1000))
-    const today = peruTime.toISOString().split('T')[0]
-    
+    const today = new Date().toISOString().split('T')[0]
     setStartDate(today)
     setEndDate(today)
     loadSales()
@@ -55,11 +52,11 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
   }
 
   const getFilteredSales = () => {
-    if (!startDate || !endDate) return sales.filter(s => s.status !== 'CANCELLED' && s.status !== 'ANULADA')
+    if (!startDate || !endDate) return sales.filter(s => s.status !== 'CANCELLED')
     
     return sales.filter(sale => {
       const saleDate = new Date(sale.created_at).toISOString().split('T')[0]
-      return saleDate >= startDate && saleDate <= endDate && sale.status !== 'CANCELLED' && sale.status !== 'ANULADA'
+      return saleDate >= startDate && saleDate <= endDate && sale.status !== 'CANCELLED'
     })
   }
 
@@ -69,7 +66,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
       return
     }
 
-    if (!confirm(`¿Está seguro de anular la venta ${selectedSale.sale_number}?\nEsta acción no se puede deshacer.`)) {
+    if (!confirm(`¿Está seguro de anular la venta ${selectedSale.sale_number}?`)) {
       return
     }
 
@@ -84,21 +81,22 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
       await saleService.cancel(
         selectedSale.id,
         currentUser?.id || 'unknown',
-        currentUser?.name || 'Usuario',
+        currentUser?.full_name || 'Usuario',
         annulmentReason
       )
 
+      // Restore stock
       if (fullSale.items && Array.isArray(fullSale.items)) {
         for (const item of fullSale.items) {
-          const products = await bellafarmaProductService.getAll()
-          const prod = products.find((p: any) => p.id === item.product_id)
-          if (prod) {
-            const newStock = Number(prod.stock) + Number(item.quantity)
-            await bellafarmaProductService.updateStock(item.product_id, newStock)
+          const product = await productService.getById(item.product_id)
+          if (product) {
+            const newStock = Number(product.stock) + Number(item.quantity)
+            await productService.updateStock(item.product_id, newStock)
           }
         }
       }
 
+      // Update cash session
       const currentSession = await cashService.getCurrentSession()
       if (currentSession) {
         await cashService.addCancelledSale(currentSession.id, fullSale.total)
@@ -111,7 +109,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
       await loadSales()
     } catch (error) {
       console.error('Error annulling sale:', error)
-      alert('❌ Error al anular venta: ' + error)
+      alert('❌ Error al anular venta')
     } finally {
       setLoading(false)
     }
@@ -131,7 +129,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
     <div className="p-6 space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Reportes y Analytics</h1>
-        <p className="text-gray-600">BOTICAS BELLAFARMA - Dashboard de Ventas</p>
+        <p className="text-gray-600">Dashboard de Ventas</p>
       </div>
 
       <div className="bg-white p-4 rounded-lg shadow">
@@ -143,7 +141,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -152,7 +150,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
             />
           </div>
           <div>
@@ -162,6 +160,14 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
               className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:bg-gray-400"
             >
               {loading ? '🔄 Cargando...' : 'Refrescar Datos'}
+            </button>
+          </div>
+          <div>
+            <button
+              onClick={() => exportSalesToCSV(filteredSales)}
+              className="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+            >
+              📄 Exportar Excel
             </button>
           </div>
         </div>
@@ -190,7 +196,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
               if (sale.items && Array.isArray(sale.items)) {
                 return sum + sale.items.reduce((itemSum: number, item: any) => itemSum + (item.quantity || 0), 0)
               }
-              return sum + (sale.items_count || 0)
+              return sum
             }, 0)}
           </p>
         </div>
@@ -207,7 +213,6 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Número</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha/Hora</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pago</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
@@ -216,25 +221,20 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredSales.slice(0, 20).map((sale) => (
-                <tr key={sale.id} className={`hover:bg-gray-50 ${sale.status === 'ANULADA' ? 'bg-red-50' : ''}`}>
+                <tr key={sale.id} className={`hover:bg-gray-50 ${sale.status === 'CANCELLED' ? 'bg-red-50' : ''}`}>
                   <td className="px-6 py-4 text-sm font-medium text-gray-900">{sale.sale_number}</td>
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {sale.created_at.replace('T', ' ').replace('Z', '').substring(0, 19)}
+                    {new Date(sale.created_at).toLocaleString('es-PE')}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900">
                     {sale.customer_name || 'Cliente General'}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-500">
-                    {sale.items && Array.isArray(sale.items) 
-                      ? sale.items.reduce((sum: number, item: any) => sum + (item.quantity || 0), 0)
-                      : sale.items_count || 0}
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-500">{sale.payment_method}</td>
                   <td className="px-6 py-4 text-sm font-medium text-green-600">
                     S/ {sale.total.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    {sale.status === 'ANULADA' ? (
+                    {sale.status === 'CANCELLED' ? (
                       <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
                         ❌ ANULADA
                       </span>
@@ -245,7 +245,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
                     )}
                   </td>
                   <td className="px-6 py-4 text-sm">
-                    {sale.status !== 'ANULADA' ? (
+                    {sale.status !== 'CANCELLED' ? (
                       <button
                         onClick={() => {
                           setSelectedSale(sale)
@@ -297,7 +297,7 @@ export default function ReportsModule({ sales: initialSales, currentUser }: Repo
 
             <div className="bg-yellow-50 border border-yellow-200 rounded p-3 mb-4">
               <p className="text-sm text-yellow-800">
-                ⚠️ Esta acción no se puede deshacer. El stock de los productos será devuelto al inventario.
+                ⚠️ Esta acción no se puede deshacer. El stock será devuelto al inventario.
               </p>
             </div>
 

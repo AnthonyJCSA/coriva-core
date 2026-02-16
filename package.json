@@ -1,19 +1,15 @@
 {
-  "name": "farmazi-bellafarma",
+  "name": "coriva-core",
   "version": "1.0.0",
+  "description": "Sistema POS Multi-Tenant SaaS para cualquier tipo de negocio",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "export": "next build && next export"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "^3.490.0",
-    "@aws-sdk/client-dynamodb": "^3.490.0",
-    "@aws-sdk/credential-provider-cognito-identity": "^3.490.0",
-    "@aws-sdk/lib-dynamodb": "^3.490.0",
     "next": "14.0.4",
     "react": "^18",
     "react-dom": "^18",

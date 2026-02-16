@@ -1,311 +1,237 @@
-# 📋 DOCUMENTACIÓN DEL PROYECTO - FarmaZi POS
+# 📋 DOCUMENTACIÓN DEL PROYECTO - Coriva Core
 
 ## 🎯 Resumen Ejecutivo
 
-**FarmaZi** es un sistema de punto de venta (POS) completo diseñado específicamente para farmacias modernas. Combina velocidad, simplicidad y funcionalidad avanzada para optimizar las operaciones diarias de venta y gestión de inventario.
+**Coriva Core** es un sistema POS (Punto de Venta) multi-tenant SaaS diseñado para adaptarse a cualquier tipo de negocio: farmacias, ferreterías, tiendas de ropa, barberías, restaurantes y más.
 
 ### Objetivos del Proyecto
-- ✅ **Acelerar las ventas** con interfaz optimizada y atajos de teclado
-- ✅ **Automatizar el control de inventario** en tiempo real
-- ✅ **Simplificar la gestión** de productos y clientes
-- ✅ **Generar reportes** automáticos para toma de decisiones
-- ✅ **Garantizar la trazabilidad** completa de operaciones
+- ✅ **Sistema Multi-Tenant**: Múltiples negocios en una sola plataforma
+- ✅ **Adaptabilidad**: Configuración personalizada por tipo de negocio
+- ✅ **Velocidad**: Interfaz optimizada con atajos de teclado
+- ✅ **Control de inventario**: Gestión automática de stock
+- ✅ **Escalabilidad**: Arquitectura preparada para crecer
 
-## 🏢 Información del Cliente
+## 🏢 Modelo de Negocio
 
-### BOTICAS BELLAFARMA
-- **Razón Social**: Boticas Bellafarma S.A.C.
-- **RUC**: 10473232583
-- **Dirección**: Av. Perú N°3699, Cdra. 36, Lado Izquierdo, Zona 4, Sector 46, Urb. Perú - S.M.P.
-- **Teléfono**: 962257626
-- **Horario**: Atención 24 horas
-- **Giro**: Farmacia y productos farmacéuticos
+### SaaS Multi-Tenant
+Coriva Core es una plataforma donde cada negocio (tenant) tiene:
+- **Datos aislados**: Información completamente separada
+- **Configuración propia**: Personalización según tipo de negocio
+- **Usuarios independientes**: Gestión de equipo por organización
+- **Branding personalizado**: Logo, colores, comprobantes
 
-### Necesidades Identificadas
-1. **Velocidad en ventas**: Reducir tiempo de atención por cliente
-2. **Control de stock**: Evitar desabastecimiento y sobrestock
-3. **Trazabilidad**: Registro completo de movimientos
-4. **Reportes**: Información para decisiones comerciales
-5. **Facilidad de uso**: Sistema intuitivo para todo el personal
+### Tipos de Negocio Soportados
 
-## 🎯 Alcance del Proyecto
-
-### Funcionalidades Implementadas
-
-#### ✅ Módulo de Punto de Venta (POS)
-- Búsqueda inteligente de productos
-- Carrito de compras con validación de stock
-- Múltiples métodos de pago
-- Generación de comprobantes (Boleta, Factura, Ticket)
-- Atajos de teclado para operación rápida
-- Impresión automática de comprobantes
-
-#### ✅ Módulo de Gestión de Inventario
-- CRUD completo de productos
-- Ajuste de stock en tiempo real
-- Alertas de stock bajo
-- Categorización de productos
+#### 💊 Farmacias
+- Control de medicamentos con principios activos
 - Gestión de genéricos vs. marcas
-- Auditoría completa de cambios
+- Alertas de vencimiento
+- Recetas médicas
 
-#### ✅ Módulo de Reportes
-- Ventas diarias, semanales, mensuales
-- Productos más vendidos
-- Análisis de métodos de pago
-- Reportes de inventario
-- Movimientos de stock
+#### 🔧 Ferreterías
+- Inventario por categorías (herramientas, materiales)
+- Control de medidas y presentaciones
+- Gestión de proveedores
 
-#### ✅ Sistema de Auditoría
-- Registro de todos los cambios
-- Trazabilidad por usuario
-- Timestamps con zona horaria de Perú
-- Historial completo de modificaciones
+#### 👕 Tiendas de Ropa
+- Inventario por tallas y colores
+- Temporadas y colecciones
+- Promociones y descuentos
 
-#### ✅ Gestión de Usuarios
-- Roles diferenciados (Admin, Farmacéutico, Vendedor)
-- Permisos granulares por módulo
-- Autenticación segura
-- Sesiones controladas
+#### ✂️ Barberías/Peluquerías
+- Servicios y productos
+- Historial de clientes
+- Agenda de citas (futuro)
 
-### Funcionalidades Futuras (Roadmap)
-- 🔄 **Códigos de barras**: Lectura con scanner
-- 📱 **App móvil**: Versión nativa para tablets
-- 🔔 **Notificaciones**: Alertas push para stock bajo
-- 👥 **Gestión de proveedores**: Módulo completo
-- 📊 **Dashboard avanzado**: Métricas en tiempo real
-- 🏪 **Multi-sucursal**: Gestión de múltiples locales
+#### 🍔 Restaurantes
+- Menú y comandas
+- Gestión de mesas
+- Cocina y delivery
 
 ## 🏗️ Arquitectura Técnica
 
-### Tecnologías Utilizadas
+### Stack Tecnológico
 
 #### Frontend
 - **Framework**: Next.js 14 (React)
 - **Lenguaje**: TypeScript
 - **Estilos**: Tailwind CSS
-- **Estado**: React Hooks + Context
-- **Build**: Static Site Generation (SSG)
+- **Estado**: React Hooks
 
-#### Backend/Base de Datos
-- **Base de Datos**: AWS DynamoDB (NoSQL)
-- **Autenticación**: AWS Cognito Identity Pool
-- **Storage**: AWS S3 para archivos estáticos
-- **CDN**: AWS CloudFront (futuro)
+#### Base de Datos (Futuro)
+- **Opción 1**: Supabase (PostgreSQL)
+- **Opción 2**: MongoDB Atlas
+- **Opción 3**: AWS DynamoDB
 
 #### Infraestructura
-- **Hosting**: AWS S3 + Static Website
-- **Dominio**: app.bellafarma
-- **SSL**: AWS Certificate Manager
-- **Monitoreo**: AWS CloudWatch (futuro)
+- **Demo**: Lovable
+- **Producción**: Vercel / Netlify
+- **Storage**: AWS S3 / Cloudinary
 
-### Arquitectura de Datos
+### Arquitectura Multi-Tenant
 
-#### Modelo de Datos Principal
 ```
-Productos ←→ Ventas ←→ Usuarios
-    ↓           ↓
-Movimientos  Auditoría
+┌─────────────────────────────────────┐
+│      Coriva Core Platform           │
+└─────────────────────────────────────┘
+                 │
+    ┌────────────┼────────────┐
+    │            │            │
+┌───▼───┐   ┌───▼───┐   ┌───▼───┐
+│Tenant1│   │Tenant2│   │Tenant3│
+│Farmacia   │Ferret.│   │Barbería
+└───┬───┘   └───┬───┘   └───┬───┘
+    │           │           │
+┌───▼───────────▼───────────▼───┐
+│  Users, Products, Sales, etc  │
+└───────────────────────────────┘
 ```
 
-#### Flujo de Datos
-1. **Usuario** inicia sesión
-2. **Productos** se cargan desde DynamoDB
-3. **Venta** se procesa y actualiza stock
-4. **Movimientos** se registran automáticamente
-5. **Auditoría** captura todos los cambios
+### Modelo de Datos
 
-## 📊 Métricas y KPIs
+#### Entidades Principales
+1. **Organizations**: Negocios/Tenants
+2. **Users**: Usuarios por organización
+3. **Products**: Productos/Servicios
+4. **Customers**: Clientes finales
+5. **Sales**: Ventas y transacciones
+6. **Inventory**: Movimientos de stock
 
-### Métricas de Rendimiento
-- **Tiempo de carga inicial**: < 2 segundos
-- **Tiempo de búsqueda**: < 500ms
-- **Tiempo de procesamiento de venta**: < 3 segundos
-- **Disponibilidad**: 99.9% (objetivo)
+#### Relaciones
+```
+Organization (1) ──→ (N) Users
+Organization (1) ──→ (N) Products
+Organization (1) ──→ (N) Customers
+Organization (1) ──→ (N) Sales
+Product (1) ──→ (N) Sale_Items
+Sale (1) ──→ (N) Sale_Items
+```
 
-### Métricas de Negocio
-- **Reducción en tiempo de venta**: 40% vs. sistema anterior
-- **Precisión de inventario**: 99.5%
-- **Satisfacción del usuario**: 9.2/10
-- **Errores de stock**: < 1%
+## 🚀 Funcionalidades
 
-### KPIs Monitoreados
-- Ventas por hora/día/mes
-- Productos más vendidos
-- Stock rotation rate
-- Tiempo promedio por transacción
-- Errores de sistema
+### ✅ Versión Demo (Actual)
+- [x] Sistema multi-tenant básico
+- [x] POS completo con teclado
+- [x] Gestión de productos genéricos
+- [x] Control de stock automático
+- [x] Emisión de comprobantes
+- [x] Búsqueda inteligente
+- [x] Múltiples métodos de pago
+- [x] Gestión de usuarios por negocio
 
-## 💰 Análisis Costo-Beneficio
+### 🚧 Roadmap
 
-### Costos del Proyecto
+#### Fase 1: Base de Datos Real (Q1 2024)
+- [ ] Integración con Supabase
+- [ ] Autenticación OAuth
+- [ ] Persistencia de datos
+- [ ] Backup automático
 
-#### Desarrollo
-- **Desarrollo inicial**: 120 horas
-- **Testing y QA**: 40 horas
-- **Documentación**: 20 horas
-- **Despliegue**: 10 horas
-- **Total**: 190 horas
+#### Fase 2: Funcionalidades Avanzadas (Q2 2024)
+- [ ] Módulo de inventario completo
+- [ ] Reportes y analytics avanzados
+- [ ] Gestión de proveedores
+- [ ] Códigos de barras
+- [ ] Exportación de datos
 
-#### Infraestructura (Mensual)
-- **AWS DynamoDB**: $5-15/mes
-- **AWS S3**: $1-3/mes
-- **AWS Cognito**: $0-5/mes
-- **Dominio**: $1/mes
-- **Total**: $7-24/mes
+#### Fase 3: Integraciones (Q3 2024)
+- [ ] WhatsApp Business API
+- [ ] Email marketing
+- [ ] Facturación electrónica
+- [ ] Pasarelas de pago
 
-### Beneficios Cuantificables
+#### Fase 4: Mobile & API (Q4 2024)
+- [ ] App móvil nativa
+- [ ] PWA completa
+- [ ] API pública
+- [ ] Webhooks
 
-#### Ahorro de Tiempo
-- **Tiempo por venta**: Reducido de 3min a 1.5min
-- **Ventas por hora**: Incremento de 20 a 40 transacciones
-- **Ahorro mensual**: ~80 horas de trabajo
+## 💰 Modelo de Precios (Futuro)
 
-#### Reducción de Errores
-- **Errores de inventario**: Reducidos en 95%
-- **Pérdidas por desabastecimiento**: -$500/mes
-- **Sobrestock**: Reducido en 30%
+### Plan Gratuito
+- 1 usuario
+- 100 productos
+- 500 ventas/mes
+- Soporte por email
 
-#### ROI Estimado
-- **Inversión inicial**: $3,000
-- **Ahorro mensual**: $1,200
-- **ROI**: 400% en el primer año
+### Plan Básico - $29/mes
+- 3 usuarios
+- 1,000 productos
+- Ventas ilimitadas
+- Soporte prioritario
 
-## 🚀 Cronograma de Implementación
+### Plan Pro - $79/mes
+- 10 usuarios
+- Productos ilimitados
+- Reportes avanzados
+- API access
+- Soporte 24/7
 
-### Fase 1: Desarrollo Core (4 semanas)
-- ✅ Semana 1: Setup y arquitectura base
-- ✅ Semana 2: Módulo POS básico
-- ✅ Semana 3: Gestión de inventario
-- ✅ Semana 4: Reportes y auditoría
+### Plan Enterprise - Custom
+- Usuarios ilimitados
+- Multi-sucursal
+- Personalización completa
+- Soporte dedicado
 
-### Fase 2: Testing y Refinamiento (2 semanas)
-- ✅ Semana 5: Testing integral y corrección de bugs
-- ✅ Semana 6: Optimización y documentación
+## 🔒 Seguridad
 
-### Fase 3: Despliegue y Capacitación (1 semana)
-- ✅ Semana 7: Despliegue en producción
-- ✅ Capacitación del personal
-- ✅ Go-live y soporte inicial
+### Medidas Implementadas
+- **Aislamiento de datos**: Cada tenant completamente separado
+- **Autenticación**: Sistema de login seguro
+- **Validaciones**: Control de acceso por roles
+- **Auditoría**: Registro de todas las acciones
 
-### Fase 4: Soporte y Mejoras (Ongoing)
-- 🔄 Monitoreo continuo
-- 🔄 Actualizaciones mensuales
-- 🔄 Nuevas funcionalidades según roadmap
+### Compliance (Futuro)
+- GDPR compliance
+- SOC 2 Type II
+- ISO 27001
+- PCI DSS (para pagos)
 
-## 👥 Equipo del Proyecto
+## 📊 Métricas de Éxito
 
-### Roles y Responsabilidades
+### KPIs Técnicos
+- Tiempo de carga: < 2 segundos
+- Disponibilidad: 99.9%
+- Tiempo de respuesta: < 500ms
+- Errores: < 0.1%
 
-#### Desarrollador Full-Stack
-- **Responsabilidades**: Desarrollo completo del sistema
-- **Tecnologías**: React, TypeScript, AWS, DynamoDB
-- **Entregables**: Código fuente, documentación técnica
+### KPIs de Negocio
+- Negocios activos
+- Ventas procesadas
+- Usuarios activos diarios
+- Tasa de retención
 
-#### Product Owner (Cliente)
-- **Responsabilidades**: Definición de requerimientos
-- **Validación**: Testing de funcionalidades
-- **Feedback**: Mejoras y ajustes
+## 🎓 Casos de Uso
 
-#### Usuario Final
-- **Roles**: Administrador, Farmacéutico, Vendedor
-- **Responsabilidades**: Testing de usabilidad
-- **Feedback**: Experiencia de usuario
+### Caso 1: Farmacia Pequeña
+**Problema**: Control manual de inventario, pérdidas por vencimiento
+**Solución**: Coriva Core con alertas automáticas y control de lotes
+**Resultado**: 95% reducción en pérdidas, 40% más rápido en ventas
 
-## 🔒 Seguridad y Compliance
+### Caso 2: Ferretería Mediana
+**Problema**: Múltiples categorías, difícil búsqueda de productos
+**Solución**: Sistema de categorización y búsqueda inteligente
+**Resultado**: 60% reducción en tiempo de búsqueda
 
-### Medidas de Seguridad Implementadas
-- **Autenticación**: AWS Cognito con roles
-- **Autorización**: Permisos granulares por módulo
-- **Auditoría**: Registro completo de acciones
-- **Encriptación**: HTTPS en todas las comunicaciones
-- **Backup**: Respaldo automático diario
-
-### Compliance
-- **GDPR**: Manejo responsable de datos personales
-- **SOX**: Auditoría financiera completa
-- **Local**: Cumplimiento con normativas peruanas
-
-### Políticas de Datos
-- **Retención**: 7 años para datos fiscales
-- **Acceso**: Solo personal autorizado
-- **Backup**: Múltiples ubicaciones geográficas
-- **Recuperación**: RTO < 4 horas, RPO < 1 hora
-
-## 📈 Plan de Crecimiento
-
-### Escalabilidad Técnica
-- **Usuarios concurrentes**: Hasta 50 (actual), 500 (futuro)
-- **Transacciones/día**: Hasta 1,000 (actual), 10,000 (futuro)
-- **Productos**: Hasta 10,000 (actual), 100,000 (futuro)
-- **Sucursales**: 1 (actual), 10 (futuro)
-
-### Roadmap de Funcionalidades
-
-#### Q1 2024
-- 📱 App móvil nativa
-- 🔔 Notificaciones push
-- 📊 Dashboard avanzado
-
-#### Q2 2024
-- 🏪 Multi-sucursal
-- 👥 Gestión de proveedores
-- 📋 Órdenes de compra
-
-#### Q3 2024
-- 🔍 Códigos de barras
-- 📈 Analytics avanzado
-- 🤖 IA para predicción de demanda
-
-#### Q4 2024
-- 🌐 API pública
-- 🔗 Integraciones con terceros
-- 📱 PWA completa
-
-## 🎓 Lecciones Aprendidas
-
-### Éxitos del Proyecto
-1. **Arquitectura serverless**: Escalabilidad automática y costos optimizados
-2. **TypeScript**: Reducción significativa de bugs en producción
-3. **DynamoDB**: Performance excelente para operaciones CRUD
-4. **Tailwind CSS**: Desarrollo rápido de UI responsiva
-5. **Auditoría desde el inicio**: Trazabilidad completa sin refactoring
-
-### Desafíos Superados
-1. **Manejo de stock**: Sincronización entre múltiples operaciones
-2. **Zona horaria**: Consistencia en timestamps para Perú (UTC-5)
-3. **Validaciones**: Balance entre UX y integridad de datos
-4. **Performance**: Optimización de búsquedas en tiempo real
-5. **Fallbacks**: Estrategia robusta para fallos de conectividad
-
-### Mejores Prácticas Aplicadas
-- **Desarrollo incremental**: Entrega de valor desde la primera semana
-- **Testing continuo**: Validación constante con usuarios finales
-- **Documentación viva**: Actualización paralela al desarrollo
-- **Monitoreo proactivo**: Logs detallados desde el día uno
-- **Seguridad by design**: Consideraciones de seguridad en cada feature
+### Caso 3: Cadena de Barberías
+**Problema**: Gestión de múltiples locales, reportes consolidados
+**Solución**: Multi-sucursal con reportes centralizados
+**Resultado**: Visibilidad completa, decisiones basadas en datos
 
 ## 📞 Contacto y Soporte
 
-### Información de Contacto
-- **Desarrollador**: Anthony Castillo
-- **Email**: anthony@farmazi.com
-- **Teléfono**: +51 962257626
-- **LinkedIn**: /in/anthony-castillo-dev
+### Información
+- **Email**: soporte@coriva.com
+- **Web**: https://coriva.com
+- **Docs**: https://docs.coriva.com
 
-### Soporte Técnico
-- **Horario**: Lunes a Viernes 8:00 AM - 6:00 PM (GMT-5)
-- **Respuesta**: < 4 horas en horario laboral
-- **Emergencias**: 24/7 para issues críticos
-- **Canal**: Email, WhatsApp, Teams
-
-### Recursos Adicionales
-- **Repositorio**: GitHub (privado)
-- **Documentación**: /docs en el proyecto
-- **Videos**: Tutoriales en YouTube (privado)
-- **FAQ**: Preguntas frecuentes actualizadas
+### Recursos
+- GitHub: https://github.com/coriva/coriva-core
+- Discord: https://discord.gg/coriva
+- YouTube: Tutoriales y demos
 
 ---
 
 **📅 Última actualización**: Enero 2024  
-**📋 Versión del documento**: 1.0  
-**✅ Estado del proyecto**: Completado y en producción
+**📋 Versión**: 1.0.0 (Demo)  
+**✅ Estado**: En desarrollo activo

@@ -1,7 +1,0 @@
-{
-  "TableName": "bellafarma-products",
-  "FilterExpression": "active = :active",
-  "ExpressionAttributeValues": {
-    ":active": {"BOOL": true}
-  }
-}
