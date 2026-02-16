@@ -12,7 +12,7 @@ interface Sale {
   customer_name?: string
   payment_method: string
   items?: any[]
-  status?: 'COMPLETED' | 'CANCELLED'
+  status?: 'COMPLETED' | 'CANCELLED' | 'PENDING'
   annulment_reason?: string
   annulled_by?: string
   annulled_at?: string

@@ -40,7 +40,7 @@ export interface User {
 
 export interface Product {
   id: string
-  organization_id: string
+  organization_id?: string
   code: string
   name: string
   description?: string
@@ -49,11 +49,11 @@ export interface Product {
   cost?: number
   stock: number
   min_stock: number
-  unit: string
+  unit?: string
   metadata?: ProductMetadata
-  is_active: boolean
-  created_at: string
-  updated_at: string
+  is_active?: boolean
+  created_at?: string
+  updated_at?: string
 }
 
 export interface ProductMetadata {
