@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coriva - Vende más, pierde menos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; background-color: #f3f4f6; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 40px 30px; text-align: center; }
+        .logo { font-size: 32px; font-weight: bold; color: #ffffff; margin-bottom: 10px; }
+        .header-text { color: #ffffff; font-size: 18px; opacity: 0.95; }
+        .hero { padding: 40px 30px; text-align: center; background: linear-gradient(to bottom, #faf5ff, #ffffff); }
+        .hero-emoji { font-size: 80px; margin-bottom: 20px; }
+        .hero-title { font-size: 36px; font-weight: bold; color: #1f2937; margin-bottom: 15px; line-height: 1.2; }
+        .hero-subtitle { font-size: 20px; color: #6b7280; margin-bottom: 30px; }
+        .benefits { padding: 30px; background-color: #ffffff; }
+        .benefit { display: flex; align-items: flex-start; margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; border-left: 4px solid #10b981; }
+        .benefit-icon { font-size: 40px; margin-right: 20px; flex-shrink: 0; }
+        .benefit-content { flex: 1; }
+        .benefit-title { font-size: 18px; font-weight: bold; color: #065f46; margin-bottom: 5px; }
+        .benefit-text { font-size: 15px; color: #047857; line-height: 1.5; }
+        .cta-section { padding: 40px 30px; text-align: center; background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); }
+        .cta-title { font-size: 28px; font-weight: bold; color: #ffffff; margin-bottom: 15px; }
+        .cta-subtitle { font-size: 16px; color: #e0e7ff; margin-bottom: 30px; }
+        .cta-button { display: inline-block; background-color: #10b981; color: #ffffff; font-size: 20px; font-weight: bold; padding: 18px 50px; text-decoration: none; border-radius: 12px; box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4); }
+        .social-proof { padding: 30px; background-color: #fef3c7; text-align: center; }
+        .social-proof-title { font-size: 16px; color: #92400e; margin-bottom: 15px; font-weight: 600; }
+        .stats { display: flex; justify-content: space-around; flex-wrap: wrap; }
+        .stat { flex: 1; min-width: 150px; margin: 10px; }
+        .stat-number { font-size: 32px; font-weight: bold; color: #b45309; }
+        .stat-label { font-size: 14px; color: #92400e; }
+        .urgency { padding: 25px 30px; background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); text-align: center; border-left: 4px solid #ef4444; }
+        .urgency-text { font-size: 16px; color: #991b1b; font-weight: 600; }
+        .footer { padding: 30px; text-align: center; background-color: #f9fafb; color: #6b7280; font-size: 14px; }
+        .footer-link { color: #4f46e5; text-decoration: none; }
+        @media only screen and (max-width: 600px) {
+            .hero-title { font-size: 28px; }
+            .benefit { flex-direction: column; text-align: center; }
+            .benefit-icon { margin-right: 0; margin-bottom: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">⚡ Coriva</div>
+            <div class="header-text">Tu negocio en piloto automático</div>
+        </div>
+
+        <div class="hero">
+            <div class="hero-emoji">🚀</div>
+            <h1 class="hero-title">Vende más, pierde menos</h1>
+            <p class="hero-subtitle">Ahorra 10 horas a la semana con IA y WhatsApp automático</p>
+        </div>
+
+        <div class="benefits">
+            <div class="benefit">
+                <div class="benefit-icon">⏰</div>
+                <div class="benefit-content">
+                    <div class="benefit-title">Ahorra 10 horas a la semana</div>
+                    <div class="benefit-text">Ya no pierdas tiempo contando inventario o cerrando caja. Coriva lo hace por ti en segundos.</div>
+                </div>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">💰</div>
+                <div class="benefit-content">
+                    <div class="benefit-title">Controla cada sol que entra y sale</div>
+                    <div class="benefit-text">Sabe exactamente cuánto debes, cuánto te deben y cuánto tienes en caja. Sin sorpresas.</div>
+                </div>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">📦</div>
+                <div class="benefit-content">
+                    <div class="benefit-title">Nunca más pierdas ventas</div>
+                    <div class="benefit-text">La IA te avisa 3 días antes de que se acabe un producto. Tus clientes siempre encuentran lo que buscan.</div>
+                </div>
+            </div>
+
+            <div class="benefit">
+                <div class="benefit-icon">🤖</div>
+                <div class="benefit-content">
+                    <div class="benefit-title">WhatsApp cobra por ti</div>
+                    <div class="benefit-text">Recordatorios automáticos de deudas. Tus clientes pagan más rápido sin que los persigas.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="social-proof">
+            <div class="social-proof-title">🏆 Más de 10,000 negocios ya confían en Coriva</div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Negocios activos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">4.9★</div>
+                    <div class="stat-label">Calificación</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Recomiendan</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="urgency">
+            <span style="font-size: 24px; margin-right: 10px;">🔥</span>
+            <span class="urgency-text">Oferta de lanzamiento: 50% OFF en tu primer año. Solo quedan 47 cupos.</span>
+        </div>
+
+        <div class="cta-section">
+            <h2 class="cta-title">Empieza gratis hoy</h2>
+            <p class="cta-subtitle">Sin tarjeta de crédito • Configuración en 60 segundos • Cancela cuando quieras</p>
+            <a href="https://wa.me/51913916967?text=Hola%2C%20quiero%20probar%20Coriva%20gratis%20%F0%9F%9A%80" class="cta-button">
+                💬 Hablar por WhatsApp
+            </a>
+        </div>
+
+        <div class="footer">
+            <p style="margin-bottom: 10px;">¿Prefieres ver el sistema primero?</p>
+            <p><a href="https://coriva-core.vercel.app/demo" class="footer-link">Ver demo en vivo →</a></p>
+            <p style="margin-top: 20px; font-size: 12px; color: #9ca3af;">
+                © 2025 Coriva Core. Todos los derechos reservados.<br>
+                <a href="https://coriva-core.vercel.app" class="footer-link">coriva-core.vercel.app</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

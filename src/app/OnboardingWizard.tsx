@@ -213,7 +213,7 @@ export default function OnboardingWizard({ onComplete, businessType }: Onboardin
         </div>
 
         <div className="relative z-10 text-white/60 text-sm">
-          © 2025 Coriva Core. Todos los derechos reservados.
+          © 2026 Coriva Core. Todos los derechos reservados.
         </div>
       </div>
 
