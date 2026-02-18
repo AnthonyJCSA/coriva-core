@@ -573,28 +573,31 @@ ${currentOrg?.settings.receipt_footer || ''}
   }
 
   const renderPOSModule = () => (
-    <div className="p-6">
+    <div className="p-6 space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <div className="lg:col-span-2">
-          <div className="mb-6">
-            <label className="block text-sm font-bold text-blue-700 mb-2">
-              BÚSQUEDA DE PRODUCTOS
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-3">
+              🔍 Búsqueda de Productos
             </label>
             <input
               type="text"
               value={searchCode}
               onChange={(e) => setSearchCode(e.target.value)}
               onKeyDown={handleSearch}
-              className="w-full p-3 text-lg border-2 border-blue-300 rounded focus:border-blue-500 focus:outline-none"
-              placeholder="Código o nombre del producto"
+              className="w-full px-4 py-3 text-lg bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+              placeholder="Escribe código o nombre del producto..."
               autoComplete="off"
             />
           </div>
 
           {searchResults.length > 0 && (
-            <div className="mb-6">
-              <h3 className="font-bold mb-3 text-blue-700">Resultados:</h3>
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+              <h3 className="font-semibold mb-4 text-gray-900 flex items-center">
+                <span className="text-lg">✨</span>
+                <span className="ml-2">Resultados de Búsqueda</span>
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {searchResults.map((product) => (
                   <div
@@ -604,58 +607,73 @@ ${currentOrg?.settings.receipt_footer || ''}
                       setSearchResults([])
                       setSearchCode('')
                     }}
-                    className="p-3 border-2 border-blue-200 rounded cursor-pointer hover:bg-blue-50 bg-white"
+                    className="p-4 border border-gray-200 rounded-xl cursor-pointer hover:border-indigo-500 hover:shadow-md bg-gradient-to-br from-white to-gray-50 transition-all"
                   >
-                    <p className="font-bold text-sm">[{product.code}] {product.name}</p>
-                    <p className="text-blue-600 font-bold text-lg">{currentOrg?.settings.currency} {product.price.toFixed(2)}</p>
-                    <p className="text-sm text-gray-600">Stock: {product.stock}</p>
+                    <p className="font-semibold text-sm text-gray-900">{product.name}</p>
+                    <p className="text-xs text-gray-500 mb-2">[{product.code}]</p>
+                    <div className="flex justify-between items-center">
+                      <p className="text-indigo-600 font-bold text-lg">{currentOrg?.settings.currency} {product.price.toFixed(2)}</p>
+                      <p className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded-full">Stock: {product.stock}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          <div>
-            <h3 className="font-bold mb-3 text-blue-700">Productos Disponibles:</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="font-semibold mb-4 text-gray-900 flex items-center">
+              <span className="text-lg">📦</span>
+              <span className="ml-2">Catálogo de Productos</span>
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-96 overflow-y-auto pr-2">
               {products.map((product) => (
                 <div
                   key={product.id}
                   onClick={() => addToCart(product)}
-                  className={`p-3 border rounded cursor-pointer hover:bg-blue-50 ${
-                    product.stock === 0 ? 'bg-red-50 opacity-50' : 'bg-white'
+                  className={`p-4 border rounded-xl cursor-pointer transition-all ${
+                    product.stock === 0 
+                      ? 'bg-red-50 border-red-200 opacity-60 cursor-not-allowed' 
+                      : 'border-gray-200 hover:border-indigo-500 hover:shadow-md bg-gradient-to-br from-white to-gray-50'
                   }`}
                 >
-                  <p className="font-bold text-sm">[{product.code}] {product.name}</p>
-                  <p className="text-blue-600 font-bold">{currentOrg?.settings.currency} {product.price.toFixed(2)}</p>
-                  <p className={`text-sm ${product.stock > 10 ? 'text-green-600' : product.stock > 0 ? 'text-yellow-600' : 'text-red-600'}`}>
-                    Stock: {product.stock}
-                  </p>
+                  <p className="font-semibold text-sm text-gray-900">{product.name}</p>
+                  <p className="text-xs text-gray-500 mb-2">[{product.code}]</p>
+                  <div className="flex justify-between items-center">
+                    <p className="text-indigo-600 font-bold">{currentOrg?.settings.currency} {product.price.toFixed(2)}</p>
+                    <p className={`text-xs font-medium px-2 py-1 rounded-full ${
+                      product.stock > 10 ? 'bg-green-100 text-green-700' : 
+                      product.stock > 0 ? 'bg-yellow-100 text-yellow-700' : 
+                      'bg-red-100 text-red-700'
+                    }`}>
+                      {product.stock} unid.
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-b from-blue-50 to-purple-50 p-4 rounded border-2 border-blue-200">
+        <div className="bg-white rounded-xl shadow-lg border border-gray-200 p-6 space-y-5">
           
-          <div className="mb-4">
-            <h3 className="font-bold mb-2 text-blue-700">CLIENTE</h3>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">👤 Cliente</label>
             <input
               type="text"
               value={customerName}
               onChange={(e) => setCustomerName(e.target.value)}
-              className="w-full p-2 border border-blue-300 rounded focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
               placeholder="Nombre del cliente"
             />
           </div>
 
-          <div className="mb-4">
-            <h3 className="font-bold mb-2 text-blue-700">COMPROBANTE</h3>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">🧾 Comprobante</label>
             <select
               value={receiptType}
               onChange={(e) => setReceiptType(e.target.value as any)}
-              className="w-full p-2 border border-blue-300 rounded focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             >
               <option value="BOLETA">BOLETA</option>
               <option value="FACTURA">FACTURA</option>
@@ -663,29 +681,32 @@ ${currentOrg?.settings.receipt_footer || ''}
             </select>
           </div>
 
-          <div className="mb-4">
-            <h3 className="font-bold mb-2 text-blue-700">CARRITO ({cart.length} items)</h3>
-            <div className="max-h-60 overflow-y-auto">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-3">🛒 Carrito ({cart.length} items)</label>
+            <div className="max-h-64 overflow-y-auto space-y-2 pr-2">
               {cart.length === 0 ? (
-                <p className="text-gray-500 text-center py-4">Carrito vacío</p>
+                <div className="text-center py-8 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                  <p className="text-gray-400 text-sm">Carrito vacío</p>
+                  <p className="text-xs text-gray-400 mt-1">Agrega productos para comenzar</p>
+                </div>
               ) : (
                 cart.map((item) => (
-                  <div key={item.id} className="flex justify-between items-center mb-2 p-2 bg-white rounded border border-blue-200">
-                    <div className="flex-1">
-                      <p className="font-medium text-sm">{item.name}</p>
-                      <p className="text-xs text-blue-600">{currentOrg?.settings.currency} {item.price.toFixed(2)} c/u</p>
+                  <div key={item.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl border border-gray-200">
+                    <div className="flex-1 min-w-0 mr-3">
+                      <p className="font-medium text-sm text-gray-900 truncate">{item.name}</p>
+                      <p className="text-xs text-gray-500">{currentOrg?.settings.currency} {item.price.toFixed(2)} c/u</p>
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-6 h-6 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+                        className="w-7 h-7 bg-red-500 text-white rounded-lg text-sm hover:bg-red-600 transition-colors flex items-center justify-center"
                       >
-                        -
+                        −
                       </button>
-                      <span className="w-8 text-center text-sm font-bold">{item.quantity}</span>
+                      <span className="w-8 text-center text-sm font-bold text-gray-900">{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        className="w-6 h-6 bg-green-500 text-white rounded text-xs hover:bg-green-600"
+                        className="w-7 h-7 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition-colors flex items-center justify-center"
                       >
                         +
                       </button>
@@ -697,47 +718,49 @@ ${currentOrg?.settings.receipt_footer || ''}
           </div>
 
           {cart.length > 0 && (
-            <div className="mb-4 p-3 bg-white rounded border border-blue-200">
-              <div className="flex justify-between text-sm">
-                <span>Subtotal:</span>
-                <span>{currentOrg?.settings.currency} {subtotal.toFixed(2)}</span>
+            <div className="p-4 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl border border-indigo-200">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-700">
+                  <span>Subtotal:</span>
+                  <span className="font-medium">{currentOrg?.settings.currency} {subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>OP. Gravadas:</span>
+                  <span>{currentOrg?.settings.currency} {opGravadas.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-xs text-gray-600">
+                  <span>IGV (18%):</span>
+                  <span>{currentOrg?.settings.currency} {tax.toFixed(2)}</span>
+                </div>
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>OP. Gravadas:</span>
-                <span>{currentOrg?.settings.currency} {opGravadas.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between text-sm text-gray-600">
-                <span>IGV (18%):</span>
-                <span>{currentOrg?.settings.currency} {tax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between font-bold text-lg border-t pt-2 text-blue-700">
+              <div className="flex justify-between font-bold text-xl border-t border-indigo-300 pt-3 mt-3 text-indigo-700">
                 <span>TOTAL:</span>
                 <span>{currentOrg?.settings.currency} {total.toFixed(2)}</span>
               </div>
               
               {paymentMethod === 'EFECTIVO' && (
-                <div className="mt-3 pt-3 border-t">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Monto Recibido:</label>
+                <div className="mt-3 pt-3 border-t border-indigo-300">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">💵 Monto Recibido:</label>
                   <input
                     type="number"
                     step="0.01"
                     value={amountPaid}
                     onChange={(e) => setAmountPaid(e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg font-semibold"
                     placeholder="0.00"
                   />
                   {amountPaid && Number(amountPaid) >= total && (
-                    <div className="mt-2 p-2 bg-green-50 rounded">
+                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl">
                       <div className="flex justify-between font-bold text-green-700">
-                        <span>VUELTO:</span>
-                        <span>{currentOrg?.settings.currency} {change.toFixed(2)}</span>
+                        <span>💰 VUELTO:</span>
+                        <span className="text-lg">{currentOrg?.settings.currency} {change.toFixed(2)}</span>
                       </div>
                     </div>
                   )}
                   {amountPaid && Number(amountPaid) < total && (
-                    <div className="mt-2 p-2 bg-red-50 rounded">
-                      <div className="text-red-700 text-sm">
-                        Falta: {currentOrg?.settings.currency} {(total - Number(amountPaid)).toFixed(2)}
+                    <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-xl">
+                      <div className="text-red-700 text-sm font-medium">
+                        ⚠️ Falta: {currentOrg?.settings.currency} {(total - Number(amountPaid)).toFixed(2)}
                       </div>
                     </div>
                   )}
@@ -746,26 +769,26 @@ ${currentOrg?.settings.receipt_footer || ''}
             </div>
           )}
 
-          <div className="mb-4">
-            <h3 className="font-bold mb-2 text-blue-700">PAGO</h3>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">💳 Método de Pago</label>
             <select
               value={paymentMethod}
               onChange={(e) => setPaymentMethod(e.target.value as any)}
-              className="w-full p-2 border border-blue-300 rounded focus:border-blue-500 focus:outline-none"
+              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
             >
-              <option value="EFECTIVO">EFECTIVO</option>
-              <option value="TARJETA">TARJETA</option>
-              <option value="YAPE">YAPE</option>
-              <option value="PLIN">PLIN</option>
-              <option value="TRANSFERENCIA">TRANSFERENCIA</option>
+              <option value="EFECTIVO">💵 EFECTIVO</option>
+              <option value="TARJETA">💳 TARJETA</option>
+              <option value="YAPE">📱 YAPE</option>
+              <option value="PLIN">📱 PLIN</option>
+              <option value="TRANSFERENCIA">🏦 TRANSFERENCIA</option>
             </select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-3 pt-2">
             <button
               onClick={processSale}
               disabled={cart.length === 0 || (paymentMethod === 'EFECTIVO' && (!amountPaid || Number(amountPaid) < total))}
-              className="w-full bg-gradient-to-r from-green-600 to-green-700 text-white p-3 rounded font-bold hover:from-green-700 hover:to-green-800 disabled:bg-gray-400 transition-all"
+              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-3.5 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed transition-all shadow-lg hover:shadow-xl"
             >
               🖨️ PROCESAR VENTA (F2)
             </button>
@@ -777,7 +800,7 @@ ${currentOrg?.settings.receipt_footer || ''}
                 setSearchResults([])
                 setAmountPaid('')
               }}
-              className="w-full bg-gradient-to-r from-red-600 to-red-700 text-white p-2 rounded hover:from-red-700 hover:to-red-800 transition-all"
+              className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white py-2.5 rounded-xl font-medium hover:from-red-600 hover:to-pink-600 transition-all"
             >
               🗑️ LIMPIAR (F1)
             </button>
