@@ -6,6 +6,7 @@ import UseCases from '@/components/marketing/UseCases'
 import Pricing from '@/components/marketing/Pricing'
 import FAQ from '@/components/marketing/FAQ'
 import FinalCTA from '@/components/marketing/FinalCTA'
+import WhatsAppWidget from '@/components/WhatsAppWidget'
 
 export const metadata = {
   title: 'Coriva Core - Vende más, pierde menos. Tu negocio en piloto automático',
@@ -21,15 +22,18 @@ export const metadata = {
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen">
-      <Hero />
-      <Benefits />
-      <SocialProof />
-      <Comparison />
-      <UseCases />
-      <Pricing />
-      <FAQ />
-      <FinalCTA />
-    </main>
+    <>
+      <main className="min-h-screen">
+        <Hero />
+        <Benefits />
+        <SocialProof />
+        <Comparison />
+        <UseCases />
+        <Pricing />
+        <FAQ />
+        <FinalCTA />
+      </main>
+      <WhatsAppWidget />
+    </>
   )
 }
