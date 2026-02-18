@@ -74,8 +74,14 @@ export default function CorivaPOS() {
   // Check demo mode
   useEffect(() => {
     const demoMode = localStorage.getItem('coriva_demo_mode') === 'true'
+    const startOnboarding = localStorage.getItem('coriva_start_onboarding') === 'true'
+    
     setIsDemoMode(demoMode)
-    if (demoMode) {
+    
+    if (startOnboarding) {
+      localStorage.removeItem('coriva_start_onboarding')
+      setShowOnboarding(true)
+    } else if (demoMode) {
       setCurrentUser(DEMO_USERS.demo.user)
       setCurrentOrg(DEMO_ORGS[0])
       setIsAuthenticated(true)

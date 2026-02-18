@@ -17,6 +17,7 @@ export default function RegistroPage() {
   const handleStartOnboarding = () => {
     setLoading(true)
     localStorage.setItem('coriva_demo_mode', 'false')
+    localStorage.setItem('coriva_start_onboarding', 'true')
     router.push('/dashboard')
   }
 
