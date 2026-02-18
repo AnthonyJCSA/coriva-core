@@ -59,6 +59,7 @@ export default function CorivaPOS() {
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
   const [activeModule, setActiveModule] = useState('pos')
+  const [isDemoMode, setIsDemoMode] = useState(false)
   
   const [products, setProducts] = useState<Product[]>([])
   const [sales, setSales] = useState<Sale[]>([])
@@ -69,6 +70,17 @@ export default function CorivaPOS() {
   const [paymentMethod, setPaymentMethod] = useState<'EFECTIVO' | 'TARJETA' | 'YAPE' | 'PLIN' | 'TRANSFERENCIA'>('EFECTIVO')
   const [receiptType, setReceiptType] = useState<'BOLETA' | 'FACTURA' | 'TICKET'>('BOLETA')
   const [amountPaid, setAmountPaid] = useState('')
+
+  // Check demo mode
+  useEffect(() => {
+    const demoMode = localStorage.getItem('coriva_demo_mode') === 'true'
+    setIsDemoMode(demoMode)
+    if (demoMode) {
+      setCurrentUser(DEMO_USERS.demo.user)
+      setCurrentOrg(DEMO_ORGS[0])
+      setIsAuthenticated(true)
+    }
+  }, [])
 
   // Initialize demo data
   useEffect(() => {
@@ -812,6 +824,11 @@ ${currentOrg?.settings.receipt_footer || ''}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+      {isDemoMode && (
+        <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-6 py-3 text-center font-semibold shadow-lg">
+          🚀 Modo Demo - Estás explorando con datos de ejemplo. <a href="/registro" className="underline ml-2">Crear mi cuenta real →</a>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto">
         
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
