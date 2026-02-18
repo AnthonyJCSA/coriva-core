@@ -16,6 +16,11 @@ export const metadata = {
   creator: 'Coriva Core',
   publisher: 'Coriva Core',
   robots: 'index, follow',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-icon.png',
+  },
   openGraph: {
     title: 'Coriva Core - Tu negocio en piloto automático',
     description: 'Vende más, pierde menos con IA y WhatsApp automático. Sistema POS completo para cualquier negocio.',
@@ -38,6 +43,9 @@ export const metadata = {
   },
   alternates: {
     canonical: 'https://coriva-core.vercel.app'
+  },
+  verification: {
+    google: 'google-site-verification-code',
   }
 }
 
