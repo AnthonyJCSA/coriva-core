@@ -326,6 +326,18 @@ export default function OnboardingWizard({ onComplete, businessType }: Onboardin
                     placeholder="Av. Principal 123, Lima"
                   />
                 </div>
+
+                <div>
+                  <label htmlFor="business-email" className="block text-sm font-medium text-gray-700 mb-2">Email del Negocio</label>
+                  <input
+                    id="business-email"
+                    type="email"
+                    value={businessData.email}
+                    onChange={(e) => setBusinessData({...businessData, email: e.target.value})}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                    placeholder="contacto@minegocio.com"
+                  />
+                </div>
               </div>
             </div>
           )}
