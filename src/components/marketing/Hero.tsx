@@ -23,7 +23,7 @@ export default function Hero() {
             <Link href="/registro" className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all text-center">
               {COPY.hero.ctaPrimary} →
             </Link>
-            <Link href="/demo" className="border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all text-center">
+            <Link href="/registro" className="border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all text-center">
               {COPY.hero.ctaSecondary}
             </Link>
           </div>

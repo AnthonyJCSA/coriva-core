@@ -19,7 +19,7 @@ export default function FinalCTA() {
           <Link href="/registro" className="bg-white text-indigo-600 px-10 py-4 rounded-xl font-bold hover:bg-gray-100 shadow-2xl hover:shadow-3xl transition-all text-lg">
             {COPY.finalCTA.ctaPrimary}
           </Link>
-          <Link href="/demo" className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-indigo-600 transition-all text-lg">
+          <Link href="/registro" className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-indigo-600 transition-all text-lg">
             {COPY.finalCTA.ctaSecondary}
           </Link>
         </div>
