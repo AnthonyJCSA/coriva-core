@@ -6,15 +6,16 @@ import { supabase } from '../lib/supabase'
 
 interface OnboardingWizardProps {
   onComplete: (org: Organization, products: any[]) => void
+  businessType?: string
 }
 
-export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
+export default function OnboardingWizard({ onComplete, businessType }: OnboardingWizardProps) {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
 
   const [businessData, setBusinessData] = useState({
     name: '',
-    business_type: 'retail' as any,
+    business_type: (businessType || 'retail') as any,
     ruc: '',
     address: '',
     phone: '',
@@ -247,6 +248,11 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Datos de tu Negocio</h2>
                 <p className="text-gray-600">Cuéntanos sobre tu empresa para personalizar tu experiencia</p>
+                <div className="mt-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-4">
+                  <p className="text-sm text-green-800">
+                    <span className="font-bold">💡 Desde hoy:</span> Ahorrarás horas, controlarás tu efectivo y dejarás de perder ventas
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-5">
@@ -330,6 +336,11 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Productos Iniciales</h2>
                 <p className="text-gray-600">Importa desde Excel/CSV o agrega manualmente</p>
+                <div className="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-4">
+                  <p className="text-sm text-blue-800">
+                    <span className="font-bold">🚀 Estás a un paso:</span> Agrega tus productos y estarás listo para tu primera venta
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-5">
@@ -431,6 +442,11 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-gray-900 mb-2">Crea tu Usuario</h2>
                 <p className="text-gray-600">Serás el administrador principal del sistema</p>
+                <div className="mt-4 bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-4">
+                  <p className="text-sm text-purple-800">
+                    <span className="font-bold">🎉 Último paso:</span> Crea tu cuenta y empieza a vender en 60 segundos
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-5">

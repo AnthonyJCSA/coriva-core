@@ -7,6 +7,7 @@ import Pricing from '@/components/marketing/Pricing'
 import FAQ from '@/components/marketing/FAQ'
 import FinalCTA from '@/components/marketing/FinalCTA'
 import WhatsAppWidget from '@/components/WhatsAppWidget'
+import ExitIntentPopup from '@/components/ExitIntentPopup'
 
 export const metadata = {
   title: 'Coriva Core - Vende más, pierde menos. Tu negocio en piloto automático',
@@ -87,6 +88,7 @@ export default function LandingPage() {
         <FinalCTA />
       </main>
       <WhatsAppWidget />
+      <ExitIntentPopup />
     </>
   )
 }

@@ -33,7 +33,7 @@ const COMPARACION = [
 ]
 
 export default function ComparacionPage() {
-  const categorias = [...new Set(COMPARACION.map(item => item.categoria))]
+  const categorias = Array.from(new Set(COMPARACION.map(item => item.categoria)))
 
   return (
     <div className="min-h-screen bg-white">

@@ -25,6 +25,9 @@ Sistema POS moderno y flexible que se adapta a las necesidades de cualquier nego
 - 🔔 **Notificaciones** en tiempo real
 - ⌨️ **Optimizado para teclado** (F1, F2, ESC)
 - 📥 **Importación Excel/CSV** de productos
+- 🌍 **Multi-currency** (8 monedas)
+- 🌐 **i18n** (ES/EN)
+- 📈 **Analytics GA4** integrado
 
 ## 🛠️ Stack Tecnológico
 
@@ -228,8 +231,14 @@ El proyecto está optimizado para desplegarse en Lovable.
 - [x] **Roles y permisos** (Admin/Manager/Vendedor)
 - [x] **Exportaciones Excel/CSV**
 - [x] **Notificaciones** (Stock bajo, ventas)
+- [x] **Multi-currency** (8 monedas: PEN, USD, MXN, COP, CLP, ARS, BRL, EUR)
+- [x] **i18n completo** (ES/EN)
+- [x] **Analytics GA4** con tracking de eventos
+- [x] **Exit-intent popup** optimizado
+- [x] **Página de precios** mejorada
 
 ### 🚧 Roadmap
+- [x] **Fase P2 - Escala Global** (ver [FASE_P2_COMPLETA.md](FASE_P2_COMPLETA.md))
 - [ ] Base de datos real (Supabase)
 - [ ] Planes y billing (Lite/Pro/Premium)
 - [ ] Multi-sucursal
