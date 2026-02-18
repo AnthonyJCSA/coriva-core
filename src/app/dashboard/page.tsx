@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Organization, User, Product, CartItem, Sale } from '../types'
-import { productService, saleService, cashService } from '../lib/storage'
-import CashRegisterModule from './CashRegisterModule'
-import InventoryModule from './InventoryModule'
-import ReportsModule from './ReportsModule'
-import CustomersModule from './CustomersModule'
-import SettingsModule from './SettingsModule'
-import OnboardingWizard from './OnboardingWizard'
-import UsersModule from './UsersModule'
-import NotificationsPanel from './NotificationsPanel'
-import { canAccessModule } from '../lib/permissions'
+import { Organization, User, Product, CartItem, Sale } from '@/types'
+import { productService, saleService, cashService } from '@/lib/storage'
+import CashRegisterModule from '@/app/CashRegisterModule'
+import InventoryModule from '@/app/InventoryModule'
+import ReportsModule from '@/app/ReportsModule'
+import CustomersModule from '@/app/CustomersModule'
+import SettingsModule from '@/app/SettingsModule'
+import OnboardingWizard from '@/app/OnboardingWizard'
+import UsersModule from '@/app/UsersModule'
+import NotificationsPanel from '@/app/NotificationsPanel'
+import { canAccessModule } from '@/lib/permissions'
 
 // Demo data
 const DEMO_ORGS: Organization[] = [
