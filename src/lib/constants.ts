@@ -113,7 +113,7 @@ export const COPY = {
         features: [
           "1 usuario",
           "100 productos",
-          "Ventas ilimitadas",
+          "Hasta 100 ventas al mes",
           "Reportes básicos",
           "Soporte por email"
         ],
@@ -129,9 +129,10 @@ export const COPY = {
         features: [
           "5 usuarios",
           "Productos ilimitados",
+          "Dominio personalizado GRATIS el primer año",
           "IA predictiva",
-          "WhatsApp automático",
-          "Códigos de barras",
+          "Alerta de Stock",
+          "Inventario Inteligente",
           "Reportes avanzados",
           "Soporte prioritario"
         ],
@@ -146,10 +147,10 @@ export const COPY = {
         features: [
           "Usuarios ilimitados",
           "Multi-sucursal",
+          "Dominio personalizado",
           "API personalizada",
           "Onboarding dedicado",
-          "Soporte 24/7",
-          "Gerente de cuenta"
+          "Soporte 24/7"
         ],
         cta: "Hablar con ventas",
         popular: false

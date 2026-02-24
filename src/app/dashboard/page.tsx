@@ -959,7 +959,7 @@ ${currentOrg?.settings.receipt_footer || ''}
 
       {/* WhatsApp Floating Button */}
       <a
-        href="https://wa.me/51962257626?text=Hola,%20necesito%20ayuda%20con%20Coriva%20Core"
+        href="https://wa.me/51913916967?text=Hola,%20necesito%20ayuda%20con%20Coriva%20Core"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white w-14 h-14 rounded-full shadow-lg flex items-center justify-center text-2xl transition-all hover:scale-110 z-50"
