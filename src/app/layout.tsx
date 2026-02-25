@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 import Analytics from '@/components/Analytics'
 import GoogleTagManager from '@/components/GoogleTagManager'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import MetaPixel from '@/components/MetaPixel'
 
 export const metadata: Metadata = {
@@ -23,6 +24,7 @@ export default function RootLayout({
       </head>
       <body>
         <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || 'GTM-XXXXXXX'} />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA4_ID || 'G-M2PFVEQV3J'} />
         <MetaPixel pixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID || ''} />
         <Analytics />
         {children}
