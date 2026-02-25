@@ -1,6 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+import DemoModal from '@/components/DemoModal'
+
 export default function HeroBotica() {
+  const [showModal, setShowModal] = useState(false)
   const whatsappUrl = "https://wa.me/51913916967?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
 
   return (
@@ -24,14 +28,14 @@ export default function HeroBotica() {
               rel="noopener noreferrer"
               className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all text-center"
             >
-              💬 Quiero el sistema para mi botica →
+              💬 Quiero que me lo instalen (WhatsApp) →
             </a>
-            <a 
-              href="/demo" 
+            <button
+              onClick={() => setShowModal(true)}
               className="border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:border-green-600 hover:text-green-600 transition-all text-center"
             >
-              Ver demo
-            </a>
+              Ver cómo funciona
+            </button>
           </div>
           <div className="flex flex-wrap gap-6 text-sm text-gray-600">
             <span className="flex items-center">
@@ -101,6 +105,11 @@ export default function HeroBotica() {
           </div>
         </div>
       </div>
+      <DemoModal 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        whatsappUrl={whatsappUrl}
+      />
     </section>
   )
 }

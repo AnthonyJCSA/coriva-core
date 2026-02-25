@@ -1,10 +1,12 @@
 import HeroBodega from './components/HeroBodega'
+import StorysellingBodega from './components/StorysellingBodega'
 import ProblemasBodega from './components/ProblemasBodega'
 import BeneficiosBodega from './components/BeneficiosBodega'
 import TestimoniosBodega from './components/TestimoniosBodega'
+import FAQBodega from './components/FAQBodega'
 import OfertaBodega from './components/OfertaBodega'
 import CTAFinalBodega from './components/CTAFinalBodega'
-import WhatsAppWidget from '@/components/WhatsAppWidget'
+import StickyWhatsApp from '@/components/StickyWhatsApp'
 
 export const metadata = {
   title: 'Sistema para Bodegas en Perú | Coriva Core',
@@ -46,14 +48,18 @@ export default function BodegaLanding() {
       />
       <main className="min-h-screen">
         <HeroBodega />
+        <StorysellingBodega />
         <ProblemasBodega />
         <BeneficiosBodega />
         <TestimoniosBodega />
+        <FAQBodega />
         <OfertaBodega />
         <CTAFinalBodega />
       </main>
-      <WhatsAppWidget 
-        defaultMessage="Hola,%20tengo%20una%20bodega%20y%20quiero%20ordenar%20mi%20negocio%20con%20Coriva%20Core."
+      <StickyWhatsApp 
+        phoneNumber="51913916967"
+        message="Hola,%20tengo%20una%20bodega%20y%20quiero%20ordenar%20mi%20negocio%20con%20Coriva%20Core."
+        text="WhatsApp: Implementación gratis"
       />
     </>
   )

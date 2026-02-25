@@ -1,6 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+import DemoModal from '@/components/DemoModal'
+
 export default function HeroBodega() {
+  const [showModal, setShowModal] = useState(false)
   const whatsappUrl = "https://wa.me/51913916967?text=Hola,%20tengo%20una%20bodega%20y%20quiero%20ordenar%20mi%20negocio%20con%20Coriva%20Core."
 
   return (
@@ -24,14 +28,14 @@ export default function HeroBodega() {
               rel="noopener noreferrer"
               className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all text-center"
             >
-              💬 Quiero el sistema para mi bodega →
+              💬 Quiero que me lo instalen (WhatsApp) →
             </a>
-            <a 
-              href="/demo" 
+            <button
+              onClick={() => setShowModal(true)}
               className="border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:border-blue-600 hover:text-blue-600 transition-all text-center"
             >
               Ver cómo funciona
-            </a>
+            </button>
           </div>
           <div className="flex flex-wrap gap-6 text-sm text-gray-600">
             <span className="flex items-center">
@@ -101,6 +105,11 @@ export default function HeroBodega() {
           </div>
         </div>
       </div>
+      <DemoModal 
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        whatsappUrl={whatsappUrl}
+      />
     </section>
   )
 }

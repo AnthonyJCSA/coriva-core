@@ -1,12 +1,14 @@
 import HeroBotica from './components/HeroBotica'
+import StorysellingBotica from './components/StorysellingBotica'
 import ProblemasBotica from './components/ProblemasBotica'
 import BeneficiosBotica from './components/BeneficiosBotica'
 import DemoVisual from './components/DemoVisual'
 import TestimoniosBotica from './components/TestimoniosBotica'
 import ComparacionBotica from './components/ComparacionBotica'
+import FAQBotica from './components/FAQBotica'
 import OfertaUrgencia from './components/OfertaUrgencia'
 import CTAFinalBotica from './components/CTAFinalBotica'
-import WhatsAppWidget from '@/components/WhatsAppWidget'
+import StickyWhatsApp from '@/components/StickyWhatsApp'
 
 export const metadata = {
   title: 'Sistema para Boticas en Perú | Coriva Core',
@@ -48,16 +50,20 @@ export default function BoticaLanding() {
       />
       <main className="min-h-screen">
         <HeroBotica />
+        <StorysellingBotica />
         <ProblemasBotica />
         <BeneficiosBotica />
         <DemoVisual />
         <TestimoniosBotica />
         <ComparacionBotica />
+        <FAQBotica />
         <OfertaUrgencia />
         <CTAFinalBotica />
       </main>
-      <WhatsAppWidget 
-        defaultMessage="Hola, tengo una botica y quiero digitalizar mi negocio con Coriva Core."
+      <StickyWhatsApp 
+        phoneNumber="51913916967"
+        message="Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
+        text="WhatsApp: Implementación gratis"
       />
     </>
   )

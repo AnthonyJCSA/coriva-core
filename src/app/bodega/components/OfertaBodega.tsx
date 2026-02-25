@@ -7,7 +7,7 @@ export default function OfertaBodega() {
         <ScrollReveal>
           <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 border-4 border-orange-300 relative overflow-hidden">
             <div className="absolute top-0 right-0 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-bl-2xl font-bold">
-              🔥 OFERTA LIMITADA
+              🔥 OFERTA LIMITADA: Solo 50 cupos
             </div>
             
             <div className="mt-8 text-center">
@@ -97,7 +97,8 @@ export default function OfertaBodega() {
               </a>
               
               <p className="text-sm text-gray-500">
-                ⏰ Oferta válida solo para las primeras 50 bodegas
+                ⏰ Oferta válida solo para las primeras 50 bodegas<br />
+                <span className="text-xs">La implementación es 1 a 1 y hay cupos limitados por semana</span>
               </p>
             </div>
           </div>
