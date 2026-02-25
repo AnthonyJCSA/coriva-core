@@ -1,7 +1,7 @@
 'use client'
 
 export default function HeroBotica() {
-  const whatsappUrl = "https://wa.me/51962257626?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
+  const whatsappUrl = "https://wa.me/51913916967?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
 
   return (
     <section className="relative min-h-screen flex items-center bg-gradient-to-br from-green-50 via-white to-emerald-50 overflow-hidden">

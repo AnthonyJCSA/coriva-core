@@ -88,7 +88,7 @@ export default function OfertaUrgencia() {
               </div>
 
               <a 
-                href="https://wa.me/51962257626?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
+                href="https://wa.me/51913916967?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block bg-gradient-to-r from-green-600 to-emerald-600 text-white px-12 py-5 rounded-xl font-bold text-xl hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all mb-4"

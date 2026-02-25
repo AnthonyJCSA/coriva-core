@@ -31,7 +31,7 @@ export default function WhatsAppWidget({ defaultMessage = "Hola,%20necesito%20ay
           </div>
           <p className="text-gray-600 text-sm mb-4">¿Necesitas ayuda? Escríbenos por WhatsApp y te respondemos en menos de 1 hora.</p>
           <a
-            href={`https://wa.me/51962257626?text=${defaultMessage}`}
+            href={`https://wa.me/51913916967?text=${defaultMessage}`}
             target="_blank"
             rel="noopener noreferrer"
             className="block w-full bg-green-500 hover:bg-green-600 text-white text-center py-3 rounded-xl font-bold transition-all"

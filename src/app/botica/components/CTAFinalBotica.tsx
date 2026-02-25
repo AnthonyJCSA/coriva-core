@@ -11,7 +11,7 @@ export default function CTAFinalBotica() {
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
           <a 
-            href="https://wa.me/51962257626?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
+            href="https://wa.me/51913916967?text=Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white text-green-600 px-10 py-5 rounded-xl font-bold text-lg hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all"

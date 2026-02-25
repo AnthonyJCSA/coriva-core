@@ -3,7 +3,7 @@
 
 export const BOTICA_COPY = {
   whatsapp: {
-    phone: "51962257626",
+    phone: "51913916967",
     defaultMessage: "Hola,%20tengo%20una%20botica%20y%20quiero%20digitalizar%20mi%20negocio%20con%20Coriva%20Core."
   },
   
