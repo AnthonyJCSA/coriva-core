@@ -1,17 +1,16 @@
-import Hero from '@/components/marketing/Hero'
+import HeroHome from '@/components/marketing/HeroHome'
+import BusinessTypeSelector from '@/components/marketing/BusinessTypeSelector'
+import BrandStory from '@/components/marketing/BrandStory'
 import Benefits from '@/components/marketing/Benefits'
 import SocialProof from '@/components/marketing/SocialProof'
-import Comparison from '@/components/marketing/Comparison'
-import UseCases from '@/components/marketing/UseCases'
-import Pricing from '@/components/marketing/Pricing'
 import FAQ from '@/components/marketing/FAQ'
 import FinalCTA from '@/components/marketing/FinalCTA'
-import WhatsAppWidget from '@/components/WhatsAppWidget'
+import StickyWhatsApp from '@/components/StickyWhatsApp'
 import ExitIntentPopup from '@/components/ExitIntentPopup'
 
 export const metadata = {
-  title: 'Coriva Core - Vende más, pierde menos. Tu negocio en piloto automático',
-  description: 'Sistema POS con IA que controla tu inventario, caja y ventas. WhatsApp automático, alertas inteligentes y reportes claros. Prueba gratis 30 días.',
+  title: 'Sistema para negocios pequeños en Perú | Coriva Core',
+  description: 'Sistema para bodegas, boticas y tiendas en Perú. Controla ventas, stock y caja desde S/49 al mes. Implementación gratis.',
   keywords: 'pos peru, punto de venta, inventario, caja, ventas, ia, whatsapp, sistema pos, pos para negocios, treinta alternativa',
   authors: [{ name: 'Coriva Core' }],
   creator: 'Coriva Core',
@@ -78,16 +77,19 @@ export default function LandingPage() {
         }}
       />
       <main className="min-h-screen">
-        <Hero />
+        <HeroHome />
+        <BusinessTypeSelector />
+        <BrandStory />
         <Benefits />
         <SocialProof />
-        <Comparison />
-        <UseCases />
-        <Pricing />
         <FAQ />
         <FinalCTA />
       </main>
-      <WhatsAppWidget />
+      <StickyWhatsApp 
+        phoneNumber="51913916967"
+        message="Hola,%20quiero%20conocer%20Coriva%20Core%20para%20mi%20negocio."
+        text="WhatsApp: Implementación gratis"
+      />
       <ExitIntentPopup />
     </>
   )
