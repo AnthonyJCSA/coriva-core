@@ -1,16 +1,22 @@
 'use client'
 
 import { useState } from 'react'
+import { trackModalOpen, trackWhatsAppClick } from '@/lib/tracking'
 
 interface DemoModalProps {
   isOpen: boolean
   onClose: () => void
   whatsappUrl: string
   demoUrl?: string
+  source?: string
 }
 
-export default function DemoModal({ isOpen, onClose, whatsappUrl, demoUrl = '/demo' }: DemoModalProps) {
+export default function DemoModal({ isOpen, onClose, whatsappUrl, demoUrl = '/demo', source = 'modal' }: DemoModalProps) {
   if (!isOpen) return null
+
+  const handleWhatsAppClick = () => {
+    trackWhatsAppClick(source)
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={onClose}>
@@ -62,6 +68,7 @@ export default function DemoModal({ isOpen, onClose, whatsappUrl, demoUrl = '/de
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleWhatsAppClick}
             className="block w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white text-center py-4 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all"
           >
             💬 Hablar por WhatsApp

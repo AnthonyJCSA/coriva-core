@@ -1,3 +1,8 @@
+'use client'
+
+import { useEffect } from 'react'
+import { usePageTracking } from '@/hooks/usePageTracking'
+import { trackPageView } from '@/lib/tracking'
 import HeroBodega from './components/HeroBodega'
 import StorysellingBodega from './components/StorysellingBodega'
 import ProblemasBodega from './components/ProblemasBodega'
@@ -26,6 +31,12 @@ export const metadata = {
 }
 
 export default function BodegaLanding() {
+  usePageTracking('bodega')
+  
+  useEffect(() => {
+    trackPageView('/bodega', 'bodega')
+  }, [])
+  
   return (
     <>
       <script
@@ -60,6 +71,7 @@ export default function BodegaLanding() {
         phoneNumber="51913916967"
         message="Hola,%20tengo%20una%20bodega%20y%20quiero%20ordenar%20mi%20negocio%20con%20Coriva%20Core."
         text="WhatsApp: Implementación gratis"
+        source="bodega"
       />
     </>
   )

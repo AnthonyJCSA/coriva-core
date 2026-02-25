@@ -1,19 +1,27 @@
 'use client'
 
+import { trackWhatsAppClick } from '@/lib/tracking'
+
 interface StickyWhatsAppProps {
   phoneNumber: string
   message: string
   text?: string
+  source?: string
 }
 
-export default function StickyWhatsApp({ phoneNumber, message, text = "WhatsApp: Implementación gratis" }: StickyWhatsAppProps) {
+export default function StickyWhatsApp({ phoneNumber, message, text = "WhatsApp: Implementación gratis", source = "sticky" }: StickyWhatsAppProps) {
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`
+
+  const handleClick = () => {
+    trackWhatsAppClick(source)
+  }
 
   return (
     <a
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
+      onClick={handleClick}
       className="fixed bottom-6 left-6 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-6 py-3 rounded-full shadow-2xl flex items-center space-x-2 font-bold transition-all hover:scale-105 z-40 animate-bounce"
       style={{ animationDuration: '2s', animationIterationCount: '3' }}
     >

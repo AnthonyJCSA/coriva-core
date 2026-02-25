@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import Analytics from '@/components/Analytics'
+import GoogleTagManager from '@/components/GoogleTagManager'
+import MetaPixel from '@/components/MetaPixel'
 
 export const metadata: Metadata = {
   title: 'Coriva Core - Sistema POS Multi-Tenant',
@@ -20,6 +22,8 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
+        <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || 'GTM-XXXXXXX'} />
+        <MetaPixel pixelId={process.env.NEXT_PUBLIC_META_PIXEL_ID || ''} />
         <Analytics />
         {children}
       </body>

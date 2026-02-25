@@ -89,6 +89,7 @@ export default function LandingPage() {
         phoneNumber="51913916967"
         message="Hola,%20quiero%20conocer%20Coriva%20Core%20para%20mi%20negocio."
         text="WhatsApp: Implementación gratis"
+        source="home"
       />
       <ExitIntentPopup />
     </>
