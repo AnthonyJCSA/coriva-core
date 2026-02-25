@@ -34,7 +34,7 @@ const DEMO_USERS: Record<string, { password: string; user: User }> = {
       id: '1',
       organization_id: '1',
       username: 'demo',
-      email: 'demo@coriva.com',
+      email: 'demo@corivape.com',
       full_name: 'Usuario Demo',
       role: 'ADMIN',
       is_active: true,

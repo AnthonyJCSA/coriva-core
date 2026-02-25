@@ -23,7 +23,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
       ruc: '20123456789',
       address: 'Av. Demo 123, Lima',
       phone: '999888777',
-      email: 'demo@coriva.com',
+      email: 'demo@corivape.com',
       settings: { currency: 'S/', tax_rate: 0.18 },
       is_active: true,
       created_at: new Date().toISOString(),

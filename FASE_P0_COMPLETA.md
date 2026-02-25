@@ -302,7 +302,7 @@ src/
 ## 📞 Soporte
 
 - **WhatsApp**: +51 913916967
-- **Email**: soporte@coriva.com
+- **Email**: soporte@corivape.com
 - **GitHub**: https://github.com/AnthonyJCSA/coriva-core
 - **Vercel**: https://coriva-core.vercel.app
 

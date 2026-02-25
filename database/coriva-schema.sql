@@ -129,5 +129,5 @@ INSERT INTO organizations (name, slug, business_type) VALUES
 
 -- Usuario demo (password: demo123)
 INSERT INTO users (organization_id, username, email, password_hash, full_name, role) 
-SELECT id, 'demo', 'demo@coriva.com', '$2a$10$demo', 'Usuario Demo', 'ADMIN'
+SELECT id, 'demo', 'demo@corivape.com', '$2a$10$demo', 'Usuario Demo', 'ADMIN'
 FROM organizations WHERE slug = 'demo-store';

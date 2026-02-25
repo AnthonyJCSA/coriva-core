@@ -276,8 +276,8 @@ MIT License - ver [LICENSE](LICENSE) para detalles.
 
 ## 🆘 Soporte
 
-- 📧 Email: soporte@coriva.com
-- 💬 WhatsApp: +51 962 257 626
+- 📧 Email: soporte@corivape.com
+- 💬 WhatsApp: +51 913 916 967
 - 💬 Issues: [GitHub Issues](https://github.com/coriva/coriva-core/issues)
 - 📖 Docs: [Documentación](https://docs.coriva.com)
 

@@ -90,4 +90,4 @@ Vercel desplegará automáticamente los cambios.
 Si tienes problemas con el despliegue:
 - Revisa los logs en el dashboard de Vercel
 - Verifica que `npm run build` funcione localmente
-- Contacta: soporte@coriva.com
+- Contacta: soporte@corivape.com

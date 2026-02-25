@@ -221,7 +221,7 @@ Sale (1) ──→ (N) Sale_Items
 ## 📞 Contacto y Soporte
 
 ### Información
-- **Email**: soporte@coriva.com
+- **Email**: soporte@corivape.com
 - **Web**: https://coriva.com
 - **Docs**: https://docs.coriva.com
 

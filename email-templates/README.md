@@ -50,7 +50,7 @@ import { Resend } from 'resend'
 const resend = new Resend('re_123456789')
 
 await resend.emails.send({
-  from: 'Coriva <hola@coriva.com>',
+  from: 'Coriva <hola@corivape.com>',
   to: ['cliente@ejemplo.com'],
   subject: '🚀 Vende más, pierde menos con Coriva',
   html: fs.readFileSync('email-templates/email-marketing-v1.html', 'utf8')

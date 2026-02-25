@@ -194,7 +194,7 @@ http://localhost:3000
 ### 📞 Soporte
 
 - WhatsApp: +51 913916967
-- Email: soporte@coriva.com
+- Email: soporte@corivape.com
 - Documentación: Este README
 
 ---
