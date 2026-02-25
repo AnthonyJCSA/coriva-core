@@ -85,7 +85,7 @@ git push origin main
 
 Vercel desplegará automáticamente los cambios.
 
-## 🆘 Soporte
+## 🆘 Soporte coriva
 
 Si tienes problemas con el despliegue:
 - Revisa los logs en el dashboard de Vercel
