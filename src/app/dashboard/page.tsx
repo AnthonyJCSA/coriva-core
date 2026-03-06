@@ -88,6 +88,19 @@ export default function CorivaPOS() {
       setCurrentUser(DEMO_USERS.demo.user)
       setCurrentOrg(DEMO_ORGS[0])
       setIsAuthenticated(true)
+    } else {
+      // Si no hay sesión, redirigir al login
+      const savedUser = localStorage.getItem('coriva_current_user')
+      const savedOrg = localStorage.getItem('coriva_current_org')
+      
+      if (savedUser && savedOrg) {
+        setCurrentUser(JSON.parse(savedUser))
+        setCurrentOrg(JSON.parse(savedOrg))
+        setIsAuthenticated(true)
+      } else {
+        // Redirigir a la página principal de login
+        window.location.href = '/'
+      }
     }
   }, [])
 
@@ -212,6 +225,11 @@ export default function CorivaPOS() {
       setCurrentUser(demoUser.user)
       setCurrentOrg(DEMO_ORGS[0])
       setIsAuthenticated(true)
+      
+      // Guardar sesión en localStorage
+      localStorage.setItem('coriva_current_user', JSON.stringify(demoUser.user))
+      localStorage.setItem('coriva_current_org', JSON.stringify(DEMO_ORGS[0]))
+      localStorage.setItem('coriva_demo_mode', 'true')
     } else {
       setLoginError('Usuario o contraseña incorrectos')
     }
@@ -958,7 +976,13 @@ ${currentOrg?.settings.receipt_footer || ''}
               <p className="text-sm">{currentUser?.full_name}</p>
               <p className="text-xs opacity-75">{currentUser?.role}</p>
               <button
-                onClick={() => setIsAuthenticated(false)}
+                onClick={() => {
+                  setIsAuthenticated(false)
+                  localStorage.removeItem('coriva_current_user')
+                  localStorage.removeItem('coriva_current_org')
+                  localStorage.removeItem('coriva_demo_mode')
+                  window.location.href = '/'
+                }}
                 className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded mt-1 hover:bg-opacity-30"
               >
                 Cerrar Sesión
