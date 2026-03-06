@@ -14,7 +14,8 @@ interface Customer {
   email?: string
   address?: string
   is_active?: boolean
-  created_at: string
+  created_at?: string
+  updated_at?: string
 }
 
 interface CustomersModuleProps {
@@ -161,6 +162,7 @@ export default function CustomersModule({ currentUser }: CustomersModuleProps) {
           <h3 className="text-sm font-medium text-gray-500 mb-2">🆕 Nuevos (Este Mes)</h3>
           <p className="text-3xl font-bold text-purple-600">
             {customers.filter(c => {
+              if (!c.created_at) return false
               const created = new Date(c.created_at)
               const now = new Date()
               return created.getMonth() === now.getMonth()
