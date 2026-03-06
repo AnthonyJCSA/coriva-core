@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase, isSupabaseConfigured } from '../supabase'
 import { DBSale, DBSaleItem } from '@/types/database.types'
 import { Sale, CartItem } from '@/types'
 
@@ -18,7 +18,7 @@ export const saleService = {
     items: CartItem[]
     createdBy?: string
   }): Promise<Sale> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     // Generar número de venta
     const { data: saleNumber } = await supabase
@@ -78,7 +78,7 @@ export const saleService = {
   },
 
   async getAll(orgId: string): Promise<Sale[]> {
-    if (!supabase) return []
+    if (!isSupabaseConfigured()) return []
     
     const { data, error } = await supabase
       .from(SALES_TABLE)
@@ -91,7 +91,7 @@ export const saleService = {
   },
 
   async getById(id: string): Promise<Sale | null> {
-    if (!supabase) return null
+    if (!isSupabaseConfigured()) return null
     
     const { data, error } = await supabase
       .from(SALES_TABLE)
@@ -104,7 +104,7 @@ export const saleService = {
   },
 
   async getSaleItems(saleId: string): Promise<DBSaleItem[]> {
-    if (!supabase) return []
+    if (!isSupabaseConfigured()) return []
     
     const { data, error } = await supabase
       .from(ITEMS_TABLE)
@@ -116,7 +116,7 @@ export const saleService = {
   },
 
   async getTodaySales(orgId: string): Promise<Sale[]> {
-    if (!supabase) return []
+    if (!isSupabaseConfigured()) return []
     
     const today = new Date().toISOString().split('T')[0]
     

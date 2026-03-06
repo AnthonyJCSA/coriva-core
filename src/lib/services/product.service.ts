@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase, isSupabaseConfigured } from '../supabase'
 import { DBProduct } from '@/types/database.types'
 import { Product } from '@/types'
 
@@ -6,7 +6,7 @@ const TABLE = 'corivacore_products'
 
 export const productService = {
   async getAll(orgId: string): Promise<Product[]> {
-    if (!supabase) return []
+    if (!isSupabaseConfigured()) return []
     
     const { data, error } = await supabase
       .from(TABLE)
@@ -20,7 +20,7 @@ export const productService = {
   },
 
   async create(orgId: string, product: Omit<Product, 'id'>): Promise<Product> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     const dbProduct: Omit<DBProduct, 'id'> = {
       org_id: orgId,
@@ -46,7 +46,7 @@ export const productService = {
   },
 
   async update(id: string, updates: Partial<Product>): Promise<Product> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     const { data, error } = await supabase
       .from(TABLE)
@@ -60,7 +60,7 @@ export const productService = {
   },
 
   async updateStock(id: string, quantity: number): Promise<void> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     const { error } = await supabase
       .from(TABLE)
@@ -71,7 +71,7 @@ export const productService = {
   },
 
   async decrementStock(id: string, quantity: number): Promise<void> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     const { data: product } = await supabase
       .from(TABLE)
@@ -85,7 +85,7 @@ export const productService = {
   },
 
   async migrateFromLocalStorage(orgId: string, products: Product[]): Promise<void> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     const dbProducts = products.map(p => ({
       org_id: orgId,
@@ -108,7 +108,7 @@ export const productService = {
   },
 
   async hasProducts(orgId: string): Promise<boolean> {
-    if (!supabase) return false
+    if (!isSupabaseConfigured()) return false
     
     const { count, error } = await supabase
       .from(TABLE)

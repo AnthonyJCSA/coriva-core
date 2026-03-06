@@ -1,4 +1,4 @@
-import { supabase } from '../supabase'
+import { supabase, isSupabaseConfigured } from '../supabase'
 import { DBCashMovement } from '@/types/database.types'
 
 const TABLE = 'corivacore_cash_movements'
@@ -12,7 +12,7 @@ export const cashService = {
     referenceId?: string
     createdBy?: string
   }): Promise<DBCashMovement> {
-    if (!supabase) throw new Error('Supabase not configured')
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
     
     const dbMovement: Omit<DBCashMovement, 'id'> = {
       org_id: orgId,
@@ -35,7 +35,7 @@ export const cashService = {
   },
 
   async getAll(orgId: string): Promise<DBCashMovement[]> {
-    if (!supabase) return []
+    if (!isSupabaseConfigured()) return []
     
     const { data, error } = await supabase
       .from(TABLE)
@@ -48,7 +48,7 @@ export const cashService = {
   },
 
   async getTodayMovements(orgId: string): Promise<DBCashMovement[]> {
-    if (!supabase) return []
+    if (!isSupabaseConfigured()) return []
     
     const today = new Date().toISOString().split('T')[0]
     

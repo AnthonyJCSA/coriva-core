@@ -1,7 +1,7 @@
 import { productService } from './product.service'
 import { saleService } from './sale.service'
 import { cashService } from './cash.service'
-import { supabase } from '../supabase'
+import { isSupabaseConfigured } from '../supabase'
 import { Product, Sale } from '@/types'
 
 const SYNC_KEY = 'coriva_sync_status'
@@ -27,7 +27,7 @@ export const syncService = {
   async syncProducts(orgId: string): Promise<void> {
     try {
       // Verificar si Supabase está configurado
-      if (!supabase) {
+      if (!isSupabaseConfigured()) {
         console.log('⚠️ Supabase no configurado, usando solo localStorage')
         return
       }
@@ -91,7 +91,7 @@ export const syncService = {
 
   async initializeOrg(orgId: string): Promise<void> {
     // Verificar si Supabase está configurado
-    if (!supabase) {
+    if (!isSupabaseConfigured()) {
       console.log('⚠️ Supabase no configurado, usando solo localStorage')
       return
     }

@@ -1,10 +1,12 @@
-import { supabase } from '../supabase'
+import { supabase, isSupabaseConfigured } from '../supabase'
 import { DBCustomer } from '@/types/database.types'
 
 const TABLE = 'corivacore_customers'
 
 export const customerService = {
   async getAll(orgId: string): Promise<DBCustomer[]> {
+    if (!isSupabaseConfigured()) return []
+    
     const { data, error } = await supabase
       .from(TABLE)
       .select('*')
@@ -24,6 +26,8 @@ export const customerService = {
     email?: string
     address?: string
   }): Promise<DBCustomer> {
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
+    
     const dbCustomer: Omit<DBCustomer, 'id'> = {
       org_id: orgId,
       name: customer.name,
@@ -46,6 +50,8 @@ export const customerService = {
   },
 
   async update(id: string, updates: Partial<DBCustomer>): Promise<DBCustomer> {
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
+    
     const { data, error } = await supabase
       .from(TABLE)
       .update(updates)
@@ -58,6 +64,8 @@ export const customerService = {
   },
 
   async search(orgId: string, query: string): Promise<DBCustomer[]> {
+    if (!isSupabaseConfigured()) return []
+    
     const { data, error } = await supabase
       .from(TABLE)
       .select('*')
