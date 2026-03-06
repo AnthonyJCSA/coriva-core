@@ -13,7 +13,7 @@ interface Customer {
   phone?: string
   email?: string
   address?: string
-  is_active: boolean
+  is_active?: boolean
   created_at: string
 }
 
