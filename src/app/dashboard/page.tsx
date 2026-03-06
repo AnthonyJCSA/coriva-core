@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Organization, User, Product, CartItem, Sale } from '@/types'
-import { productService, saleService, cashService } from '@/lib/storage'
-import { productService as supabaseProductService, saleService as supabaseSaleService, cashService as supabaseCashService, syncService } from '@/lib/services'
+import { productService as supabaseProductService, saleService as supabaseSaleService, cashService as supabaseCashService, authService } from '@/lib/services'
 import CashRegisterModule from '@/app/CashRegisterModule'
 import InventoryModule from '@/app/InventoryModule'
 import ReportsModule from '@/app/ReportsModule'
@@ -15,42 +14,6 @@ import NotificationsPanel from '@/app/NotificationsPanel'
 import { canAccessModule } from '@/lib/permissions'
 
 // Demo data
-const DEMO_ORGS: Organization[] = [
-  {
-    id: '1',
-    name: 'Demo Store',
-    slug: 'demo-store',
-    business_type: 'retail',
-    settings: { currency: 'S/', tax_rate: 0.18 },
-    is_active: true,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  }
-]
-
-const DEMO_USERS: Record<string, { password: string; user: User }> = {
-  demo: {
-    password: 'demo123',
-    user: {
-      id: '1',
-      organization_id: '1',
-      username: 'demo',
-      email: 'demo@corivape.com',
-      full_name: 'Usuario Demo',
-      role: 'ADMIN',
-      is_active: true,
-      created_at: new Date().toISOString()
-    }
-  }
-}
-
-const INITIAL_PRODUCTS: Product[] = [
-  { id: '1', organization_id: '1', code: 'PROD001', name: 'Producto 1', category: 'General', price: 25.50, cost: 18.00, stock: 50, min_stock: 10, unit: 'unit', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '2', organization_id: '1', code: 'PROD002', name: 'Producto 2', category: 'General', price: 15.80, cost: 12.00, stock: 80, min_stock: 15, unit: 'unit', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '3', organization_id: '1', code: 'PROD003', name: 'Producto 3', category: 'General', price: 8.50, cost: 6.00, stock: 100, min_stock: 20, unit: 'unit', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
-  { id: '4', organization_id: '1', code: 'PROD004', name: 'Producto 4', category: 'General', price: 45.60, cost: 35.00, stock: 40, min_stock: 8, unit: 'unit', is_active: true, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
-]
-
 export default function CorivaPOS() {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
@@ -60,9 +23,7 @@ export default function CorivaPOS() {
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState('')
   const [activeModule, setActiveModule] = useState('pos')
-  const [isDemoMode, setIsDemoMode] = useState(false)
-  const [syncing, setSyncing] = useState(false)
-  const [syncComplete, setSyncComplete] = useState(false)
+  const [loading, setLoading] = useState(true)
   
   const [products, setProducts] = useState<Product[]>([])
   const [sales, setSales] = useState<Sale[]>([])
@@ -74,117 +35,49 @@ export default function CorivaPOS() {
   const [receiptType, setReceiptType] = useState<'BOLETA' | 'FACTURA' | 'TICKET'>('BOLETA')
   const [amountPaid, setAmountPaid] = useState('')
 
-  // Check demo mode
+  // Check session
   useEffect(() => {
-    const demoMode = localStorage.getItem('coriva_demo_mode') === 'true'
-    const startOnboarding = localStorage.getItem('coriva_start_onboarding') === 'true'
-    
-    setIsDemoMode(demoMode)
-    
-    if (startOnboarding) {
-      localStorage.removeItem('coriva_start_onboarding')
-      setShowOnboarding(true)
-    } else if (demoMode) {
-      setCurrentUser(DEMO_USERS.demo.user)
-      setCurrentOrg(DEMO_ORGS[0])
-      setIsAuthenticated(true)
-    } else {
-      // Si no hay sesión, redirigir al login
-      const savedUser = localStorage.getItem('coriva_current_user')
-      const savedOrg = localStorage.getItem('coriva_current_org')
+    const checkSession = async () => {
+      const savedUser = sessionStorage.getItem('coriva_user')
+      const savedOrg = sessionStorage.getItem('coriva_org')
       
       if (savedUser && savedOrg) {
         setCurrentUser(JSON.parse(savedUser))
         setCurrentOrg(JSON.parse(savedOrg))
         setIsAuthenticated(true)
       } else {
-        // Redirigir a la página principal de login
         window.location.href = '/'
       }
+      setLoading(false)
     }
-  }, [])
-
-  // Initialize demo data
-  useEffect(() => {
-    const initData = async () => {
-      const existingProducts = await productService.getAll()
-      if (existingProducts.length === 0) {
-        for (const product of INITIAL_PRODUCTS) {
-          await productService.createProduct(product)
-        }
-      }
-    }
-    initData()
+    checkSession()
   }, [])
 
   // Load data when authenticated
   useEffect(() => {
     if (isAuthenticated && currentOrg) {
-      initializeSupabase()
+      loadProducts()
+      loadSales()
     }
   }, [isAuthenticated, currentOrg])
 
-  const initializeSupabase = async () => {
-    if (!currentOrg) return
-    
-    try {
-      setSyncing(true)
-      console.log('🔄 Inicializando Supabase para org:', currentOrg.id)
-      
-      // Sincronizar productos
-      await syncService.initializeOrg(currentOrg.id)
-      
-      setSyncComplete(true)
-      console.log('✅ Sincronización completa')
-      
-      // Cargar datos
-      await loadProducts()
-      await loadSales()
-    } catch (error) {
-      console.error('❌ Error inicializando Supabase:', error)
-      // Continuar con localStorage si falla
-      await loadProducts()
-      await loadSales()
-    } finally {
-      setSyncing(false)
-    }
-  }
-
   const loadProducts = async () => {
+    if (!currentOrg) return
     try {
-      // Intentar cargar de Supabase si está sincronizado
-      if (currentOrg && syncComplete) {
-        const supabaseProducts = await supabaseProductService.getAll(currentOrg.id)
-        setProducts(supabaseProducts)
-        // Actualizar cache
-        localStorage.setItem('coriva_products', JSON.stringify(supabaseProducts))
-      } else {
-        // Fallback a localStorage
-        const data = await productService.getAll()
-        setProducts(data as Product[])
-      }
+      const data = await supabaseProductService.getAll(currentOrg.id)
+      setProducts(data)
     } catch (error) {
       console.error('Error loading products:', error)
-      // Fallback a localStorage
-      const data = await productService.getAll()
-      setProducts(data as Product[])
     }
   }
 
   const loadSales = async () => {
+    if (!currentOrg) return
     try {
-      if (currentOrg && syncComplete) {
-        const supabaseSales = await supabaseSaleService.getAll(currentOrg.id)
-        setSales(supabaseSales)
-        localStorage.setItem('coriva_sales', JSON.stringify(supabaseSales))
-      } else {
-        const data = await saleService.getAll()
-        setSales(data as Sale[])
-      }
+      const data = await supabaseSaleService.getAll(currentOrg.id)
+      setSales(data)
     } catch (error) {
       console.error('Error loading sales:', error)
-      const data = await saleService.getAll()
-      setSales(data as Sale[])
     }
   }
 
@@ -216,32 +109,44 @@ export default function CorivaPOS() {
     alert('🎉 ¡Bienvenido a Coriva Core!')
   }
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoginError('')
+    setLoading(true)
     
-    const demoUser = DEMO_USERS[username]
-    if (demoUser && demoUser.password === password) {
-      setCurrentUser(demoUser.user)
-      setCurrentOrg(DEMO_ORGS[0])
-      setIsAuthenticated(true)
+    try {
+      const result = await authService.login(username, password)
       
-      // Guardar sesión en localStorage
-      localStorage.setItem('coriva_current_user', JSON.stringify(demoUser.user))
-      localStorage.setItem('coriva_current_org', JSON.stringify(DEMO_ORGS[0]))
-      localStorage.setItem('coriva_demo_mode', 'true')
-    } else {
-      setLoginError('Usuario o contraseña incorrectos')
+      if (result) {
+        setCurrentUser(result.user)
+        setCurrentOrg(result.org)
+        setIsAuthenticated(true)
+        
+        // Guardar en sessionStorage
+        sessionStorage.setItem('coriva_user', JSON.stringify(result.user))
+        sessionStorage.setItem('coriva_org', JSON.stringify(result.org))
+      } else {
+        setLoginError('Usuario o contraseña incorrectos')
+      }
+    } catch (error) {
+      console.error('Error login:', error)
+      setLoginError('Error al iniciar sesión')
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleSearch = async (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && searchCode.trim()) {
-      const results = await productService.searchIntelligent(searchCode)
-      setSearchResults(results as Product[])
+    if (e.key === 'Enter' && searchCode.trim() && currentOrg) {
+      const allProducts = await supabaseProductService.getAll(currentOrg.id)
+      const results = allProducts.filter(p => 
+        p.code.toLowerCase().includes(searchCode.toLowerCase()) ||
+        p.name.toLowerCase().includes(searchCode.toLowerCase())
+      )
+      setSearchResults(results)
       
       if (results.length === 1) {
-        addToCart(results[0] as Product)
+        addToCart(results[0])
         setSearchCode('')
         setSearchResults([])
       }
@@ -367,86 +272,29 @@ ${currentOrg?.settings.receipt_footer || ''}
       return
     }
 
+    if (!currentOrg) return
+
     try {
-      // PASO 4: Registrar venta en Supabase
-      if (currentOrg && syncComplete) {
-        console.log('💾 Guardando venta en Supabase...')
-        
-        const sale = await supabaseSaleService.create(currentOrg.id, {
-          customerName: customerName || 'Cliente General',
-          receiptType: receiptType,
-          paymentMethod: paymentMethod,
-          subtotal: opGravadas,
-          tax: tax,
-          total: total,
-          amountPaid: amountPaid ? Number(amountPaid) : undefined,
-          changeAmount: change > 0 ? change : undefined,
-          items: cart,
-          createdBy: currentUser?.username
-        })
+      const sale = await supabaseSaleService.create(currentOrg.id, {
+        customerName: customerName || 'Cliente General',
+        receiptType: receiptType,
+        paymentMethod: paymentMethod,
+        subtotal: opGravadas,
+        tax: tax,
+        total: total,
+        amountPaid: amountPaid ? Number(amountPaid) : undefined,
+        changeAmount: change > 0 ? change : undefined,
+        items: cart,
+        createdBy: currentUser?.username
+      })
 
-        // Registrar en caja
-        await supabaseCashService.registerSale(currentOrg.id, sale.id, total)
-        
-        console.log('✅ Venta guardada en Supabase:', sale.sale_number)
-        
-        // Actualizar localStorage (cache)
-        const sales = await supabaseSaleService.getAll(currentOrg.id)
-        localStorage.setItem('coriva_sales', JSON.stringify(sales))
-        
-        // Actualizar productos en cache
-        const products = await supabaseProductService.getAll(currentOrg.id)
-        localStorage.setItem('coriva_products', JSON.stringify(products))
-        
-        await loadProducts()
-        await loadSales()
-        
-        // Print receipt
-        printReceipt(sale)
-        
-        alert(`✅ Venta exitosa!\n${sale.sale_number}\nTotal: ${currentOrg?.settings.currency} ${total.toFixed(2)}${change > 0 ? `\nVuelto: ${currentOrg?.settings.currency} ${change.toFixed(2)}` : ''}\n\n💾 Guardado en Supabase`)
-      } else {
-        // Fallback a localStorage
-        const saleData = {
-          organization_id: currentOrg!.id,
-          customer_name: customerName || 'Cliente General',
-          user_id: currentUser!.id,
-          receipt_type: receiptType,
-          subtotal: opGravadas,
-          tax,
-          discount: 0,
-          total,
-          payment_method: paymentMethod,
-          items: cart.map(item => ({
-            product_id: item.id,
-            quantity: item.quantity,
-            unit_price: item.price,
-            subtotal: item.price * item.quantity
-          }))
-        }
-
-        const newSale = await saleService.create(saleData)
-        
-        // Update stock
-        for (const item of cart) {
-          await productService.decreaseStock(item.id, item.quantity)
-        }
-        
-        // Update cash session
-        const currentSession = await cashService.getCurrentSession()
-        if (currentSession) {
-          await cashService.updateSession(currentSession.id, {
-            total_sales: (currentSession.total_sales || 0) + total
-          })
-        }
-        
-        await loadProducts()
-        await loadSales()
-        
-        printReceipt(newSale)
-        
-        alert(`✅ Venta exitosa!\n${newSale.sale_number}\nTotal: ${currentOrg?.settings.currency} ${total.toFixed(2)}${change > 0 ? `\nVuelto: ${currentOrg?.settings.currency} ${change.toFixed(2)}` : ''}`)
-      }
+      await supabaseCashService.registerSale(currentOrg.id, sale.id, total)
+      await loadProducts()
+      await loadSales()
+      
+      printReceipt(sale)
+      
+      alert(`✅ Venta exitosa!\n${sale.sale_number}\nTotal: ${currentOrg?.settings.currency} ${total.toFixed(2)}${change > 0 ? `\nVuelto: ${currentOrg?.settings.currency} ${change.toFixed(2)}` : ''}`)
       
       setCart([])
       setCustomerName('')
@@ -454,22 +302,23 @@ ${currentOrg?.settings.receipt_footer || ''}
       setAmountPaid('')
     } catch (error) {
       console.error('❌ Error procesando venta:', error)
-      alert('❌ Error al procesar la venta. Inténtalo de nuevo.')
+      alert('❌ Error al procesar la venta')
     }
   }
 
   const updateProduct = async (updatedProduct: Product) => {
-    await productService.updateProduct(updatedProduct)
+    await supabaseProductService.update(updatedProduct.id, updatedProduct)
     await loadProducts()
   }
 
   const deleteProduct = async (id: string) => {
-    await productService.deleteProduct(id)
+    // Implementar delete en product.service
     await loadProducts()
   }
 
   const addProduct = async (newProduct: Omit<Product, 'id'>) => {
-    await productService.createProduct(newProduct)
+    if (!currentOrg) return
+    await supabaseProductService.create(currentOrg.id, newProduct)
     await loadProducts()
   }
 
@@ -498,6 +347,14 @@ ${currentOrg?.settings.receipt_footer || ''}
     window.addEventListener('keydown', handleKeyPress)
     return () => window.removeEventListener('keydown', handleKeyPress)
   }, [cart, activeModule])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
+      </div>
+    )
+  }
 
   if (showOnboarding) {
     return <OnboardingWizard onComplete={handleOnboardingComplete} />
@@ -635,9 +492,10 @@ ${currentOrg?.settings.receipt_footer || ''}
 
               <button
                 type="submit"
-                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-200"
+                disabled={loading}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold py-3.5 rounded-xl shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 transition-all duration-200 disabled:opacity-50"
               >
-                Iniciar Sesión
+                {loading ? 'Iniciando...' : 'Iniciar Sesión'}
               </button>
             </form>
 
@@ -648,10 +506,9 @@ ${currentOrg?.settings.receipt_footer || ''}
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
                 <div className="flex-1">
-                  <p className="text-sm font-semibold text-indigo-900 mb-1">Cuenta Demo</p>
+                  <p className="text-sm font-semibold text-indigo-900 mb-1">Usuarios de Prueba</p>
                   <p className="text-sm text-indigo-700">
-                    Usuario: <span className="font-mono font-semibold">demo</span> | 
-                    Contraseña: <span className="font-mono font-semibold">demo123</span>
+                    Usa las credenciales de tu organización creada en Supabase
                   </p>
                 </div>
               </div>
@@ -948,20 +805,6 @@ ${currentOrg?.settings.receipt_footer || ''}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
-      {syncing && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
-          <div className="bg-white rounded-2xl p-8 max-w-md text-center">
-            <div className="animate-spin w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">🔄 Sincronizando datos...</h3>
-            <p className="text-gray-600">Migrando productos a Supabase</p>
-          </div>
-        </div>
-      )}
-      {isDemoMode && (
-        <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-6 py-3 text-center font-semibold shadow-lg">
-          🚀 Modo Demo - Estás explorando con datos de ejemplo. <a href="/registro" className="underline ml-2">Crear mi cuenta real →</a>
-        </div>
-      )}
       <div className="max-w-7xl mx-auto">
         
         <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
@@ -977,10 +820,7 @@ ${currentOrg?.settings.receipt_footer || ''}
               <p className="text-xs opacity-75">{currentUser?.role}</p>
               <button
                 onClick={() => {
-                  setIsAuthenticated(false)
-                  localStorage.removeItem('coriva_current_user')
-                  localStorage.removeItem('coriva_current_org')
-                  localStorage.removeItem('coriva_demo_mode')
+                  sessionStorage.clear()
                   window.location.href = '/'
                 }}
                 className="text-xs bg-white bg-opacity-20 px-2 py-1 rounded mt-1 hover:bg-opacity-30"

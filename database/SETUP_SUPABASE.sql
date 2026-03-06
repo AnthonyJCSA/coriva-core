@@ -3,6 +3,42 @@
 -- Ejecutar en: Supabase SQL Editor
 -- ============================================
 
+-- 0. ORGANIZATIONS TABLE
+CREATE TABLE IF NOT EXISTS corivacore_organizations (
+  id TEXT PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  business_type VARCHAR(50),
+  ruc VARCHAR(20),
+  address TEXT,
+  phone VARCHAR(50),
+  email VARCHAR(255),
+  logo_url TEXT,
+  settings JSONB DEFAULT '{"currency": "S/", "tax_rate": 0.18}'::jsonb,
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_corivacore_organizations_slug ON corivacore_organizations(slug);
+
+-- 0.1 USERS TABLE
+CREATE TABLE IF NOT EXISTS corivacore_users (
+  id TEXT PRIMARY KEY,
+  org_id TEXT NOT NULL REFERENCES corivacore_organizations(id),
+  username VARCHAR(100) UNIQUE NOT NULL,
+  password_hash TEXT NOT NULL,
+  email VARCHAR(255),
+  full_name VARCHAR(255),
+  role VARCHAR(20) DEFAULT 'ADMIN',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_corivacore_users_org_id ON corivacore_users(org_id);
+CREATE INDEX IF NOT EXISTS idx_corivacore_users_username ON corivacore_users(username);
+
 -- 1. PRODUCTS TABLE
 CREATE TABLE IF NOT EXISTS corivacore_products (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -119,12 +155,32 @@ CREATE TRIGGER update_corivacore_customers_updated_at
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
+DROP TRIGGER IF EXISTS update_corivacore_organizations_updated_at ON corivacore_organizations;
+CREATE TRIGGER update_corivacore_organizations_updated_at
+  BEFORE UPDATE ON corivacore_organizations
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_corivacore_users_updated_at ON corivacore_users;
+CREATE TRIGGER update_corivacore_users_updated_at
+  BEFORE UPDATE ON corivacore_users
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
 -- RLS (Deshabilitado para desarrollo)
+ALTER TABLE corivacore_organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE corivacore_users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE corivacore_products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE corivacore_customers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE corivacore_sales ENABLE ROW LEVEL SECURITY;
 ALTER TABLE corivacore_sale_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE corivacore_cash_movements ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Enable all for organizations" ON corivacore_organizations;
+CREATE POLICY "Enable all for organizations" ON corivacore_organizations FOR ALL USING (true);
+
+DROP POLICY IF EXISTS "Enable all for users" ON corivacore_users;
+CREATE POLICY "Enable all for users" ON corivacore_users FOR ALL USING (true);
 
 DROP POLICY IF EXISTS "Enable all for products" ON corivacore_products;
 CREATE POLICY "Enable all for products" ON corivacore_products FOR ALL USING (true);
@@ -166,3 +222,8 @@ BEGIN
   WHERE id::TEXT = p_product_id;
 END;
 $$ LANGUAGE plpgsql;
+
+-- DATOS DE PRUEBA (Usuario demo para org_1772836382137)
+INSERT INTO corivacore_users (id, org_id, username, password_hash, email, full_name, role)
+VALUES ('user_demo', 'org_1772836382137', 'demo', 'demo123', 'demo@coriva.com', 'Usuario Demo', 'ADMIN')
+ON CONFLICT (username) DO NOTHING;
