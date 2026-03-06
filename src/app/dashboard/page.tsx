@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Organization, User, Product, CartItem, Sale } from '@/types'
 import { productService, saleService, cashService } from '@/lib/storage'
+import { productService as supabaseProductService, saleService as supabaseSaleService, cashService as supabaseCashService, syncService } from '@/lib/services'
 import CashRegisterModule from '@/app/CashRegisterModule'
 import InventoryModule from '@/app/InventoryModule'
 import ReportsModule from '@/app/ReportsModule'
@@ -60,6 +61,8 @@ export default function CorivaPOS() {
   const [loginError, setLoginError] = useState('')
   const [activeModule, setActiveModule] = useState('pos')
   const [isDemoMode, setIsDemoMode] = useState(false)
+  const [syncing, setSyncing] = useState(false)
+  const [syncComplete, setSyncComplete] = useState(false)
   
   const [products, setProducts] = useState<Product[]>([])
   const [sales, setSales] = useState<Sale[]>([])
@@ -103,11 +106,36 @@ export default function CorivaPOS() {
 
   // Load data when authenticated
   useEffect(() => {
-    if (isAuthenticated) {
-      loadProducts()
-      loadSales()
+    if (isAuthenticated && currentOrg) {
+      initializeSupabase()
     }
-  }, [isAuthenticated])
+  }, [isAuthenticated, currentOrg])
+
+  const initializeSupabase = async () => {
+    if (!currentOrg) return
+    
+    try {
+      setSyncing(true)
+      console.log('🔄 Inicializando Supabase para org:', currentOrg.id)
+      
+      // Sincronizar productos
+      await syncService.initializeOrg(currentOrg.id)
+      
+      setSyncComplete(true)
+      console.log('✅ Sincronización completa')
+      
+      // Cargar datos
+      await loadProducts()
+      await loadSales()
+    } catch (error) {
+      console.error('❌ Error inicializando Supabase:', error)
+      // Continuar con localStorage si falla
+      await loadProducts()
+      await loadSales()
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const loadProducts = async () => {
     const data = await productService.getAll()
@@ -293,51 +321,95 @@ ${currentOrg?.settings.receipt_footer || ''}
       return
     }
 
-    const saleData = {
-      organization_id: currentOrg!.id,
-      customer_name: customerName || 'Cliente General',
-      user_id: currentUser!.id,
-      receipt_type: receiptType,
-      subtotal: opGravadas,
-      tax,
-      discount: 0,
-      total,
-      payment_method: paymentMethod,
-      items: cart.map(item => ({
-        product_id: item.id,
-        quantity: item.quantity,
-        unit_price: item.price,
-        subtotal: item.price * item.quantity
-      }))
-    }
+    try {
+      // PASO 4: Registrar venta en Supabase
+      if (currentOrg && syncComplete) {
+        console.log('💾 Guardando venta en Supabase...')
+        
+        const sale = await supabaseSaleService.create(currentOrg.id, {
+          customerName: customerName || 'Cliente General',
+          receiptType: receiptType,
+          paymentMethod: paymentMethod,
+          subtotal: opGravadas,
+          tax: tax,
+          total: total,
+          amountPaid: amountPaid ? Number(amountPaid) : undefined,
+          changeAmount: change > 0 ? change : undefined,
+          items: cart,
+          createdBy: currentUser?.username
+        })
 
-    const newSale = await saleService.create(saleData)
-    
-    // Update stock
-    for (const item of cart) {
-      await productService.decreaseStock(item.id, item.quantity)
+        // Registrar en caja
+        await supabaseCashService.registerSale(currentOrg.id, sale.id, total)
+        
+        console.log('✅ Venta guardada en Supabase:', sale.sale_number)
+        
+        // Actualizar localStorage (cache)
+        const sales = await supabaseSaleService.getAll(currentOrg.id)
+        localStorage.setItem('coriva_sales', JSON.stringify(sales))
+        
+        // Actualizar productos en cache
+        const products = await supabaseProductService.getAll(currentOrg.id)
+        localStorage.setItem('coriva_products', JSON.stringify(products))
+        
+        await loadProducts()
+        await loadSales()
+        
+        // Print receipt
+        printReceipt(sale)
+        
+        alert(`✅ Venta exitosa!\n${sale.sale_number}\nTotal: ${currentOrg?.settings.currency} ${total.toFixed(2)}${change > 0 ? `\nVuelto: ${currentOrg?.settings.currency} ${change.toFixed(2)}` : ''}\n\n💾 Guardado en Supabase`)
+      } else {
+        // Fallback a localStorage
+        const saleData = {
+          organization_id: currentOrg!.id,
+          customer_name: customerName || 'Cliente General',
+          user_id: currentUser!.id,
+          receipt_type: receiptType,
+          subtotal: opGravadas,
+          tax,
+          discount: 0,
+          total,
+          payment_method: paymentMethod,
+          items: cart.map(item => ({
+            product_id: item.id,
+            quantity: item.quantity,
+            unit_price: item.price,
+            subtotal: item.price * item.quantity
+          }))
+        }
+
+        const newSale = await saleService.create(saleData)
+        
+        // Update stock
+        for (const item of cart) {
+          await productService.decreaseStock(item.id, item.quantity)
+        }
+        
+        // Update cash session
+        const currentSession = await cashService.getCurrentSession()
+        if (currentSession) {
+          await cashService.updateSession(currentSession.id, {
+            total_sales: (currentSession.total_sales || 0) + total
+          })
+        }
+        
+        await loadProducts()
+        await loadSales()
+        
+        printReceipt(newSale)
+        
+        alert(`✅ Venta exitosa!\n${newSale.sale_number}\nTotal: ${currentOrg?.settings.currency} ${total.toFixed(2)}${change > 0 ? `\nVuelto: ${currentOrg?.settings.currency} ${change.toFixed(2)}` : ''}`)
+      }
+      
+      setCart([])
+      setCustomerName('')
+      setSearchResults([])
+      setAmountPaid('')
+    } catch (error) {
+      console.error('❌ Error procesando venta:', error)
+      alert('❌ Error al procesar la venta. Inténtalo de nuevo.')
     }
-    
-    // Update cash session
-    const currentSession = await cashService.getCurrentSession()
-    if (currentSession) {
-      await cashService.updateSession(currentSession.id, {
-        total_sales: (currentSession.total_sales || 0) + total
-      })
-    }
-    
-    await loadProducts()
-    await loadSales()
-    
-    // Print receipt
-    printReceipt(newSale)
-    
-    alert(`✅ Venta exitosa!\n${newSale.sale_number}\nTotal: ${currentOrg?.settings.currency} ${total.toFixed(2)}${change > 0 ? `\nVuelto: ${currentOrg?.settings.currency} ${change.toFixed(2)}` : ''}`)
-    
-    setCart([])
-    setCustomerName('')
-    setSearchResults([])
-    setAmountPaid('')
   }
 
   const updateProduct = async (updatedProduct: Product) => {
@@ -830,6 +902,15 @@ ${currentOrg?.settings.receipt_footer || ''}
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
+      {syncing && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-2xl p-8 max-w-md text-center">
+            <div className="animate-spin w-16 h-16 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">🔄 Sincronizando datos...</h3>
+            <p className="text-gray-600">Migrando productos a Supabase</p>
+          </div>
+        </div>
+      )}
       {isDemoMode && (
         <div className="bg-gradient-to-r from-yellow-400 to-orange-400 text-gray-900 px-6 py-3 text-center font-semibold shadow-lg">
           🚀 Modo Demo - Estás explorando con datos de ejemplo. <a href="/registro" className="underline ml-2">Crear mi cuenta real →</a>
