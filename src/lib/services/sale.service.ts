@@ -91,6 +91,8 @@ export const saleService = {
   },
 
   async getById(id: string): Promise<Sale | null> {
+    if (!supabase) return null
+    
     const { data, error } = await supabase
       .from(SALES_TABLE)
       .select('*')
@@ -102,6 +104,8 @@ export const saleService = {
   },
 
   async getSaleItems(saleId: string): Promise<DBSaleItem[]> {
+    if (!supabase) return []
+    
     const { data, error } = await supabase
       .from(ITEMS_TABLE)
       .select('*')
@@ -112,6 +116,8 @@ export const saleService = {
   },
 
   async getTodaySales(orgId: string): Promise<Sale[]> {
+    if (!supabase) return []
+    
     const today = new Date().toISOString().split('T')[0]
     
     const { data, error } = await supabase

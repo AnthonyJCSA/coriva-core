@@ -48,6 +48,8 @@ export const cashService = {
   },
 
   async getTodayMovements(orgId: string): Promise<DBCashMovement[]> {
+    if (!supabase) return []
+    
     const today = new Date().toISOString().split('T')[0]
     
     const { data, error } = await supabase
