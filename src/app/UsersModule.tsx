@@ -95,14 +95,14 @@ export default function UsersModule({ currentUser, organizationId }: UsersModule
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">👤 Gestión de Usuarios</h1>
           <p className="text-gray-600 mt-1">Control de acceso y permisos del sistema</p>
         </div>
         <button
           onClick={() => setShowAddForm(true)}
-          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2.5 rounded-xl hover:from-indigo-700 hover:to-purple-700 font-semibold transition-all shadow-md hover:shadow-lg"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-3 rounded-xl hover:from-indigo-700 hover:to-purple-700 font-semibold transition-all shadow-md hover:shadow-lg"
         >
           + Agregar Usuario
         </button>

@@ -11,7 +11,7 @@ import SettingsModule from '@/app/SettingsModule'
 import OnboardingWizard from '@/app/OnboardingWizard'
 import UsersModule from '@/app/UsersModule'
 import NotificationsPanel from '@/app/NotificationsPanel'
-import { canAccessModule } from '@/lib/permissions'
+import MobileNav from '@/components/MobileNav'
 
 // Demo data
 export default function CorivaPOS() {
@@ -816,98 +816,7 @@ ${currentOrg?.settings.receipt_footer || ''}
             <NotificationsPanel products={products} sales={sales} />
           </div>
 
-          <div className="flex space-x-2">
-            {canAccessModule(currentUser!.role, 'pos') && (
-              <button
-                onClick={() => setActiveModule('pos')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'pos' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                💰 Punto de Venta
-              </button>
-            )}
-            
-            {canAccessModule(currentUser!.role, 'cash') && (
-              <button
-                onClick={() => setActiveModule('cash')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'cash' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                💵 Caja
-              </button>
-            )}
-            
-            {canAccessModule(currentUser!.role, 'inventory') && (
-              <button
-                onClick={() => setActiveModule('inventory')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'inventory' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                📦 Inventario
-              </button>
-            )}
-            
-            {canAccessModule(currentUser!.role, 'reports') && (
-              <button
-                onClick={() => setActiveModule('reports')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'reports' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                📈 Reportes
-              </button>
-            )}
-            
-            {canAccessModule(currentUser!.role, 'customers') && (
-              <button
-                onClick={() => setActiveModule('customers')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'customers' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                👥 Clientes
-              </button>
-            )}
-            
-            {canAccessModule(currentUser!.role, 'users') && (
-              <button
-                onClick={() => setActiveModule('users')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'users' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                👤 Usuarios
-              </button>
-            )}
-            
-            {canAccessModule(currentUser!.role, 'settings') && (
-              <button
-                onClick={() => setActiveModule('settings')}
-                className={`px-4 py-2 rounded text-sm font-medium transition-all ${
-                  activeModule === 'settings' 
-                    ? 'bg-white text-blue-600' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                ⚙️ Configuración
-              </button>
-            )}
-          </div>
+          <MobileNav currentUser={currentUser} activeModule={activeModule} setActiveModule={setActiveModule} />
         </div>
 
         <div className="bg-white shadow-lg">

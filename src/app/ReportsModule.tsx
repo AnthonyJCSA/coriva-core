@@ -51,14 +51,14 @@ export default function ReportsModule({ sales, currentUser }: ReportsProps) {
 
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
         <h3 className="text-lg font-semibold mb-5 text-gray-900">🔍 Filtros de Reporte</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">📅 Fecha Inicio</label>
             <input
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
@@ -67,14 +67,14 @@ export default function ReportsModule({ sales, currentUser }: ReportsProps) {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
             />
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">&nbsp;</label>
             <button
               onClick={() => window.location.reload()}
-              className="w-full bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 font-medium transition-all shadow-md"
+              className="w-full bg-blue-600 text-white px-4 py-3 rounded-xl hover:bg-blue-700 font-medium transition-all shadow-md"
             >
               🔄 Refrescar
             </button>
@@ -83,7 +83,7 @@ export default function ReportsModule({ sales, currentUser }: ReportsProps) {
             <label className="block text-sm font-semibold text-gray-700 mb-2">&nbsp;</label>
             <button
               onClick={() => exportSalesToCSV(filteredSales)}
-              className="w-full bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 font-medium transition-all shadow-md"
+              className="w-full bg-green-600 text-white px-4 py-3 rounded-xl hover:bg-green-700 font-medium transition-all shadow-md"
             >
               📄 Exportar Excel
             </button>

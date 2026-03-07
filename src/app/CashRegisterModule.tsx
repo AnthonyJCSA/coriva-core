@@ -126,21 +126,21 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
       ) : (
         <div className="space-y-6">
           <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl shadow-lg p-6">
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
               <h2 className="text-2xl font-bold text-green-800 flex items-center">
                 <span className="mr-2">✅</span> Caja Abierta
               </h2>
-              <div className="flex space-x-3">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   onClick={loadCashData}
                   disabled={loading}
-                  className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 disabled:bg-gray-400 font-medium transition-all shadow-md hover:shadow-lg"
+                  className="bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700 disabled:bg-gray-400 font-medium transition-all shadow-md hover:shadow-lg"
                 >
                   {loading ? '🔄 Cargando...' : '🔄 Actualizar'}
                 </button>
                 <button
                   onClick={() => setShowCloseModal(true)}
-                  className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-5 py-2.5 rounded-xl hover:from-red-700 hover:to-pink-700 font-medium transition-all shadow-md hover:shadow-lg"
+                  className="bg-gradient-to-r from-red-600 to-pink-600 text-white px-5 py-3 rounded-xl hover:from-red-700 hover:to-pink-700 font-medium transition-all shadow-md hover:shadow-lg"
                 >
                   🔒 Cerrar Caja
                 </button>
