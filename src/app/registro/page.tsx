@@ -55,8 +55,11 @@ export default function RegistroPage() {
       
       console.log('Session saved, redirecting to dashboard')
       
+      // Esperar un momento para asegurar que la sesión se guardó
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
       // Redirigir al dashboard
-      router.push('/dashboard')
+      window.location.href = '/dashboard'
     } catch (error: any) {
       console.error('Error completing onboarding:', error)
       const errorMessage = error?.message || error?.code || 'Error desconocido'
