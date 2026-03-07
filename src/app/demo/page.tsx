@@ -2,13 +2,32 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { authService } from '@/lib/services'
 
 export default function DemoPage() {
   const router = useRouter()
 
   useEffect(() => {
-    localStorage.setItem('coriva_demo_mode', 'true')
-    router.push('/dashboard')
+    const loginDemo = async () => {
+      try {
+        localStorage.setItem('coriva_demo_mode', 'true')
+        
+        const result = await authService.login('demo', 'demo123')
+        
+        if (result) {
+          sessionStorage.setItem('coriva_user', JSON.stringify(result.user))
+          sessionStorage.setItem('coriva_org', JSON.stringify(result.org))
+          router.push('/dashboard')
+        } else {
+          router.push('/')
+        }
+      } catch (error) {
+        console.error('Error auto-login demo:', error)
+        router.push('/')
+      }
+    }
+    
+    loginDemo()
   }, [router])
 
   return (
