@@ -38,7 +38,7 @@ export default function RegistroPage() {
         password: 'admin123',
         full_name: 'Administrador',
         email: org.email || 'admin@coriva.com',
-        role: 'admin',
+        role: 'ADMIN',
         is_active: true
       })
       console.log('Admin user created:', adminUser)
