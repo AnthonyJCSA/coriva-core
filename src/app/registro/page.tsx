@@ -62,7 +62,12 @@ export default function RegistroPage() {
 
   // Si skip=true, mostrar directamente el wizard
   if (skipWelcome) {
-    return <OnboardingWizard onComplete={handleOnboardingComplete} businessType={undefined} />
+    return (
+      <OnboardingWizard 
+        onComplete={(org, products) => handleOnboardingComplete(org, products, false)} 
+        businessType={undefined} 
+      />
+    )
   }
 
   return <OnboardingFlow onComplete={handleOnboardingComplete} />
