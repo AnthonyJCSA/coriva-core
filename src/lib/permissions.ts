@@ -38,5 +38,6 @@ export const hasPermission = (role: Role, module: string, action: string): boole
 
 export const canAccessModule = (role: Role, module: string): boolean => {
   const permissions = ROLE_PERMISSIONS[role]
+  if (!permissions) return false
   return permissions.some(p => p.module === module)
 }
