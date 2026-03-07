@@ -48,6 +48,45 @@ export const authService = {
     return { user, org }
   },
 
+  async createUser(userData: {
+    organization_id: string
+    username: string
+    password: string
+    full_name: string
+    email: string
+    role: string
+    is_active: boolean
+  }): Promise<User> {
+    if (!isSupabaseConfigured()) throw new Error('Supabase not configured')
+
+    const { data, error } = await supabase
+      .from('corivacore_users')
+      .insert({
+        org_id: userData.organization_id,
+        username: userData.username,
+        password_hash: userData.password, // En producción usar bcrypt
+        full_name: userData.full_name,
+        email: userData.email,
+        role: userData.role,
+        is_active: userData.is_active
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+    
+    return {
+      id: data.id,
+      organization_id: data.org_id,
+      username: data.username,
+      email: data.email,
+      full_name: data.full_name,
+      role: data.role,
+      is_active: data.is_active,
+      created_at: data.created_at
+    }
+  },
+
   async getOrganization(orgId: string): Promise<Organization | null> {
     if (!isSupabaseConfigured()) return null
 

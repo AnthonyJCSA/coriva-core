@@ -4,8 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import OnboardingFlow from '@/app/OnboardingFlow'
 import { Organization } from '@/types'
-import { productService, authService } from '@/lib/services'
-import { v4 as uuidv4 } from 'uuid'
+import { organizationService, productService, authService } from '@/lib/services'
 
 export default function RegistroPage() {
   const router = useRouter()
@@ -15,34 +14,24 @@ export default function RegistroPage() {
     try {
       setLoading(true)
       
-      // Crear ID único para la organización
-      const orgId = uuidv4()
-      const createdOrg = { ...org, id: orgId }
+      // Crear organización en Supabase
+      const createdOrg = await organizationService.create(org)
       
-      // Guardar organización en localStorage
-      const orgs = JSON.parse(localStorage.getItem('coriva_organizations') || '[]')
-      orgs.push(createdOrg)
-      localStorage.setItem('coriva_organizations', JSON.stringify(orgs))
-      
-      // Guardar productos en localStorage
-      const allProducts = JSON.parse(localStorage.getItem('coriva_products') || '[]')
-      const newProducts = products.map(p => ({ ...p, organization_id: orgId, id: uuidv4() }))
-      localStorage.setItem('coriva_products', JSON.stringify([...allProducts, ...newProducts]))
+      // Crear productos
+      for (const product of products) {
+        await productService.create(createdOrg.id, product)
+      }
       
       // Crear usuario admin
-      const adminUser = {
-        id: uuidv4(),
-        organization_id: orgId,
+      const adminUser = await authService.createUser({
+        organization_id: createdOrg.id,
         username: org.slug || 'admin',
+        password: 'admin123',
         full_name: 'Administrador',
         email: org.email,
         role: 'admin',
         is_active: true
-      }
-      
-      const allUsers = JSON.parse(localStorage.getItem('coriva_users') || '[]')
-      allUsers.push(adminUser)
-      localStorage.setItem('coriva_users', JSON.stringify(allUsers))
+      })
       
       // Guardar sesión
       sessionStorage.setItem('coriva_user', JSON.stringify(adminUser))
