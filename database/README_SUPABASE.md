@@ -11,7 +11,7 @@
    - **Region**: Elige la más cercana
 5. Click "Create new project" (tarda 1-2 minutos)
 
-## Paso 2: Ejecutar Script SQL
+## Paso 2: Ejecutar Script SQL Principal
 
 1. En tu proyecto de Supabase, ve a **SQL Editor** (menú izquierdo)
 2. Click en "New query"
@@ -20,14 +20,25 @@
 5. Click en **RUN** (o presiona Ctrl+Enter)
 6. Verifica que aparezca "Success. No rows returned"
 
-## Paso 3: Obtener Credenciales
+## Paso 3: Insertar Datos de Prueba
+
+1. En **SQL Editor**, click en "New query"
+2. Copia TODO el contenido de `database/INSERT_TEST_DATA.sql`
+3. Pégalo en el editor
+4. Click en **RUN**
+5. Deberías ver:
+   - ✅ 10 productos agregados
+   - ✅ 4 clientes agregados
+   - ✅ Usuario demo creado
+
+## Paso 4: Obtener Credenciales
 
 1. Ve a **Settings** → **API** (menú izquierdo)
 2. Copia estos valores:
    - **Project URL**: `https://xxxxx.supabase.co`
    - **anon public**: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...`
 
-## Paso 4: Configurar Variables en Vercel
+## Paso 5: Configurar Variables en Vercel
 
 1. Ve a tu proyecto en [Vercel Dashboard](https://vercel.com/dashboard)
 2. Click en tu proyecto "coriva-core"
@@ -43,14 +54,17 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 6. Ve a **Deployments**
 7. Click en los 3 puntos del último deployment → **Redeploy**
 
-## Paso 5: Verificar
+## Paso 6: Verificar
 
 1. Espera que termine el deployment (1-2 minutos)
 2. Abre tu app en Vercel
 3. Inicia sesión con:
    - Usuario: `demo`
    - Contraseña: `demo123`
-4. El sistema ahora usará Supabase ✅
+4. Deberías ver:
+   - ✅ 10 productos en el catálogo
+   - ✅ 4 clientes en el módulo de clientes
+   - ✅ Sistema funcionando completamente
 
 ## 🔍 Verificar Tablas Creadas
 
