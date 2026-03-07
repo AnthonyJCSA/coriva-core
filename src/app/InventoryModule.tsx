@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { productService } from '../lib/storage'
 import { exportInventoryToCSV } from '../lib/export'
 
 interface Product {
@@ -42,20 +41,8 @@ export default function InventoryModule({ products: initialProducts, onUpdatePro
   })
 
   useEffect(() => {
-    loadProducts()
-  }, [])
-
-  const loadProducts = async () => {
-    setLoading(true)
-    try {
-      const data = await productService.getAll()
-      setProducts(data as Product[])
-    } catch (error) {
-      console.error('Error loading products:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+    setProducts(initialProducts)
+  }, [initialProducts])
 
   const filteredProducts = products.filter(product => 
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -69,7 +56,6 @@ export default function InventoryModule({ products: initialProducts, onUpdatePro
     setLoading(true)
     try {
       await onAddProduct(newProduct)
-      await loadProducts()
       setNewProduct({
         code: '',
         name: '',
@@ -89,16 +75,13 @@ export default function InventoryModule({ products: initialProducts, onUpdatePro
   }
 
   const handleUpdateStock = async (productId: string, newStock: number) => {
+    const product = products.find(p => p.id === productId)
+    if (!product) return
+    
     setLoading(true)
     try {
       const validStock = Math.max(0, Number(newStock))
-      await productService.updateStock(productId, validStock)
-      await loadProducts()
-      
-      const product = products.find(p => p.id === productId)
-      if (product) {
-        onUpdateProduct({ ...product, stock: validStock })
-      }
+      await onUpdateProduct({ ...product, stock: validStock })
     } catch (error) {
       console.error('Error updating stock:', error)
       alert('Error al actualizar stock')
@@ -119,7 +102,6 @@ export default function InventoryModule({ products: initialProducts, onUpdatePro
     setLoading(true)
     try {
       await onUpdateProduct(editingProduct)
-      await loadProducts()
       setShowEditForm(false)
       setEditingProduct(null)
     } catch (error) {
@@ -136,7 +118,6 @@ export default function InventoryModule({ products: initialProducts, onUpdatePro
     setLoading(true)
     try {
       await onDeleteProduct(product.id)
-      await loadProducts()
     } catch (error) {
       console.error('Error deleting product:', error)
       alert('Error al eliminar producto')
@@ -154,7 +135,7 @@ export default function InventoryModule({ products: initialProducts, onUpdatePro
         </div>
         <div className="flex space-x-3">
           <button
-            onClick={loadProducts}
+            onClick={() => window.location.reload()}
             disabled={loading}
             className="bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 disabled:bg-gray-400 font-medium transition-all shadow-md hover:shadow-lg"
           >
