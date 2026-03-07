@@ -57,9 +57,10 @@ export default function RegistroPage() {
       
       // Redirigir al dashboard
       router.push('/dashboard')
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error completing onboarding:', error)
-      alert(`Error al crear la organización: ${error instanceof Error ? error.message : 'Error desconocido'}`)
+      const errorMessage = error?.message || error?.code || 'Error desconocido'
+      alert(`Error al crear la organización: ${errorMessage}`)
       setLoading(false)
     }
   }

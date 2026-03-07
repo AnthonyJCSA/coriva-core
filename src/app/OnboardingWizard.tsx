@@ -108,7 +108,7 @@ export default function OnboardingWizard({ onComplete, businessType }: Onboardin
 
       const newOrg: Organization = {
         id: `org_${Date.now()}`,
-        slug: businessData.name.toLowerCase().replace(/\s+/g, '-'),
+        slug: `${businessData.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`,
         ...businessData,
         settings: { currency: 'S/', tax_rate: 0.18 },
         is_active: true,
