@@ -41,6 +41,33 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
     }
   }
 
+  const handleOpenCash = async () => {
+    if (!openingAmount || Number(openingAmount) < 0) {
+      alert('Ingrese un monto válido')
+      return
+    }
+
+    if (!currentUser?.organization_id) return
+
+    try {
+      setLoading(true)
+      await cashService.openCash(
+        currentUser.organization_id,
+        Number(openingAmount),
+        currentUser.username
+      )
+      await loadCashData()
+      setOpeningAmount('')
+      setShowOpenModal(false)
+      alert('✅ Caja aperturada exitosamente')
+    } catch (error) {
+      console.error('Error opening cash:', error)
+      alert('❌ Error al aperturar caja')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleCloseCash = async () => {
     if (!closingAmount || Number(closingAmount) < 0) {
       alert('Ingrese un monto válido')
@@ -63,31 +90,6 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
     } catch (error) {
       console.error('Error closing cash:', error)
       alert('❌ Error al cerrar caja')
-    } finally {
-      setLoading(false)
-    }
-  }
-    if (!openingAmount || Number(openingAmount) < 0) {
-      alert('Ingrese un monto válido')
-      return
-    }
-
-    if (!currentUser?.organization_id) return
-
-    try {
-      setLoading(true)
-      await cashService.openCash(
-        currentUser.organization_id,
-        Number(openingAmount),
-        currentUser.username
-      )
-      await loadCashData()
-      setOpeningAmount('')
-      setShowOpenModal(false)
-      alert('✅ Caja aperturada exitosamente')
-    } catch (error) {
-      console.error('Error opening cash:', error)
-      alert('❌ Error al aperturar caja')
     } finally {
       setLoading(false)
     }
