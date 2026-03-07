@@ -27,15 +27,18 @@ export default function CashRegisterModule({ currentUser }: CashRegisterProps) {
     try {
       setLoading(true)
       const movements = await cashService.getTodayMovements(currentUser.organization_id)
-      setTodayMovements(movements)
+      setTodayMovements(movements || [])
       
       const currentBalance = await cashService.getBalance(currentUser.organization_id)
-      setBalance(currentBalance)
+      setBalance(currentBalance || 0)
       
-      const hasOpening = movements.some(m => m.type === 'opening')
+      const hasOpening = (movements || []).some(m => m.type === 'opening')
       setHasOpenedToday(hasOpening)
     } catch (error) {
       console.error('Error loading cash data:', error)
+      setTodayMovements([])
+      setBalance(0)
+      setHasOpenedToday(false)
     } finally {
       setLoading(false)
     }
