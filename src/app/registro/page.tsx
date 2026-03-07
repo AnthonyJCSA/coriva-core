@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import OnboardingFlow from '@/app/OnboardingFlow'
+import OnboardingWizard from '@/app/OnboardingWizard'
 import { Organization } from '@/types'
 import { organizationService, productService, authService } from '@/lib/services'
 
 export default function RegistroPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [loading, setLoading] = useState(false)
+  const skipWelcome = searchParams.get('skip') === 'true'
 
   const handleOnboardingComplete = async (org: Organization, products: any[], isDemo: boolean) => {
     try {
@@ -55,6 +58,11 @@ export default function RegistroPage() {
         </div>
       </div>
     )
+  }
+
+  // Si skip=true, mostrar directamente el wizard
+  if (skipWelcome) {
+    return <OnboardingWizard onComplete={handleOnboardingComplete} businessType={undefined} />
   }
 
   return <OnboardingFlow onComplete={handleOnboardingComplete} />
