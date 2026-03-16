@@ -1,72 +1,62 @@
-'use client'
-
-import { useState } from 'react'
 import Link from 'next/link'
-import DemoModal from '@/components/DemoModal'
+
+const C = {
+  ink: '#0C0E12', lime: '#C8F23A', orange: '#FF5A1F', wa: '#25D366',
+  border2: '#D4D2CC',
+}
 
 export default function FinalCTA() {
-  const [showModal, setShowModal] = useState(false)
-  const whatsappUrl = "https://wa.me/51913916967?text=Hola,%20quiero%20conocer%20Coriva%20Core%20para%20mi%20negocio."
+  const wa = "https://wa.me/51913916967?text=Hola,%20quiero%20conocer%20Coriva%20Core."
+
   return (
-    <section className="py-20 bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 relative overflow-hidden">
-      <div className="absolute inset-0 bg-black opacity-10"></div>
-      <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl opacity-10 -mr-48 -mt-48"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl opacity-10 -ml-48 -mb-48"></div>
-      
-      <div className="relative max-w-4xl mx-auto px-6 text-center">
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-          ¿Listo para ordenar tu negocio?
-        </h2>
-        <p className="text-xl text-white/90 mb-10">
-          Elige tu tipo de negocio y empieza hoy
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-          <Link 
-            href="/botica"
-            className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-10 py-4 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 shadow-2xl transition-all text-lg"
-          >
-            💊 Soy botica
-          </Link>
-          <Link 
-            href="/bodega"
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-10 py-4 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 shadow-2xl transition-all text-lg"
-          >
-            🛒 Soy bodega/tienda
-          </Link>
-          <button
-            onClick={() => setShowModal(true)}
-            className="border-2 border-white text-white px-10 py-4 rounded-xl font-bold hover:bg-white hover:text-indigo-600 transition-all text-lg"
-          >
-            💬 Hablar por WhatsApp
-          </button>
+    <section style={{ background: C.ink, padding: '100px clamp(20px,5vw,80px)', position: 'relative', overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', top: -200, right: -200, width: 600, height: 600, borderRadius: '50%', background: 'radial-gradient(circle, rgba(200,242,58,0.08), transparent 70%)', pointerEvents: 'none' }} />
+
+      <div style={{ maxWidth: 1200, margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr auto', gap: 60, alignItems: 'center' }} className="fci-grid">
+        <div>
+          <span style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 2, color: C.lime, display: 'block', marginBottom: 16 }}>Empieza hoy</span>
+          <h2 style={{ fontFamily: "'Fraunces',Georgia,serif", fontSize: 'clamp(36px,5vw,62px)', fontWeight: 900, lineHeight: 1.0, letterSpacing: -2, color: '#fff', marginBottom: 16 }}>
+            ¿Listo para<br /><em style={{ fontStyle: 'italic', fontWeight: 300, color: C.lime }}>ordenar tu</em><br />negocio?
+          </h2>
+          <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.5)', lineHeight: 1.7 }}>
+            Elige tu tipo de negocio y empieza hoy.<br />Implementación gratis, soporte en español.
+          </p>
         </div>
-        <div className="flex flex-wrap justify-center gap-8 text-white/90">
-          <span className="flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            Implementación gratis
-          </span>
-          <span className="flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            Desde S/49 al mes
-          </span>
-          <span className="flex items-center">
-            <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            Soporte en Perú
-          </span>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 280 }}>
+          <Link href="/botica" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, padding: '14px 24px', borderRadius: 12, fontSize: 15, fontWeight: 700, background: C.ink, color: '#fff', textDecoration: 'none', border: '1.5px solid rgba(255,255,255,0.15)' }}>
+            💊 Soy botica →
+          </Link>
+          <Link href="/bodega" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, padding: '14px 24px', borderRadius: 12, fontSize: 15, fontWeight: 700, background: C.orange, color: '#fff', textDecoration: 'none' }}>
+            🛒 Soy bodega →
+          </Link>
+          <a href={wa} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, padding: '14px 24px', borderRadius: 12, fontSize: 15, fontWeight: 700, background: C.wa, color: '#fff', textDecoration: 'none' }}>
+            💬 Hablar por WhatsApp →
+          </a>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
+            {['Implementación gratis', 'Desde S/ 49 al mes', 'Soporte en Perú'].map(p => (
+              <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: C.lime, flexShrink: 0 }} />{p}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-      
-      <DemoModal 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        whatsappUrl={whatsappUrl}
-      />
+
+      {/* footer */}
+      <footer style={{ maxWidth: 1200, margin: '60px auto 0', paddingTop: 36, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 20, flexWrap: 'wrap' }}>
+        <div style={{ fontFamily: "'Fraunces',Georgia,serif", fontSize: 16, fontWeight: 700, color: 'rgba(255,255,255,0.3)' }}>Coriva Core</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)' }}>soporte@corivape.com · +51 913 916 967</div>
+        <div style={{ display: 'flex', gap: 20 }}>
+          {[['Términos','#'],['Privacidad','#'],['WhatsApp',wa]].map(([label, href]) => (
+            <a key={label} href={href} target={href.startsWith('http') ? '_blank' : undefined} rel="noreferrer" style={{ fontSize: 13, color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: '.15s' }}
+              onMouseEnter={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.5)'}
+              onMouseLeave={e => (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.25)'}>{label}</a>
+          ))}
+        </div>
+      </footer>
+
+      <style>{`@media (max-width: 900px) { .fci-grid { grid-template-columns: 1fr !important; gap: 40px !important; } }`}</style>
     </section>
   )
 }

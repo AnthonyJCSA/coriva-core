@@ -1,131 +1,134 @@
 'use client'
 
-import { useState } from 'react'
 import Link from 'next/link'
-import DemoModal from '@/components/DemoModal'
+
+const C = {
+  ink: '#0C0E12', ink2: '#2D3142', muted: '#6B7280', pale: '#9CA3AF',
+  bg: '#FAFAF8', bg2: '#F3F2EF', card: '#FFFFFF', border: '#E5E3DE', border2: '#D4D2CC',
+  lime: '#C8F23A', orange: '#FF5A1F', green: '#0D9C6E', greenLight: '#E8F8F3',
+  amber: '#E8970A', amberLight: '#FEF6E4', wa: '#25D366',
+}
 
 export default function HeroHome() {
-  const [showModal, setShowModal] = useState(false)
-  const whatsappUrl = "https://wa.me/51913916967?text=Hola,%20quiero%20conocer%20Coriva%20Core%20para%20mi%20negocio."
+  const wa = "https://wa.me/51913916967?text=Hola,%20quiero%20conocer%20Coriva%20Core%20para%20mi%20negocio."
 
   return (
-    <section className="relative min-h-screen flex items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 overflow-hidden">
-      <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-200 rounded-full blur-3xl opacity-20 -mr-48 -mt-48"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200 rounded-full blur-3xl opacity-20 -ml-48 -mb-48"></div>
-      
-      <div className="relative max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center">
-        <div className="space-y-8">
-          <p className="text-indigo-600 font-semibold text-sm md:text-base">🚀 Sistema para negocios pequeños en Perú</p>
-          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 leading-tight">
-            Deja el cuaderno y <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">ordena tu negocio</span>
-          </h1>
-          <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-            Sistema para bodegas, boticas y tiendas en Perú. Controla ventas, stock y caja desde S/49 al mes.
-          </p>
-          
-          <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link 
-                href="/botica"
-                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-4 rounded-xl font-bold hover:from-green-700 hover:to-emerald-700 shadow-lg hover:shadow-xl transition-all text-center"
-              >
-                💊 Soy botica
-              </Link>
-              <Link 
-                href="/bodega"
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-xl font-bold hover:from-blue-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all text-center"
-              >
-                🛒 Soy bodega/tienda
-              </Link>
-            </div>
-            
-            <button
-              onClick={() => setShowModal(true)}
-              className="w-full sm:w-auto border-2 border-gray-300 px-8 py-4 rounded-xl font-semibold hover:border-indigo-600 hover:text-indigo-600 transition-all text-center"
-            >
-              💬 Hablar por WhatsApp
-            </button>
-            
-            <p className="text-sm text-gray-500 text-center sm:text-left">
-              Te mostramos la demo por WhatsApp en 5 minutos (gratis)
-            </p>
+    <section style={{ minHeight: '100vh', padding: '100px clamp(20px,5vw,80px) 80px', position: 'relative', overflow: 'hidden', display: 'flex', flexDirection: 'column', justifyContent: 'center', background: C.bg }}>
+      {/* bg texture */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: `radial-gradient(ellipse 900px 600px at 75% 40%, rgba(200,242,58,0.12), transparent), radial-gradient(ellipse 600px 400px at 10% 80%, rgba(255,90,31,0.06), transparent)`, pointerEvents: 'none' }} />
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'clamp(300px,50%,600px) 1fr', gap: '80px', alignItems: 'center', position: 'relative', zIndex: 2, maxWidth: 1200, margin: '0 auto', width: '100%' }} className="hero-inner-grid">
+        {/* LEFT */}
+        <div>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, border: `1.5px solid ${C.border2}`, borderRadius: 99, padding: '5px 14px 5px 8px', fontSize: 12, fontWeight: 600, color: C.ink2, marginBottom: 24, background: C.card, boxShadow: '0 2px 8px rgba(12,14,18,0.06)' }}>
+            <span style={{ width: 24, height: 24, background: C.lime, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, flexShrink: 0 }}>🚀</span>
+            Sistema POS con IA · Perú &amp; América Latina
           </div>
 
-          <div className="flex flex-wrap gap-6 text-sm text-gray-600">
-            <span className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Implementación gratis
-            </span>
-            <span className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Desde S/49 al mes
-            </span>
-            <span className="flex items-center">
-              <svg className="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              Soporte en Perú
-            </span>
+          <h1 style={{ fontFamily: "'Fraunces', Georgia, serif", fontSize: 'clamp(44px,6vw,76px)', fontWeight: 900, lineHeight: 0.96, letterSpacing: -3, marginBottom: 24, color: C.ink }}>
+            Deja el<br />
+            <em style={{ fontStyle: 'italic', color: C.orange, fontWeight: 300, display: 'block' }}>cuaderno.</em>
+            <span style={{ position: 'relative', whiteSpace: 'nowrap' }}>
+              Ordena
+              <span style={{ position: 'absolute', left: 0, bottom: -4, width: '100%', height: 6, background: C.lime, borderRadius: 3, zIndex: -1, transform: 'rotate(-1deg)', display: 'block' }} />
+            </span>{' '}tu<br />negocio.
+          </h1>
+
+          <p style={{ fontSize: 18, lineHeight: 1.7, color: C.muted, marginBottom: 36, maxWidth: 480 }}>
+            Sistema para bodegas, boticas y tiendas. Controla ventas, stock y caja desde <strong style={{ color: C.ink, fontWeight: 600 }}>S/ 49 al mes</strong>. La IA trabaja por ti.
+          </p>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              <Link href="/botica" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '15px 28px', borderRadius: 12, fontSize: 16, fontWeight: 700, background: C.ink, color: '#fff', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)'; (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 28px rgba(12,14,18,0.25)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ''; (e.currentTarget as HTMLElement).style.boxShadow = '' }}>
+                💊 Soy botica
+              </Link>
+              <Link href="/bodega" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '15px 28px', borderRadius: 12, fontSize: 16, fontWeight: 700, background: C.orange, color: '#fff', textDecoration: 'none', whiteSpace: 'nowrap', transition: 'all .2s' }}
+                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = 'translateY(-2px)' }}
+                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = '' }}>
+                🛒 Soy bodega
+              </Link>
+              <a href={wa} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 9, padding: '15px 26px', borderRadius: 12, fontSize: 16, fontWeight: 600, background: 'transparent', border: `1.5px solid ${C.border2}`, color: C.ink2, textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                💬 WhatsApp
+              </a>
+            </div>
+
+            {/* trust */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, color: C.pale }}>
+              <div style={{ display: 'flex' }}>
+                {[['#4F46E5','MG'],['#0D9C6E','CR'],['#E8970A','AT'],['#DC2626','JP']].map(([bg, initials]) => (
+                  <div key={initials} style={{ width: 28, height: 28, borderRadius: '50%', border: `2px solid ${C.bg}`, marginRight: -8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: '#fff', background: bg, flexShrink: 0 }}>{initials}</div>
+                ))}
+              </div>
+              <div>
+                <div style={{ color: C.amber, fontSize: 12 }}>★★★★★</div>
+                <div><strong style={{ color: C.ink2, fontWeight: 600 }}>500+ negocios</strong> ya usan Coriva</div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="relative">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 border border-gray-200">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between pb-4 border-b">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg"></div>
-                  <div>
-                    <div className="h-3 w-24 bg-gray-200 rounded"></div>
-                    <div className="h-2 w-16 bg-gray-100 rounded mt-2"></div>
-                  </div>
+        {/* RIGHT — app card */}
+        <div style={{ position: 'relative' }}>
+          {/* float top */}
+          <div style={{ position: 'absolute', top: -16, right: 40, background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: '10px 14px', boxShadow: '0 8px 28px rgba(12,14,18,0.1)', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', zIndex: 3, color: C.green }}>
+            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C.green, marginRight: 5 }} />+18% ventas esta semana
+          </div>
+
+          <div style={{ background: C.card, border: `1px solid ${C.border}`, borderRadius: 24, overflow: 'hidden', boxShadow: '0 32px 80px rgba(12,14,18,0.12), 0 8px 24px rgba(12,14,18,0.06)', position: 'relative', zIndex: 2 }}>
+            {/* bar */}
+            <div style={{ background: C.ink, padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 6 }}>
+                {['#FF5F57','#FEBC2E','#28C840'].map(c => <div key={c} style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />)}
+              </div>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'rgba(255,255,255,0.5)', marginLeft: 8 }}>Coriva Core — Dashboard</span>
+              <span style={{ marginLeft: 'auto', background: C.lime, color: C.ink, fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 99 }}>IA activa</span>
+            </div>
+            {/* body */}
+            <div style={{ padding: 20 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
+                <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: C.muted, marginBottom: 6 }}>Ventas hoy</div>
+                  <div style={{ fontFamily: "'Fraunces',Georgia,serif", fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.green }}>S/ 2,450</div>
+                  <div style={{ fontSize: 11, color: C.pale, marginTop: 4 }}>↑ 18% vs ayer</div>
+                </div>
+                <div style={{ background: C.bg2, border: `1px solid ${C.border}`, borderRadius: 14, padding: '14px 16px' }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.6px', color: C.muted, marginBottom: 6 }}>Productos</div>
+                  <div style={{ fontFamily: "'Fraunces',Georgia,serif", fontSize: 26, fontWeight: 700, lineHeight: 1, color: C.ink }}>245</div>
+                  <div style={{ fontSize: 11, color: C.pale, marginTop: 4 }}>2 con stock bajo</div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
-                  <div className="text-2xl font-bold text-green-600">S/ 2,450</div>
-                  <div className="text-xs text-gray-600 mt-1">Ventas hoy</div>
-                </div>
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
-                  <div className="text-2xl font-bold text-blue-600">245</div>
-                  <div className="text-xs text-gray-600 mt-1">Productos</div>
+              <div style={{ background: C.amberLight, border: '1px solid rgba(232,151,10,0.2)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 10 }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>⚠️</span>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.amber, marginBottom: 2 }}>Stock bajo · Coca Cola 1L</div>
+                  <div style={{ fontSize: 11, color: C.muted }}>Quedan 5 unidades · IA recomienda pedir hoy</div>
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-yellow-50 to-orange-50 border-2 border-yellow-300 rounded-xl p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="text-2xl">⚠️</div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm text-gray-900">Se está acabando</div>
-                    <div className="text-xs text-gray-600 mt-1">Coca Cola 1L - Quedan 5 unidades</div>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-4">
-                <div className="flex items-start space-x-3">
-                  <div className="text-2xl">✅</div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-sm text-gray-900">Caja cerrada</div>
-                    <div className="text-xs text-gray-600 mt-1">S/ 2,450 - Todo cuadra</div>
-                  </div>
+              <div style={{ background: C.greenLight, border: '1px solid rgba(13,156,110,0.2)', borderRadius: 12, padding: '12px 14px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                <span style={{ fontSize: 16, flexShrink: 0, marginTop: 1 }}>✅</span>
+                <div>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: C.green, marginBottom: 2 }}>Caja cerrada · Todo cuadra</div>
+                  <div style={{ fontSize: 11, color: C.muted }}>S/ 2,450 registrados · Cierre en 47 segundos</div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="absolute -top-4 -right-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-2 rounded-full shadow-lg font-bold text-sm animate-pulse">
-            🔥 Oferta limitada
+
+          {/* float bottom */}
+          <div style={{ position: 'absolute', bottom: 24, left: -24, background: C.card, border: `1px solid ${C.border}`, borderRadius: 14, padding: '10px 14px', boxShadow: '0 8px 28px rgba(12,14,18,0.1)', fontSize: 12, fontWeight: 600, whiteSpace: 'nowrap', zIndex: 3, color: C.ink2 }}>
+            <span style={{ display: 'inline-block', width: 7, height: 7, borderRadius: '50%', background: C.amber, marginRight: 5 }} />⏱ Caja cerrada en 1 min
           </div>
         </div>
       </div>
 
-      <DemoModal 
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        whatsappUrl={whatsappUrl}
-      />
+      <style>{`
+        @media (max-width: 900px) {
+          .hero-inner-grid { grid-template-columns: 1fr !important; gap: 48px !important; }
+        }
+      `}</style>
     </section>
   )
 }
