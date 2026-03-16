@@ -3,6 +3,8 @@ import { organizationService } from '@/lib/services/organization.service'
 import { productService } from '@/lib/services/product.service'
 import StorePage from './StorePage'
 
+export const revalidate = 0 // no cache — siempre datos frescos
+
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const org = await organizationService.getBySlug(params.slug)
   if (!org) return { title: 'Tienda no encontrada' }
