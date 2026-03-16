@@ -8,7 +8,9 @@ interface CatalogModuleProps {
 export default function CatalogModule({ products, currentOrg }: CatalogModuleProps) {
   const currency = currentOrg?.settings?.currency || 'S/'
   const storeSlug = currentOrg?.slug || 'mi-negocio'
-  const storeUrl = `https://coriva.app/tienda/${storeSlug}`
+  const storeUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/tienda/${storeSlug}`
+    : `/tienda/${storeSlug}`
   const waPhone = currentOrg?.phone || ''
 
   const copyLink = () => {
