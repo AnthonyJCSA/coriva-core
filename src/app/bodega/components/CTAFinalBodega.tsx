@@ -21,8 +21,8 @@ export default function CTAFinalBodega() {
           <a href={WA} target="_blank" rel="noreferrer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, padding: '14px 24px', borderRadius: 12, fontSize: 15, fontWeight: 700, background: C.wa, color: '#fff', textDecoration: 'none' }}>
             💬 Hablar con un asesor ahora →
           </a>
-          <a href="/demo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, padding: '14px 26px', borderRadius: 12, fontSize: 15, fontWeight: 600, background: 'transparent', border: `1.5px solid ${C.border2}`, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>
-            Ver cómo funciona
+          <a href="/registro" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 9, padding: '14px 26px', borderRadius: 12, fontSize: 15, fontWeight: 600, background: 'transparent', border: `1.5px solid ${C.border2}`, color: 'rgba(255,255,255,0.7)', textDecoration: 'none' }}>
+            Registrarme gratis
           </a>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 8 }}>
             {['Implementación gratis · S/79/mes','📞 +51 913 916 967','📧 soporte@corivape.com'].map(p => (

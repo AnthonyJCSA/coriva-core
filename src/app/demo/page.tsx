@@ -2,42 +2,16 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { authService } from '@/lib/services'
 
 export default function DemoPage() {
   const router = useRouter()
-
-  useEffect(() => {
-    const loginDemo = async () => {
-      try {
-        localStorage.setItem('coriva_demo_mode', 'true')
-        
-        const result = await authService.login('demo', 'demo123')
-        
-        if (result) {
-          sessionStorage.setItem('coriva_user', JSON.stringify(result.user))
-          sessionStorage.setItem('coriva_org', JSON.stringify(result.org))
-          router.push('/dashboard')
-        } else {
-          router.push('/')
-        }
-      } catch (error) {
-        console.error('Error auto-login demo:', error)
-        router.push('/')
-      }
-    }
-    
-    loginDemo()
-  }, [router])
+  useEffect(() => { router.replace('/registro') }, [router])
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50">
-      <div className="text-center">
-        <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full mx-auto mb-6 flex items-center justify-center animate-pulse">
-          <span className="text-white text-3xl">🚀</span>
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Cargando Demo...</h2>
-        <p className="text-gray-600">Preparando tu experiencia con datos de ejemplo</p>
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FAFAF8' }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ width: 56, height: 56, background: '#0C0E12', borderRadius: 16, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', fontSize: 24 }}>🚀</div>
+        <p style={{ fontFamily: "'Plus Jakarta Sans',sans-serif", fontSize: 16, color: '#6B7280' }}>Redirigiendo...</p>
       </div>
     </div>
   )
