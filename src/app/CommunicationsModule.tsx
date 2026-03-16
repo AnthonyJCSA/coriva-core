@@ -8,10 +8,10 @@ interface CommunicationsProps {
 }
 
 const waTemplates: Record<string, string> = {
-  promo: '🎉 ¡Hola [nombre]! Te tenemos una oferta especial.\n\n🛍️ Hoy: Descuento especial en productos seleccionados.\n\nVisita tu tienda online:\n👉 coriva.app/tienda/tu-negocio\n\n¡Válido solo hoy! ⏰',
-  inactive: '👋 Hola [nombre], hace tiempo no te vemos.\n\nTe tenemos un regalo especial para que vuelvas: 10% OFF en tu próxima compra. 🎁\n\nPide en línea: coriva.app/tienda',
-  stock: '📦 ¡Hola [nombre]! Ya llegó el producto que tenías pendiente.\n\nHaz tu pedido ahora antes que se agote:\n👉 coriva.app/tienda\n\n📱 O escríbenos directamente.',
-  catalog: '🛍️ Hola [nombre]! Ya puedes ver y pedir desde nuestro catálogo digital:\n\n👉 coriva.app/tienda/tu-negocio\n\nProductos frescos todos los días. Delivery disponible. 🚚',
+  promo: '🎉 ¡Hola [nombre]! Te tenemos una oferta especial.\n\n🛍️ Hoy: Descuento especial en productos seleccionados.\n\nVisita tu tienda online:\n👉 [TIENDA_URL]\n\n¡Válido solo hoy! ⏰',
+  inactive: '👋 Hola [nombre], hace tiempo no te vemos.\n\nTe tenemos un regalo especial para que vuelvas: 10% OFF en tu próxima compra. 🎁\n\nPide en línea: [TIENDA_URL]',
+  stock: '📦 ¡Hola [nombre]! Ya llegó el producto que tenías pendiente.\n\nHaz tu pedido ahora antes que se agote:\n👉 [TIENDA_URL]\n\n📱 O escríbenos directamente.',
+  catalog: '🛍️ Hola [nombre]! Ya puedes ver y pedir desde nuestro catálogo digital:\n\n👉 [TIENDA_URL]\n\nProductos frescos todos los días. Delivery disponible. 🚚',
 }
 
 const history = [
@@ -20,8 +20,15 @@ const history = [
 ]
 
 export default function CommunicationsModule({ currentOrg, customers }: CommunicationsProps) {
+  const storeUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/tienda/${currentOrg?.slug || 'mi-negocio'}`
+    : `/tienda/${currentOrg?.slug || 'mi-negocio'}`
+
+  const resolveTemplate = (key: string) =>
+    waTemplates[key].replace(/\[TIENDA_URL\]/g, storeUrl)
+
   const [selectedTemplate, setSelectedTemplate] = useState('promo')
-  const [waMsg, setWaMsg] = useState(waTemplates.promo)
+  const [waMsg, setWaMsg] = useState(() => resolveTemplate('promo'))
   const [emailSubject, setEmailSubject] = useState('🎁 Oferta especial de hoy')
   const [recipients, setRecipients] = useState('all')
   const [generatingAI, setGeneratingAI] = useState(false)
@@ -35,7 +42,7 @@ export default function CommunicationsModule({ currentOrg, customers }: Communic
 
   const selectTemplate = (key: string) => {
     setSelectedTemplate(key)
-    setWaMsg(waTemplates[key])
+    setWaMsg(resolveTemplate(key))
   }
 
   const generateWithAI = async () => {

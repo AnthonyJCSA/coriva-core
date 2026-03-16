@@ -146,7 +146,9 @@ export default function DashboardPage() {
 
   // ── Catalog modal ──────────────────────────────────────────
   const [showCatalogModal, setShowCatalogModal] = useState(false)
-  const storeUrl = `https://coriva.app/tienda/${currentOrg?.slug || 'mi-negocio'}`
+  const storeUrl = typeof window !== 'undefined'
+    ? `${window.location.origin}/tienda/${currentOrg?.slug || 'mi-negocio'}`
+    : `/tienda/${currentOrg?.slug || 'mi-negocio'}`
 
   // ── Loading screen ─────────────────────────────────────────
   if (loading) {
