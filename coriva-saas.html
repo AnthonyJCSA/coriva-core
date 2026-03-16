@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coriva Core — SaaS para Negocios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#070B12;--sidebar:#0D1117;--surface:#111827;--card:#161D2E;
+  --card2:#1A2035;--border:#1E2D45;--border2:#243350;
+  --accent:#6366F1;--accent2:#06B6D4;--accent3:#8B5CF6;
+  --text:#E8EDF8;--muted:#8896B3;--sub:#3D4F6E;
+  --green:#10B981;--amber:#F59E0B;--red:#EF4444;--blue:#3B82F6;--pink:#EC4899;
+  --gradient:linear-gradient(135deg,#6366F1,#8B5CF6);
+  font-family:'Outfit',sans-serif;
+}
+body{background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ── SHELL ── */
+.shell{display:flex;flex:1;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:240px;min-width:240px;background:var(--sidebar);
+  border-right:1px solid var(--border);display:flex;flex-direction:column;
+  transition:transform .25s;z-index:200;
+}
+.logo-area{padding:18px 16px 14px;border-bottom:1px solid var(--border)}
+.logo-row{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:var(--gradient);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 0 20px rgba(99,102,241,.3)}
+.logo-brand{font-size:17px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:-.5px}
+.logo-tag{font-size:9px;color:var(--sub);margin-top:1px;font-weight:500;text-transform:uppercase;letter-spacing:.8px}
+
+.user-card{margin:10px 12px;padding:10px;background:var(--card);border-radius:11px;border:1px solid var(--border);cursor:pointer;transition:.15s}
+.user-card:hover{border-color:var(--accent)}
+.user-top{display:flex;align-items:center;gap:9px}
+.ava{width:32px;height:32px;border-radius:9px;background:var(--gradient);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+.ava-name{font-size:12px;font-weight:700;color:var(--text)}
+.ava-role{font-size:10px;color:var(--muted)}
+.ai-hint{margin-top:8px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:7px;padding:5px 8px;font-size:10px;color:var(--accent);display:flex;align-items:center;gap:5px}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+.nav{flex:1;padding:6px 0;overflow-y:auto}
+.nav-sec{padding:10px 14px 3px;font-size:9px;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:1px}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:8px 12px;
+  margin:1px 8px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:500;
+  color:var(--muted);transition:.15s;user-select:none;
+}
+.nav-item:hover{background:var(--surface);color:var(--text)}
+.nav-item.active{background:rgba(99,102,241,.15);color:var(--accent);border:1px solid rgba(99,102,241,.2)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0;opacity:.8}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;font-size:9px;padding:2px 7px;border-radius:99px;font-weight:700}
+.nb-red{background:rgba(239,68,68,.15);color:var(--red)}
+.nb-green{background:rgba(16,185,129,.15);color:var(--green)}
+.nb-accent{background:rgba(99,102,241,.15);color:var(--accent)}
+.nb-amber{background:rgba(245,158,11,.15);color:var(--amber)}
+
+.sidebar-footer{padding:10px 12px;border-top:1px solid var(--border)}
+.plan-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.plan-name{font-size:11px;font-weight:700;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.tag{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600}
+.t-green{background:rgba(16,185,129,.1);color:var(--green)}
+.t-amber{background:rgba(245,158,11,.1);color:var(--amber)}
+.t-red{background:rgba(239,68,68,.1);color:var(--red)}
+.t-blue{background:rgba(59,130,246,.1);color:var(--blue)}
+.t-purple{background:rgba(99,102,241,.1);color:var(--accent)}
+.t-pink{background:rgba(236,72,153,.1);color:var(--pink)}
+.t-cyan{background:rgba(6,182,212,.1);color:var(--accent2)}
+.t-gray{background:rgba(136,150,179,.1);color:var(--muted)}
+.up-btn{width:100%;padding:9px;border-radius:9px;background:var(--gradient);border:none;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:.15s;box-shadow:0 0 15px rgba(99,102,241,.25)}
+.up-btn:hover{opacity:.9;box-shadow:0 0 25px rgba(99,102,241,.4)}
+
+/* ── MAIN ── */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+
+/* ── TOPBAR ── */
+.topbar{
+  padding:0 20px;height:52px;background:var(--sidebar);flex-shrink:0;
+  border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.tl{display:flex;align-items:center;gap:12px}
+.ham{display:none;width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--border);cursor:pointer;align-items:center;justify-content:center;font-size:14px;color:var(--text)}
+.pg-title{font-size:14px;font-weight:700;color:var(--text)}
+.pg-crumb{font-size:10px;color:var(--sub)}
+.tr{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.status-badge{padding:3px 10px;border-radius:99px;font-size:10px;font-weight:600;white-space:nowrap}
+.sb-green{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.2);color:var(--green)}
+.sb-red{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red)}
+.ib{width:32px;height:32px;border-radius:8px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);font-size:13px;transition:.15s;position:relative}
+.ib:hover{border-color:var(--accent);color:var(--accent)}
+.ib-dot::after{content:'';position:absolute;top:6px;right:6px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid var(--sidebar)}
+.ai-bar{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:8px;padding:4px 12px;font-size:11px;color:var(--accent);font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.ai-bar:hover{background:rgba(99,102,241,.15)}
+
+/* ── TABS ── */
+.page-tabs{display:flex;gap:1px;padding:0 20px;background:var(--sidebar);border-bottom:1px solid var(--border);overflow-x:auto;flex-shrink:0}
+.page-tabs::-webkit-scrollbar{height:2px}
+.ptab{padding:9px 14px;font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:.15s}
+.ptab:hover{color:var(--muted)}
+.ptab.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:20px;background:var(--bg)}
+
+/* ── SCREENS ── */
+.screen{display:none;animation:fadeUp .2s ease}
+.screen.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ── METRIC CARDS ── */
+.mg{display:grid;gap:10px;margin-bottom:16px}
+.mg4{grid-template-columns:repeat(4,1fr)}
+.mg3{grid-template-columns:repeat(3,1fr)}
+.mg2{grid-template-columns:repeat(2,1fr)}
+.mc{
+  background:var(--card);border:1px solid var(--border);border-radius:13px;
+  padding:16px 18px;display:flex;flex-direction:column;gap:2px;position:relative;overflow:hidden;cursor:default;transition:.2s;
+}
+.mc:hover{border-color:var(--border2);transform:translateY(-1px)}
+.mc-glow::after{content:'';position:absolute;right:-10px;top:-10px;width:70px;height:70px;border-radius:50%;opacity:.06}
+.mc-green .mc-glow::after,.mc-green.mc-glow::after{background:var(--green)}
+.mc-blue .mc-glow::after,.mc-blue.mc-glow::after{background:var(--blue)}
+.mc-amber .mc-glow::after,.mc-amber.mc-glow::after{background:var(--amber)}
+.mc-red .mc-glow::after,.mc-red.mc-glow::after{background:var(--red)}
+.mc-purple .mc-glow::after,.mc-purple.mc-glow::after{background:var(--accent)}
+.mc-cyan .mc-glow::after,.mc-cyan.mc-glow::after{background:var(--accent2)}
+.ml{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.mv{font-size:26px;font-weight:800;line-height:1.1;margin:3px 0}
+.mv-green{color:var(--green)}.mv-blue{color:var(--blue)}.mv-amber{color:var(--amber)}.mv-red{color:var(--red)}.mv-purple{color:var(--accent)}.mv-cyan{color:var(--accent2)}
+.mt{font-size:11px;color:var(--sub)}
+.mt em{font-style:normal;color:var(--green)}
+.mt em.neg{color:var(--red)}
+.mc-icon{position:absolute;right:14px;top:14px;font-size:22px;opacity:.35}
+
+/* ── AI INSIGHT BANNER ── */
+.ai-banner{
+  background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.08));
+  border:1px solid rgba(99,102,241,.25);border-radius:12px;
+  padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:16px;
+}
+.ai-banner-icon{width:36px;height:36px;background:var(--gradient);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.ai-banner-text strong{font-size:13px;font-weight:700;color:var(--text);display:block}
+.ai-banner-text span{font-size:12px;color:var(--muted)}
+.ai-banner-actions{margin-left:auto;display:flex;gap:6px;flex-shrink:0}
+
+/* ── SECTION CARD ── */
+.sec{background:var(--card);border:1px solid var(--border);border-radius:13px;margin-bottom:14px;overflow:hidden}
+.sec-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;gap:8px}
+.sec-title{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+.sec-sub{font-size:11px;color:var(--muted);font-weight:400}
+.sec-body{padding:16px}
+.sec-actions{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+
+/* ── BUTTONS ── */
+.btn{padding:7px 14px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:.15s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{border-color:var(--border2);color:var(--text)}
+.btn-p{background:var(--gradient);color:#fff;border-color:transparent;box-shadow:0 0 12px rgba(99,102,241,.2)}
+.btn-p:hover{opacity:.9;color:#fff;box-shadow:0 0 20px rgba(99,102,241,.35)}
+.btn-g{background:rgba(16,185,129,.1);color:var(--green);border-color:rgba(16,185,129,.25)}
+.btn-g:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-r{background:rgba(239,68,68,.08);color:var(--red);border-color:rgba(239,68,68,.2)}
+.btn-r:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.btn-c{background:rgba(6,182,212,.08);color:var(--accent2);border-color:rgba(6,182,212,.2)}
+.btn-c:hover{background:var(--accent2);color:#fff}
+.btn-a{background:rgba(245,158,11,.08);color:var(--amber);border-color:rgba(245,158,11,.2)}
+.btn-a:hover{background:var(--amber);color:#fff}
+.btn-block{display:flex;width:100%;justify-content:center;padding:12px}
+.btn-lg{font-size:14px;font-weight:700;padding:11px 20px}
+
+/* ── SEARCH ── */
+.srch{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:0 12px;height:38px;display:flex;align-items:center;gap:8px;transition:.15s}
+.srch:focus-within{border-color:var(--accent)}
+.srch input{background:none;border:none;outline:none;font-size:13px;color:var(--text);flex:1;font-family:'Outfit',sans-serif}
+.srch input::placeholder{color:var(--sub)}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto}
+.dt{width:100%;border-collapse:collapse;font-size:12px;min-width:400px}
+.dt th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--sub);background:var(--surface);border-bottom:1px solid var(--border)}
+.dt td{padding:10px 14px;border-bottom:1px solid rgba(30,45,69,.5);color:var(--text);vertical-align:middle}
+.dt tr:last-child td{border-bottom:none}
+.dt tr:hover td{background:rgba(17,24,39,.5)}
+.mono{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)}
+
+/* ── FORMS ── */
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fgg{display:flex;flex-direction:column;gap:5px}
+.fgg.full{grid-column:1/-1}
+.fl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.fi,.fs{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-size:13px;color:var(--text);font-family:'Outfit',sans-serif;outline:none;transition:.15s;width:100%}
+.fi:focus,.fs:focus{border-color:var(--accent)}
+.fs option{background:var(--card)}
+textarea.fi{resize:vertical;min-height:80px;line-height:1.5}
+
+/* ── POS ── */
+.pos-wrap{display:grid;grid-template-columns:1fr 340px;gap:14px;height:calc(100vh - 140px)}
+.pos-left{display:flex;flex-direction:column;gap:10px;min-height:0}
+.cat-pills{display:flex;gap:6px;flex-wrap:wrap}
+.cp{padding:5px 13px;border-radius:99px;font-size:11px;font-weight:600;cursor:pointer;transition:.15s;border:1px solid var(--border);color:var(--muted);background:var(--surface)}
+.cp:hover{border-color:var(--accent);color:var(--accent)}
+.cp.active{background:rgba(99,102,241,.15);color:var(--accent);border-color:rgba(99,102,241,.3)}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:9px;overflow-y:auto;padding-bottom:4px;flex:1}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:.2s;position:relative}
+.pcard:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 24px rgba(99,102,241,.12)}
+.pcard .pc{font-size:10px;color:var(--sub);font-family:'DM Mono',monospace}
+.pcard .pn{font-size:13px;font-weight:700;color:var(--text);margin:5px 0 3px;line-height:1.3}
+.pcard .pp{font-size:17px;font-weight:800;color:var(--accent2)}
+.pcard .ps{font-size:10px;margin-top:6px}
+.sok{background:rgba(16,185,129,.1);color:var(--green);padding:2px 8px;border-radius:99px;display:inline-block;font-weight:600}
+.slow{background:rgba(245,158,11,.1);color:var(--amber);padding:2px 8px;border-radius:99px;display:inline-block;font-weight:600}
+.sout{background:rgba(239,68,68,.1);color:var(--red);padding:2px 8px;border-radius:99px;display:inline-block;font-weight:600}
+.ai-rec{position:absolute;top:8px;right:8px;background:var(--gradient);border-radius:5px;font-size:9px;font-weight:700;color:#fff;padding:1px 5px}
+
+/* ── CART ── */
+.cart{background:var(--card);border:1px solid var(--border);border-radius:13px;display:flex;flex-direction:column;height:100%;overflow:hidden}
+.ch{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ch-t{font-size:13px;font-weight:700;color:var(--text)}
+.cc{background:var(--accent);color:#fff;font-size:10px;padding:2px 8px;border-radius:99px;font-weight:700}
+.cb{flex:1;overflow-y:auto;padding:10px}
+.ce{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--sub)}
+.ce-i{font-size:36px;opacity:.2}
+.ci{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:9px;margin-bottom:5px;background:var(--surface);border:1px solid var(--border)}
+.ci-inf{flex:1;min-width:0}
+.ci-n{font-size:12px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ci-p{font-size:11px;color:var(--accent2);margin-top:2px}
+.qc{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.qb{width:22px;height:22px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:.15s;user-select:none}
+.qb:hover{border-color:var(--accent);color:var(--accent)}
+.qn{font-size:12px;font-weight:700;min-width:18px;text-align:center}
+.cf{padding:12px 14px;border-top:1px solid var(--border)}
+.cr{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:3px 0}
+.ctotal{display:flex;justify-content:space-between;align-items:center;padding:8px 0;margin:4px 0}
+.ctl{font-size:14px;font-weight:800;color:var(--text)}
+.ctv{font-size:24px;font-weight:800;color:var(--green)}
+.pay-row{margin-bottom:9px}
+.prl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--sub);margin-bottom:5px}
+.po{display:flex;gap:5px}
+.pop{flex:1;padding:6px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:11px;font-weight:600;cursor:pointer;text-align:center;transition:.15s;font-family:'Outfit',sans-serif}
+.pop:hover{border-color:var(--accent2);color:var(--accent2)}
+.pop.active{border-color:var(--accent2);color:var(--accent2);background:rgba(6,182,212,.08)}
+.cli-row{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 11px;font-size:12px;color:var(--muted);cursor:pointer;display:flex;align-items:center;gap:8px;margin-bottom:10px;transition:.15s}
+.cli-row:hover{border-color:var(--accent)}
+
+/* ── AI CHAT ── */
+.aichat-wrap{display:grid;grid-template-columns:1fr 360px;gap:14px;height:calc(100vh - 140px)}
+.chat-panel{background:var(--card);border:1px solid var(--border);border-radius:13px;display:flex;flex-direction:column;overflow:hidden}
+.chat-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.chat-ava{width:34px;height:34px;background:var(--gradient);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.chat-name{font-size:13px;font-weight:700;color:var(--text)}
+.chat-status{font-size:10px;color:var(--green)}
+.chat-body{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px}
+.msg{max-width:85%;padding:10px 13px;border-radius:12px;font-size:13px;line-height:1.6}
+.msg-ai{background:var(--surface);border:1px solid var(--border);color:var(--text);align-self:flex-start;border-radius:4px 12px 12px 12px}
+.msg-user{background:var(--gradient);color:#fff;align-self:flex-end;border-radius:12px 12px 4px 12px}
+.msg-time{font-size:10px;color:var(--sub);margin-top:3px}
+.chat-input{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px}
+.chat-input input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 13px;font-size:13px;color:var(--text);outline:none;font-family:'Outfit',sans-serif}
+.chat-input input:focus{border-color:var(--accent)}
+.ai-suggestions{display:flex;flex-direction:column;gap:8px}
+.ai-sug{background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:12px 14px;cursor:pointer;transition:.15s}
+.ai-sug:hover{border-color:var(--accent)}
+.ai-sug-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ai-sug-desc{font-size:11px;color:var(--muted)}
+.ai-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.ai-kpi{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:10px 12px;text-align:center}
+.ai-kpi-val{font-size:18px;font-weight:800;color:var(--accent)}
+.ai-kpi-lbl{font-size:10px;color:var(--muted)}
+
+/* ── TIENDA VIRTUAL ── */
+.store-preview{background:var(--bg);border:2px solid var(--border2);border-radius:14px;overflow:hidden}
+.store-header{padding:20px;text-align:center;background:var(--card)}
+.store-products{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px}
+.sp{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center}
+.sp-img{width:60px;height:60px;margin:0 auto 8px;background:var(--surface);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.sp-name{font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px}
+.sp-price{font-size:14px;font-weight:800;color:var(--accent2)}
+.sp-btn{margin-top:8px;width:100%;padding:6px;background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2);border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif}
+.catalog-link{background:var(--surface);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--accent2);margin-bottom:12px}
+
+/* ── COMUNIC ── */
+.comm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.template-card{background:var(--card2);border:1px solid var(--border);border-radius:11px;padding:14px;cursor:pointer;transition:.15s}
+.template-card:hover{border-color:var(--accent)}
+.template-card.sel{border-color:var(--accent);background:rgba(99,102,241,.08)}
+.tc-icon{font-size:24px;margin-bottom:8px}
+.tc-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:3px}
+.tc-desc{font-size:11px;color:var(--muted)}
+.preview-msg{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;margin-top:10px}
+.wa-bubble{background:#128C7E;color:#fff;border-radius:3px 12px 12px 12px;padding:10px 13px;font-size:12px;line-height:1.6;max-width:80%;display:inline-block}
+.email-preview{border:1px solid var(--border);border-radius:9px;overflow:hidden}
+.email-head{background:var(--surface);padding:10px 14px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border)}
+.email-body{padding:14px;font-size:12px;color:var(--text);line-height:1.7}
+
+/* ── STOCK ALERTS ── */
+.alert-card{border:1px solid var(--border);border-radius:11px;padding:12px 14px;display:flex;align-items:center;gap:12px;margin-bottom:8px;transition:.15s}
+.alert-card:hover{border-color:var(--border2)}
+.alert-card.crit{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.04)}
+.alert-card.warn{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.04)}
+.alert-card.ok{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.04)}
+.alert-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.aic-r{background:rgba(239,68,68,.15)}.aic-a{background:rgba(245,158,11,.15)}.aic-g{background:rgba(16,185,129,.15)}
+.alert-info .aname{font-size:13px;font-weight:700;color:var(--text)}
+.alert-info .adesc{font-size:11px;color:var(--muted)}
+.alert-val{margin-left:auto;text-align:right;flex-shrink:0}
+.av-num{font-size:18px;font-weight:800}
+.av-lbl{font-size:10px;color:var(--muted)}
+
+/* ── FUNNEL ── */
+.fs{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);margin-bottom:5px}
+.fl2{font-size:12px;color:var(--text);width:110px;flex-shrink:0}
+.fb{flex:1;height:8px;background:var(--border);border-radius:99px;overflow:hidden}
+.fb-inner{height:100%;border-radius:99px;transition:width .7s ease}
+.fp{font-size:12px;color:var(--muted);width:40px;text-align:right;flex-shrink:0}
+
+/* ── CAJA ── */
+.caja-box{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:32px 24px;text-align:center;max-width:420px;margin:0 auto 16px}
+.caja-icon-wrap{width:76px;height:76px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:30px}
+.ci-open{background:rgba(16,185,129,.1);border:2px solid rgba(16,185,129,.25)}
+.ci-closed{background:rgba(239,68,68,.1);border:2px solid rgba(239,68,68,.25)}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  .sidebar{position:fixed;top:0;left:0;height:100vh;transform:translateX(-100%)}
+  .sidebar.open{transform:none}
+  .ham{display:flex}
+  .mg4,.mg3{grid-template-columns:1fr 1fr}
+  .pos-wrap{grid-template-columns:1fr;height:auto}
+  .cart{height:auto;min-height:280px}
+  .aichat-wrap{grid-template-columns:1fr;height:auto}
+  .store-products{grid-template-columns:repeat(2,1fr)}
+  .comm-grid{grid-template-columns:1fr}
+}
+@media(max-width:600px){
+  .mg4,.mg3,.mg2{grid-template-columns:1fr 1fr}
+  .fg{grid-template-columns:1fr}
+  .fgg.full{grid-column:1}
+  .page-tabs{display:none}
+}
+.ovlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:150;backdrop-filter:blur(2px)}
+.ovlay.show{display:block}
+
+/* ── MODAL ── */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-wrap.show{display:flex}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:16px;padding:24px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.modal-title{font-size:16px;font-weight:800;color:var(--text)}
+.modal-close{width:30px;height:30px;border-radius:7px;background:var(--surface);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px;transition:.15s}
+.modal-close:hover{border-color:var(--red);color:var(--red)}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast-item{background:var(--card);border-radius:11px;padding:12px 16px;font-size:13px;font-weight:600;color:var(--text);box-shadow:0 4px 20px rgba(0,0,0,.5);animation:slideIn .2s ease;display:flex;align-items:center;gap:8px;max-width:320px}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0}to{transform:none;opacity:1}}
+.toast-item.t-s{border-left:3px solid var(--green)}
+.toast-item.t-e{border-left:3px solid var(--red)}
+.toast-item.t-i{border-left:3px solid var(--accent)}
+
+/* ── DASHBOARD CHARTS ── */
+.spark{height:40px;display:flex;align-items:flex-end;gap:3px}
+.spark-bar{flex:1;background:rgba(99,102,241,.3);border-radius:3px 3px 0 0;transition:.3s}
+.spark-bar.high{background:rgba(16,185,129,.4)}
+.spark-bar.today{background:var(--accent);box-shadow:0 0 6px rgba(99,102,241,.4)}
+.heatmap{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.hm-cell{height:20px;border-radius:3px;transition:.15s;cursor:default}
+.hm-cell:hover{opacity:.7}
+
+/* ── CATALOG PUBLIC ── */
+.catalog-public{background:var(--bg);min-height:100%}
+.cat-pub-header{background:var(--gradient);padding:24px 20px;text-align:center;position:relative}
+.cat-pub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;padding:16px}
+.cat-pub-card{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;cursor:pointer;transition:.2s}
+.cat-pub-card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.cat-pub-img{height:80px;background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:32px}
+.cat-pub-info{padding:10px}
+.cat-pub-name{font-size:12px;font-weight:700;color:var(--text)}
+.cat-pub-price{font-size:15px;font-weight:800;color:var(--accent2);margin:3px 0}
+.cat-pub-btn{width:100%;padding:7px;background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2);border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:'Outfit',sans-serif;transition:.15s}
+.cat-pub-btn:hover{background:var(--green);color:#fff}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+<div class="ovlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- MODALS -->
+<div class="modal-wrap" id="modal-venta">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">✅ Venta Procesada</div>
+      <div class="modal-close" onclick="closeModal('modal-venta')">✕</div>
+    </div>
+    <div style="text-align:center;padding:16px 0">
+      <div style="font-size:48px;margin-bottom:12px">🎉</div>
+      <div style="font-size:22px;font-weight:800;color:var(--green);margin-bottom:4px" id="venta-total-modal">S/ 0.00</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Boleta generada exitosamente</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn btn-c" onclick="closeModal('modal-venta')">🖨️ Imprimir</button>
+        <button class="btn btn-g" onclick="shareWA()">📱 Enviar por WhatsApp</button>
+        <button class="btn" onclick="closeModal('modal-venta')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="modal-product">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-title">➕ Agregar Producto</div>
+      <div class="modal-close" onclick="closeModal('modal-product')">✕</div>
+    </div>
+    <div class="fg">
+      <div class="fgg"><label class="fl">Código</label><input class="fi" placeholder="AQ001"></div>
+      <div class="fgg"><label class="fl">Nombre</label><input class="fi" placeholder="Agua Mineral 1L"></div>
+      <div class="fgg"><label class="fl">Precio Venta</label><input class="fi" type="number" placeholder="2.50"></div>
+      <div class="fgg"><label class="fl">Costo</label><input class="fi" type="number" placeholder="1.20"></div>
+      <div class="fgg"><label class="fl">Stock Inicial</label><input class="fi" type="number" placeholder="50"></div>
+      <div class="fgg"><label class="fl">Stock Mínimo</label><input class="fi" type="number" placeholder="5"></div>
+      <div class="fgg full"><label class="fl">Categoría</label><select class="fs"><option>Bebidas</option><option>Snacks</option><option>Lácteos</option><option>Limpieza</option><option>Abarrotes</option></select></div>
+      <div class="fgg full"><label class="fl">Emoji / Icono</label><input class="fi" placeholder="🥤"></div>
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <button class="btn btn-p btn-block" onclick="saveProduct()">💾 Guardar Producto</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-wrap" id="modal-catalog">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head">
+      <div class="modal-title">📲 Catálogo Digital</div>
+      <div class="modal-close" onclick="closeModal('modal-catalog')">✕</div>
+    </div>
+    <div style="text-align:center;padding:8px 0">
+      <div style="font-size:13px;color:var(--muted);margin-bottom:14px">Comparte este enlace con tus clientes</div>
+      <div style="background:var(--surface);border:1px solid var(--border2);border-radius:9px;padding:10px 14px;font-family:'DM Mono',monospace;font-size:12px;color:var(--accent2);margin-bottom:14px;word-break:break-all">
+        https://coriva.app/tienda/tu-negocio
+      </div>
+      <div style="background:#1A1A2E;border-radius:10px;padding:12px;display:inline-block;margin-bottom:14px">
+        <div style="width:80px;height:80px;background:var(--card2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--sub);margin:0 auto">QR Code</div>
+      </div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+        <button class="btn btn-g" onclick="toast('✅ Enlace copiado','s')">📋 Copiar Enlace</button>
+        <button class="btn" style="background:rgba(37,211,102,.1);color:#25D366;border-color:rgba(37,211,102,.3)" onclick="shareWA()">📱 WhatsApp</button>
+        <button class="btn btn-c" onclick="toast('📧 Enviando…','i')">📧 Email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="shell">
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo-row">
+        <div class="logo-icon">🚀</div>
+        <div><div class="logo-brand">Coriva Core</div><div class="logo-tag">SaaS · IA para Negocios</div></div>
+      </div>
+    </div>
+    <div class="user-card">
+      <div class="user-top">
+        <div class="ava">AD</div>
+        <div><div class="ava-name">Administrador</div><div class="ava-role">Admin · Plan Pro</div></div>
+      </div>
+      <div class="ai-hint"><div class="ai-dot"></div>IA activa — 3 alertas nuevas</div>
+    </div>
+    <nav class="nav">
+      <div class="nav-sec">Principal</div>
+      <div class="nav-item active" data-screen="dashboard">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
+        Dashboard IA
+        <span class="nav-badge nb-accent">3</span>
+      </div>
+      <div class="nav-item" data-screen="asistente">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6"/><path d="M6 6c0-1.1.9-2 2-2s2 .9 2 2c0 1-1 1.5-2 2"/><circle cx="8" cy="12" r=".5" fill="currentColor"/></svg>
+        Asistente IA
+        <span class="nav-badge nb-green">IA</span>
+      </div>
+      <div class="nav-sec">Ventas</div>
+      <div class="nav-item" data-screen="pos">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="12" height="10" rx="1.5"/><path d="M5 7h6M5 10h3"/></svg>
+        Punto de Venta
+      </div>
+      <div class="nav-item" data-screen="caja">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="5" width="14" height="9" rx="1.5"/><path d="M5 5V3.5a3 3 0 016 0V5"/><circle cx="8" cy="9.5" r="1.5"/></svg>
+        Caja
+      </div>
+      <div class="nav-sec">Inventario & IA</div>
+      <div class="nav-item" data-screen="inventario">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4l6-2 6 2v8l-6 2-6-2V4z"/><path d="M8 2v12M2 4l6 2 6-2"/></svg>
+        Inventario
+        <span class="nav-badge nb-red" id="inv-badge">2</span>
+      </div>
+      <div class="nav-sec">Tienda Virtual</div>
+      <div class="nav-item" data-screen="tienda">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12l-1.5 6H3.5L2 2z"/><circle cx="6" cy="13" r="1.5"/><circle cx="11" cy="13" r="1.5"/></svg>
+        Tienda Virtual
+        <span class="nav-badge nb-green">NUEVO</span>
+      </div>
+      <div class="nav-item" data-screen="catalogo">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M5 6h6M5 9h4"/></svg>
+        Catálogo Digital
+      </div>
+      <div class="nav-sec">Comunicaciones</div>
+      <div class="nav-item" data-screen="comunicaciones">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 3H2a1 1 0 00-1 1v7a1 1 0 001 1h12a1 1 0 001-1V4a1 1 0 00-1-1z"/><path d="M1 4l7 4 7-4"/></svg>
+        Email & WhatsApp
+        <span class="nav-badge nb-amber">IA</span>
+      </div>
+      <div class="nav-sec">CRM</div>
+      <div class="nav-item" data-screen="clientes">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6" cy="5" r="2.5"/><path d="M1 13c0-2.76 2.24-5 5-5s5 2.24 5 5"/><circle cx="12" cy="5" r="2"/><path d="M15 13c0-1.66-1.34-3-3-3"/></svg>
+        Clientes
+      </div>
+      <div class="nav-sec">Análisis</div>
+      <div class="nav-item" data-screen="reportes">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12V8M6 12V5M9 12V7M12 12V4"/><path d="M1 14h14"/></svg>
+        Reportes IA
+      </div>
+      <div class="nav-sec">Sistema</div>
+      <div class="nav-item" data-screen="usuarios">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6"/></svg>
+        Usuarios
+      </div>
+      <div class="nav-item" data-screen="config">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2"/></svg>
+        Configuración
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="plan-row">
+        <span class="plan-name">Plan PRO</span>
+        <span class="tag t-green">Activo</span>
+      </div>
+      <button class="up-btn">⚡ Upgrade a Enterprise</button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="main">
+    <div class="topbar">
+      <div class="tl">
+        <button class="ham" onclick="toggleSidebar()">☰</button>
+        <div><div class="pg-title" id="pg-title">Dashboard IA</div><div class="pg-crumb" id="pg-crumb">Coriva → Dashboard</div></div>
+      </div>
+      <div class="tr">
+        <div class="ai-bar" onclick="showScreen('asistente')">🤖 Pregúntale a la IA</div>
+        <div class="status-badge sb-green" id="caja-pill">● Caja Abierta</div>
+        <div class="ib ib-dot" title="Notificaciones">🔔</div>
+        <div class="ib" onclick="openModal('modal-catalog')" title="Catálogo">🔗</div>
+        <div class="ib" onclick="toggleFS()">⛶</div>
+      </div>
+    </div>
+
+    <div class="page-tabs" id="page-tabs">
+      <div class="ptab active" data-screen="dashboard">Dashboard</div>
+      <div class="ptab" data-screen="asistente">IA Asistente</div>
+      <div class="ptab" data-screen="pos">POS</div>
+      <div class="ptab" data-screen="caja">Caja</div>
+      <div class="ptab" data-screen="inventario">Inventario</div>
+      <div class="ptab" data-screen="tienda">Tienda</div>
+      <div class="ptab" data-screen="catalogo">Catálogo</div>
+      <div class="ptab" data-screen="comunicaciones">Comunicaciones</div>
+      <div class="ptab" data-screen="clientes">Clientes</div>
+      <div class="ptab" data-screen="reportes">Reportes</div>
+      <div class="ptab" data-screen="config">Config</div>
+    </div>
+
+    <div class="content">
+
+<!-- ══════════ DASHBOARD ══════════ -->
+<div class="screen active" id="screen-dashboard">
+  <div class="ai-banner">
+    <div class="ai-banner-icon">🤖</div>
+    <div class="ai-banner-text">
+      <strong>IA detectó 3 situaciones importantes hoy</strong>
+      <span>Stock crítico en Galletas Soda · Pico de ventas martes 11am · 8 clientes sin comprar en 30+ días</span>
+    </div>
+    <div class="ai-banner-actions">
+      <button class="btn btn-p" onclick="showScreen('asistente')">Ver análisis</button>
+    </div>
+  </div>
+
+  <div class="mg mg4">
+    <div class="mc mc-green mc-glow">
+      <div class="mc-icon">💰</div>
+      <div class="ml">Ventas Hoy</div>
+      <div class="mv mv-green">S/ 1,284</div>
+      <div class="mt"><em>+18%</em> vs ayer</div>
+    </div>
+    <div class="mc mc-blue mc-glow">
+      <div class="mc-icon">🧾</div>
+      <div class="ml">Transacciones</div>
+      <div class="mv mv-blue">34</div>
+      <div class="mt"><em>+5</em> vs promedio</div>
+    </div>
+    <div class="mc mc-amber mc-glow">
+      <div class="mc-icon">🎯</div>
+      <div class="ml">Ticket Promedio</div>
+      <div class="mv mv-amber">S/ 37.8</div>
+      <div class="mt">Meta: <em>S/ 40</em></div>
+    </div>
+    <div class="mc mc-purple mc-glow">
+      <div class="mc-icon">🛍️</div>
+      <div class="ml">Pedidos Tienda</div>
+      <div class="mv mv-purple">7</div>
+      <div class="mt"><em>3</em> pendientes</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="sec" style="margin:0">
+      <div class="sec-head">
+        <div class="sec-title">📊 Ventas Semana (S/)</div>
+        <span class="tag t-green">IA Predicción activa</span>
+      </div>
+      <div class="sec-body">
+        <div style="display:flex;align-items:flex-end;gap:6px;height:80px;margin-bottom:8px" id="sales-chart"></div>
+        <div style="display:flex;justify-content:space-around;font-size:10px;color:var(--sub)">
+          <span>Lun</span><span>Mar</span><span>Mié</span><span>Jue</span><span>Vie</span><span>Sáb</span><span>Hoy</span>
+        </div>
+        <div style="margin-top:12px;background:rgba(99,102,241,.06);border:1px solid rgba(99,102,241,.15);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--muted)">
+          🤖 <strong style="color:var(--accent)">Predicción IA:</strong> El sábado podría alcanzar S/ 1,650 (+12%). Recomienda aumentar stock de Agua y Galletas.
+        </div>
+      </div>
+    </div>
+    <div class="sec" style="margin:0">
+      <div class="sec-head"><div class="sec-title">⚠️ Alertas IA Stock</div></div>
+      <div style="padding:10px 12px">
+        <div class="alert-card crit">
+          <div class="alert-ico aic-r">🚨</div>
+          <div class="alert-info"><div class="aname">Galletas Soda</div><div class="adesc">Sin stock en ~2 días</div></div>
+          <div class="alert-val"><div class="av-num" style="color:var(--red)">4</div><div class="av-lbl">uds</div></div>
+        </div>
+        <div class="alert-card warn">
+          <div class="alert-ico aic-a">⚠️</div>
+          <div class="alert-info"><div class="aname">Leche Gloria</div><div class="adesc">Stock bajo</div></div>
+          <div class="alert-val"><div class="av-num" style="color:var(--amber)">3</div><div class="av-lbl">uds</div></div>
+        </div>
+        <div class="alert-card ok">
+          <div class="alert-ico aic-g">✅</div>
+          <div class="alert-info"><div class="aname">Agua Mineral</div><div class="adesc">Nivel óptimo</div></div>
+          <div class="alert-val"><div class="av-num" style="color:var(--green)">32</div><div class="av-lbl">uds</div></div>
+        </div>
+        <button class="btn btn-p btn-block" style="margin-top:8px" onclick="showScreen('inventario')">Ver inventario completo</button>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+    <div class="sec" style="margin:0">
+      <div class="sec-head"><div class="sec-title">🏆 Top Productos</div></div>
+      <div class="sec-body">
+        <div class="fs"><div class="fl2">Agua Mineral</div><div class="fb"><div class="fb-inner" style="width:85%;background:var(--accent2)"></div></div><div class="fp">S/182</div></div>
+        <div class="fs"><div class="fl2">Leche Gloria</div><div class="fb"><div class="fb-inner" style="width:62%;background:var(--accent2)"></div></div><div class="fp">S/134</div></div>
+        <div class="fs"><div class="fl2">Detergente</div><div class="fb"><div class="fb-inner" style="width:44%;background:var(--accent2)"></div></div><div class="fp">S/98</div></div>
+        <div class="fs"><div class="fl2">Gaseosa</div><div class="fb"><div class="fb-inner" style="width:33%;background:var(--accent2)"></div></div><div class="fp">S/72</div></div>
+      </div>
+    </div>
+    <div class="sec" style="margin:0">
+      <div class="sec-head"><div class="sec-title">📱 Tienda Virtual</div><span class="tag t-green">7 pedidos</span></div>
+      <div class="sec-body">
+        <div style="text-align:center;margin-bottom:12px">
+          <div style="font-size:28px;font-weight:800;color:var(--accent2)">S/ 342</div>
+          <div style="font-size:11px;color:var(--muted)">Facturado online hoy</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--muted)">Pedidos pendientes</span><span class="tag t-amber">3</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--muted)">Pedidos entregados</span><span class="tag t-green">4</span></div>
+          <div style="display:flex;justify-content:space-between;font-size:11px"><span style="color:var(--muted)">Vía WhatsApp</span><span style="color:var(--green)">5</span></div>
+        </div>
+        <button class="btn btn-block" style="margin-top:10px" onclick="showScreen('tienda')">Gestionar tienda →</button>
+      </div>
+    </div>
+    <div class="sec" style="margin:0">
+      <div class="sec-head"><div class="sec-title">📧 Comunicaciones</div></div>
+      <div class="sec-body">
+        <div class="ai-sug" style="margin-bottom:6px" onclick="showScreen('comunicaciones')">
+          <div class="ai-sug-title">🤖 IA sugiere</div>
+          <div class="ai-sug-desc">8 clientes no compran hace 30 días. ¿Enviar promoción?</div>
+        </div>
+        <div class="ai-sug" onclick="showScreen('comunicaciones')">
+          <div class="ai-sug-title">📦 Alerta stock</div>
+          <div class="ai-sug-desc">Notificar a proveedor de reposición urgente</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ ASISTENTE IA ══════════ -->
+<div class="screen" id="screen-asistente">
+  <div class="aichat-wrap">
+    <div class="chat-panel">
+      <div class="chat-head">
+        <div class="chat-ava">🤖</div>
+        <div><div class="chat-name">Coriva IA — Asistente de Negocio</div><div class="chat-status">● En línea · GPT-4 powered</div></div>
+        <div style="margin-left:auto;display:flex;gap:6px">
+          <button class="btn" onclick="clearChat()">🗑 Limpiar</button>
+        </div>
+      </div>
+      <div class="chat-body" id="chat-body">
+        <div class="msg msg-ai">
+          👋 Hola! Soy tu asistente IA de Coriva. Puedo ayudarte a:<br><br>
+          • Analizar tus ventas y predecir tendencias<br>
+          • Alertarte sobre stock bajo y recomendar pedidos<br>
+          • Crear mensajes para clientes por WhatsApp o email<br>
+          • Sugerir promociones basadas en datos reales<br>
+          • Responder preguntas sobre tu negocio<br><br>
+          ¿En qué te ayudo hoy?
+          <div class="msg-time">Ahora</div>
+        </div>
+      </div>
+      <div class="chat-input">
+        <input id="chat-in" placeholder="Ej: ¿Cuáles son mis productos con más margen?" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn btn-p" onclick="sendChat()">Enviar ↗</button>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">⚡ Preguntas Rápidas</div></div>
+        <div style="padding:10px;display:flex;flex-direction:column;gap:6px">
+          <div class="ai-sug" onclick="askAI('¿Cuál es mi producto más vendido esta semana?')">
+            <div class="ai-sug-title">📈 Producto más vendido</div>
+          </div>
+          <div class="ai-sug" onclick="askAI('¿Qué productos debo reabastecer urgente?')">
+            <div class="ai-sug-title">📦 Reabastecimiento urgente</div>
+          </div>
+          <div class="ai-sug" onclick="askAI('Genera un mensaje de WhatsApp para clientes inactivos')">
+            <div class="ai-sug-title">📱 Mensaje para inactivos</div>
+          </div>
+          <div class="ai-sug" onclick="askAI('¿Cómo puedo aumentar mi ticket promedio?')">
+            <div class="ai-sug-title">💡 Subir ticket promedio</div>
+          </div>
+          <div class="ai-sug" onclick="askAI('Predice mis ventas para este fin de semana')">
+            <div class="ai-sug-title">🔮 Predicción ventas fin de semana</div>
+          </div>
+          <div class="ai-sug" onclick="askAI('¿Cuáles son mis clientes más valiosos?')">
+            <div class="ai-sug-title">🏆 Clientes más valiosos</div>
+          </div>
+        </div>
+      </div>
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">📊 KPIs Clave</div></div>
+        <div style="padding:12px">
+          <div class="ai-kpis">
+            <div class="ai-kpi"><div class="ai-kpi-val">94%</div><div class="ai-kpi-lbl">Satisfacción</div></div>
+            <div class="ai-kpi"><div class="ai-kpi-val" style="color:var(--green)">S/48</div><div class="ai-kpi-lbl">Ticket prom.</div></div>
+            <div class="ai-kpi"><div class="ai-kpi-val" style="color:var(--amber)">18%</div><div class="ai-kpi-lbl">Margen bruto</div></div>
+            <div class="ai-kpi"><div class="ai-kpi-val" style="color:var(--accent2)">142</div><div class="ai-kpi-lbl">Clientes</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ PUNTO DE VENTA ══════════ -->
+<div class="screen" id="screen-pos">
+  <div class="pos-wrap">
+    <div class="pos-left">
+      <div class="srch"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="var(--sub)" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar producto por nombre o código…" id="pos-q" oninput="filterProds()"></div>
+      <div class="cat-pills">
+        <div class="cp active" onclick="setCat(this,'')">Todos</div>
+        <div class="cp" onclick="setCat(this,'bebidas')">🥤 Bebidas</div>
+        <div class="cp" onclick="setCat(this,'snacks')">🍪 Snacks</div>
+        <div class="cp" onclick="setCat(this,'lacteos')">🥛 Lácteos</div>
+        <div class="cp" onclick="setCat(this,'limpieza')">🧹 Limpieza</div>
+        <div class="cp" onclick="setCat(this,'abarrotes')">🛒 Abarrotes</div>
+      </div>
+      <div class="pgrid" id="pgrid"></div>
+    </div>
+    <div class="cart">
+      <div class="ch">
+        <div class="ch-t">🛒 Venta actual</div>
+        <span class="cc" id="cart-cnt">0 items</span>
+      </div>
+      <div class="cb" id="cart-body">
+        <div class="ce" id="cart-empty">
+          <div class="ce-i">🛍️</div>
+          <div style="font-size:12px;font-weight:700">Carrito vacío</div>
+          <div style="font-size:11px">Haz clic en un producto</div>
+        </div>
+      </div>
+      <div class="cf">
+        <div class="cli-row" onclick="toast('Selección de cliente próximamente','i')">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3.31 2.69-6 6-6s6 2.69 6 6"/></svg>
+          <span id="cli-text">Agregar cliente</span>
+        </div>
+        <div class="pay-row"><div class="prl">Comprobante</div><div class="po"><div class="pop active" onclick="selOpt(this,'comp')">Boleta</div><div class="pop" onclick="selOpt(this,'comp')">Factura</div><div class="pop" onclick="selOpt(this,'comp')">Ticket</div></div></div>
+        <div class="pay-row"><div class="prl">Pago</div><div class="po"><div class="pop active" onclick="selOpt(this,'pay')">💵 Efectivo</div><div class="pop" onclick="selOpt(this,'pay')">💳 Tarjeta</div><div class="pop" onclick="selOpt(this,'pay')">📱 Yape</div></div></div>
+        <div class="cr"><span>Subtotal</span><span id="sub-t">S/ 0.00</span></div>
+        <div class="cr"><span>IGV (18%)</span><span id="igv-t">S/ 0.00</span></div>
+        <div class="ctotal"><span class="ctl">TOTAL</span><span class="ctv" id="total-t">S/ 0.00</span></div>
+        <button class="btn btn-g btn-block btn-lg" onclick="procesarVenta()" style="margin-bottom:5px">✓ Procesar Venta — F2</button>
+        <button class="btn btn-block" onclick="limpiarCart()" style="color:var(--red)">✕ Limpiar — ESC</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CAJA ══════════ -->
+<div class="screen" id="screen-caja">
+  <div class="mg mg3" style="max-width:680px">
+    <div class="mc mc-green mc-glow"><div class="ml">Saldo Inicial</div><div class="mv mv-green">S/ 200</div></div>
+    <div class="mc mc-blue mc-glow"><div class="ml">Ventas del Día</div><div class="mv mv-blue">S/ 1,284</div></div>
+    <div class="mc mc-amber mc-glow"><div class="ml">Total en Caja</div><div class="mv mv-amber">S/ 1,484</div></div>
+  </div>
+  <div class="caja-box">
+    <div class="caja-icon-wrap ci-open" id="caja-icon">🔓</div>
+    <div style="font-size:20px;font-weight:800;color:var(--green)" id="caja-title">Caja Abierta</div>
+    <div style="font-size:12px;color:var(--muted);margin:6px 0 4px">Aperturada hoy a las <strong>08:32 AM</strong></div>
+    <div style="font-size:11px;color:var(--sub)">Usuario: Administrador</div>
+    <div style="display:flex;gap:8px;justify-content:center;margin-top:18px">
+      <button class="btn btn-r" onclick="toggleCaja()">🔒 Cerrar Caja</button>
+      <button class="btn btn-p">+ Ingreso/Egreso</button>
+    </div>
+  </div>
+  <div class="sec"><div class="sec-head"><div class="sec-title">Movimientos del Día</div><button class="btn">📥 Exportar</button></div>
+    <div class="tw"><table class="dt"><thead><tr><th>Hora</th><th>Tipo</th><th>Descripción</th><th>Monto</th><th>Usuario</th></tr></thead><tbody>
+      <tr><td>08:32</td><td><span class="tag t-green">Apertura</span></td><td>Saldo inicial</td><td style="color:var(--green);font-weight:700">+S/ 200</td><td>Admin</td></tr>
+      <tr><td>09:15</td><td><span class="tag t-blue">Venta</span></td><td>Boleta #001</td><td style="color:var(--green);font-weight:700">+S/ 45.50</td><td>Admin</td></tr>
+      <tr><td>11:05</td><td><span class="tag t-red">Egreso</span></td><td>Cambio de caja</td><td style="color:var(--red);font-weight:700">-S/ 50</td><td>Admin</td></tr>
+      <tr><td>12:30</td><td><span class="tag t-blue">Venta</span></td><td>Factura #003 — Empresa ABC</td><td style="color:var(--green);font-weight:700">+S/ 532</td><td>Cajero</td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- ══════════ INVENTARIO ══════════ -->
+<div class="screen" id="screen-inventario">
+  <div class="ai-banner">
+    <div class="ai-banner-icon">📦</div>
+    <div class="ai-banner-text">
+      <strong>IA detectó 2 productos en riesgo de quiebre de stock</strong>
+      <span>Galletas Soda: ~2 días restantes · Leche Gloria: ~3 días restantes. Recomendamos pedir hoy.</span>
+    </div>
+    <div class="ai-banner-actions">
+      <button class="btn btn-a" onclick="toast('📧 Email enviado al proveedor','s')">Notificar proveedor</button>
+    </div>
+  </div>
+  <div class="mg mg4">
+    <div class="mc mc-blue mc-glow"><div class="ml">Total Productos</div><div class="mv mv-blue">48</div></div>
+    <div class="mc mc-red mc-glow"><div class="ml">Stock Crítico</div><div class="mv mv-red">2</div><div class="mt"><em class="neg">Atención inmediata</em></div></div>
+    <div class="mc mc-green mc-glow"><div class="ml">Valor Inventario</div><div class="mv mv-green">S/ 4,820</div></div>
+    <div class="mc mc-amber mc-glow"><div class="ml">Rotación IA</div><div class="mv mv-amber">4.2x</div><div class="mt">Mensual <em>+0.3x</em></div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Catálogo de Productos <span class="sec-sub">con alertas IA</span></div>
+      <div class="sec-actions">
+        <div class="srch" style="width:200px"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--sub)" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar…"></div>
+        <button class="btn">📥 Exportar</button>
+        <button class="btn btn-p" onclick="openModal('modal-product')">+ Agregar</button>
+      </div>
+    </div>
+    <div class="tw"><table class="dt"><thead><tr><th>Código</th><th>Producto</th><th>Cat.</th><th>P. Venta</th><th>Costo</th><th>Stock</th><th>Mín.</th><th>Estado IA</th><th>Acciones</th></tr></thead><tbody>
+      <tr><td class="mono">AQ001</td><td style="font-weight:700">Agua Mineral 1L</td><td><span class="tag t-cyan">Bebidas</span></td><td>S/ 2.50</td><td>S/ 1.20</td><td>32</td><td>5</td><td><span class="tag t-green">✅ Óptimo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+      <tr><td class="mono">GA002</td><td style="font-weight:700">Gaseosa 500ml</td><td><span class="tag t-cyan">Bebidas</span></td><td>S/ 3.00</td><td>S/ 1.80</td><td>18</td><td>8</td><td><span class="tag t-green">✅ Óptimo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+      <tr style="background:rgba(239,68,68,.04)"><td class="mono">GA003</td><td style="font-weight:700">Galletas Soda</td><td><span class="tag t-amber">Snacks</span></td><td>S/ 1.50</td><td>S/ 0.80</td><td style="color:var(--red);font-weight:800">4</td><td>10</td><td><span class="tag t-red">🚨 Crítico</span></td><td><button class="btn btn-a" style="padding:3px 8px;font-size:10px" onclick="toast('📦 Orden generada','s')">Pedir</button></td></tr>
+      <tr><td class="mono">DT004</td><td style="font-weight:700">Detergente 500g</td><td><span class="tag t-purple">Limpieza</span></td><td>S/ 8.90</td><td>S/ 5.50</td><td>25</td><td>5</td><td><span class="tag t-green">✅ Óptimo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+      <tr style="background:rgba(245,158,11,.04)"><td class="mono">LE005</td><td style="font-weight:700">Leche Gloria 400g</td><td><span class="tag t-gray">Lácteos</span></td><td>S/ 4.20</td><td>S/ 2.90</td><td style="color:var(--amber);font-weight:800">3</td><td>8</td><td><span class="tag t-amber">⚠️ Bajo</span></td><td><button class="btn btn-a" style="padding:3px 8px;font-size:10px" onclick="toast('📦 Orden generada','s')">Pedir</button></td></tr>
+      <tr><td class="mono">AC006</td><td style="font-weight:700">Aceite Vegetal 1L</td><td><span class="tag t-gray">Abarrotes</span></td><td>S/ 9.50</td><td>S/ 7.20</td><td>7</td><td>3</td><td><span class="tag t-green">✅ Óptimo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- ══════════ TIENDA VIRTUAL ══════════ -->
+<div class="screen" id="screen-tienda">
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:14px">
+    <div>
+      <div class="ai-banner">
+        <div class="ai-banner-icon">🛍️</div>
+        <div class="ai-banner-text">
+          <strong>Tu tienda virtual está activa y recibiendo pedidos</strong>
+          <span>7 pedidos hoy · S/ 342 en ventas online · 3 pendientes de entrega</span>
+        </div>
+        <div class="ai-banner-actions">
+          <button class="btn btn-c" onclick="openModal('modal-catalog')">📲 Compartir enlace</button>
+        </div>
+      </div>
+      <div class="mg mg3">
+        <div class="mc mc-cyan mc-glow"><div class="ml">Pedidos Hoy</div><div class="mv mv-cyan">7</div></div>
+        <div class="mc mc-green mc-glow"><div class="ml">Ventas Online</div><div class="mv mv-green">S/ 342</div></div>
+        <div class="mc mc-amber mc-glow"><div class="ml">Pendientes</div><div class="mv mv-amber">3</div></div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">📋 Pedidos Recientes</div><button class="btn btn-g" onclick="toast('📱 Notificando clientes…','i')">Notificar todos</button></div>
+        <div class="tw"><table class="dt"><thead><tr><th>ID</th><th>Cliente</th><th>Productos</th><th>Total</th><th>Canal</th><th>Estado</th><th>Acción</th></tr></thead><tbody>
+          <tr><td class="mono">#W001</td><td>Juan García</td><td>Agua x3, Leche x2</td><td style="color:var(--green);font-weight:700">S/ 18.90</td><td><span class="tag" style="background:rgba(37,211,102,.1);color:#25D366">WhatsApp</span></td><td><span class="tag t-amber">Pendiente</span></td><td><button class="btn btn-g" style="padding:3px 8px;font-size:10px" onclick="toast('✅ Pedido confirmado','s')">Confirmar</button></td></tr>
+          <tr><td class="mono">#W002</td><td>María Torres</td><td>Galletas x5, Gaseosa x2</td><td style="color:var(--green);font-weight:700">S/ 13.50</td><td><span class="tag" style="background:rgba(37,211,102,.1);color:#25D366">WhatsApp</span></td><td><span class="tag t-green">Entregado</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">Ver</button></td></tr>
+          <tr><td class="mono">#W003</td><td>Carlos Quispe</td><td>Aceite x1, Detergente x1</td><td style="color:var(--green);font-weight:700">S/ 18.40</td><td><span class="tag t-blue">Web</span></td><td><span class="tag t-amber">Pendiente</span></td><td><button class="btn btn-g" style="padding:3px 8px;font-size:10px" onclick="toast('✅ Pedido confirmado','s')">Confirmar</button></td></tr>
+          <tr><td class="mono">#W004</td><td>Rosa Mamani</td><td>Leche x3, Agua x4</td><td style="color:var(--green);font-weight:700">S/ 22.60</td><td><span class="tag" style="background:rgba(37,211,102,.1);color:#25D366">WhatsApp</span></td><td><span class="tag t-purple">En camino</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">Ver</button></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">⚙️ Config. Tienda</div></div>
+        <div style="padding:14px;display:flex;flex-direction:column;gap:10px">
+          <div class="fgg"><label class="fl">Nombre de la Tienda</label><input class="fi" value="Bodega Coriva"></div>
+          <div class="fgg"><label class="fl">WhatsApp de Pedidos</label><input class="fi" value="+51 972 163 576" placeholder="+51 999 999 999"></div>
+          <div class="fgg"><label class="fl">Mensaje de Bienvenida</label><textarea class="fi" style="height:70px">¡Hola! 👋 Bienvenido a Bodega Coriva. Escríbenos tu pedido y te lo entregamos.</textarea></div>
+          <div class="fgg"><label class="fl">Delivery</label>
+            <select class="fs"><option>Solo recojo en tienda</option><option>Delivery (radio 2km)</option><option>Delivery (radio 5km)</option></select>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:12px;color:var(--muted)">Tienda visible al público</span>
+            <div class="toggle active" onclick="this.classList.toggle('active')" id="store-toggle" style="width:36px;height:20px;border-radius:99px;background:var(--green);cursor:pointer;position:relative;transition:.2s"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px;transition:.2s"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-size:12px;color:var(--muted)">Pedidos por WhatsApp</span>
+            <div style="width:36px;height:20px;border-radius:99px;background:var(--green);cursor:pointer;position:relative"><div style="width:16px;height:16px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px"></div></div>
+          </div>
+          <button class="btn btn-p btn-block" onclick="toast('✅ Configuración guardada','s')">💾 Guardar</button>
+          <button class="btn btn-c btn-block" onclick="openModal('modal-catalog')">📲 Compartir catálogo</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CATÁLOGO DIGITAL ══════════ -->
+<div class="screen" id="screen-catalogo">
+  <div class="ai-banner">
+    <div class="ai-banner-icon">📲</div>
+    <div class="ai-banner-text">
+      <strong>Catálogo digital listo para compartir</strong>
+      <span>Tus clientes pueden ver tus productos y hacer pedidos directo por WhatsApp</span>
+    </div>
+    <div class="ai-banner-actions">
+      <button class="btn btn-g" onclick="openModal('modal-catalog')">📲 Compartir ahora</button>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div>
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sec-head"><div class="sec-title">🖼️ Vista Previa del Catálogo</div></div>
+        <div style="padding:12px">
+          <div class="store-preview">
+            <div class="store-header">
+              <div style="font-size:22px;font-weight:800;color:#fff;margin-bottom:4px">🏪 Bodega Coriva</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.8)">Delivery disponible · Pedidos por WhatsApp</div>
+              <div style="margin-top:10px;background:rgba(255,255,255,.15);border-radius:8px;padding:6px 12px;font-size:11px;color:#fff;display:inline-block">📱 +51 972 163 576</div>
+            </div>
+            <div class="store-products">
+              <div class="sp"><div class="sp-img">🥤</div><div class="sp-name">Agua Mineral</div><div class="sp-price">S/ 2.50</div><button class="sp-btn" onclick="toast('🛒 Agregado al pedido','s')">Pedir</button></div>
+              <div class="sp"><div class="sp-img">🥛</div><div class="sp-name">Leche Gloria</div><div class="sp-price">S/ 4.20</div><button class="sp-btn" onclick="toast('🛒 Agregado al pedido','s')">Pedir</button></div>
+              <div class="sp"><div class="sp-img">🧹</div><div class="sp-name">Detergente</div><div class="sp-price">S/ 8.90</div><button class="sp-btn" onclick="toast('🛒 Agregado al pedido','s')">Pedir</button></div>
+              <div class="sp"><div class="sp-img">🫙</div><div class="sp-name">Aceite Vegetal</div><div class="sp-price">S/ 9.50</div><button class="sp-btn" onclick="toast('🛒 Agregado al pedido','s')">Pedir</button></div>
+              <div class="sp"><div class="sp-img">🍪</div><div class="sp-name">Galletas Soda</div><div class="sp-price">S/ 1.50</div><button class="sp-btn" onclick="toast('🛒 Agregado al pedido','s')">Pedir</button></div>
+              <div class="sp"><div class="sp-img">🥤</div><div class="sp-name">Gaseosa 500ml</div><div class="sp-price">S/ 3.00</div><button class="sp-btn" onclick="toast('🛒 Agregado al pedido','s')">Pedir</button></div>
+            </div>
+            <div style="padding:12px;border-top:1px solid var(--border);background:var(--card)">
+              <button class="btn btn-block" style="background:#25D366;color:#fff;border-color:#25D366;font-weight:700" onclick="shareWA()">📱 Enviar pedido por WhatsApp</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sec-head"><div class="sec-title">📊 Estadísticas del Catálogo</div></div>
+        <div class="sec-body">
+          <div class="mg mg2" style="margin-bottom:12px">
+            <div class="mc mc-blue mc-glow"><div class="ml">Visitas Hoy</div><div class="mv mv-blue">47</div></div>
+            <div class="mc mc-green mc-glow"><div class="ml">Pedidos</div><div class="mv mv-green">7</div></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:8px;font-weight:600">PRODUCTOS MÁS VISTOS</div>
+          <div class="fs"><div class="fl2">Agua Mineral</div><div class="fb"><div class="fb-inner" style="width:90%;background:var(--accent2)"></div></div><div class="fp">28 v.</div></div>
+          <div class="fs"><div class="fl2">Leche Gloria</div><div class="fb"><div class="fb-inner" style="width:70%;background:var(--accent2)"></div></div><div class="fp">21 v.</div></div>
+          <div class="fs"><div class="fl2">Detergente</div><div class="fb"><div class="fb-inner" style="width:50%;background:var(--accent2)"></div></div><div class="fp">15 v.</div></div>
+        </div>
+      </div>
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">🔗 Enlace de tu Catálogo</div></div>
+        <div class="sec-body">
+          <div class="catalog-link">
+            <span>coriva.app/tienda/tu-negocio</span>
+            <button class="btn btn-c" style="padding:4px 10px;font-size:10px" onclick="toast('📋 Enlace copiado','s')">Copiar</button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button class="btn btn-block" style="background:rgba(37,211,102,.1);color:#25D366;border-color:rgba(37,211,102,.3)" onclick="shareWA()">📱 WhatsApp</button>
+            <button class="btn btn-block btn-c" onclick="toast('📧 Enviando…','i')">📧 Email</button>
+            <button class="btn btn-block" onclick="toast('📋 Copiado','s')">📋 Copiar QR</button>
+            <button class="btn btn-block btn-p" onclick="toast('📥 Descargando…','i')">⬇️ Descargar QR</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ COMUNICACIONES ══════════ -->
+<div class="screen" id="screen-comunicaciones">
+  <div class="ai-banner">
+    <div class="ai-banner-icon">🤖</div>
+    <div class="ai-banner-text">
+      <strong>IA detectó oportunidades de comunicación</strong>
+      <span>8 clientes inactivos · Galletas Soda con stock bajo · Proveedor pendiente de contacto</span>
+    </div>
+    <div class="ai-banner-actions">
+      <button class="btn btn-p" onclick="genMsgIA()">✨ Generar mensaje con IA</button>
+    </div>
+  </div>
+  <div class="comm-grid">
+    <div>
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sec-head"><div class="sec-title">📱 Nueva Campaña WhatsApp</div><span class="tag t-green">Recomendado IA</span></div>
+        <div class="sec-body">
+          <div style="margin-bottom:12px">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Plantillas IA</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px">
+              <div class="template-card sel" onclick="setTemplate(this,'wa-promo')">
+                <div class="tc-icon">🎁</div>
+                <div class="tc-title">Promoción</div>
+                <div class="tc-desc">Oferta especial del día</div>
+              </div>
+              <div class="template-card" onclick="setTemplate(this,'wa-inactive')">
+                <div class="tc-icon">👋</div>
+                <div class="tc-title">Clientes inactivos</div>
+                <div class="tc-desc">Reactiva clientes</div>
+              </div>
+              <div class="template-card" onclick="setTemplate(this,'wa-stock')">
+                <div class="tc-icon">📦</div>
+                <div class="tc-title">Stock reabastecido</div>
+                <div class="tc-desc">Avisa llegada de producto</div>
+              </div>
+              <div class="template-card" onclick="setTemplate(this,'wa-catalog')">
+                <div class="tc-icon">📲</div>
+                <div class="tc-title">Catálogo digital</div>
+                <div class="tc-desc">Comparte tu tienda</div>
+              </div>
+            </div>
+          </div>
+          <div class="fgg" style="margin-bottom:10px">
+            <label class="fl">Destinatarios</label>
+            <select class="fs"><option>Todos los clientes (142)</option><option>Clientes inactivos +30 días (8)</option><option>Clientes frecuentes (24)</option><option>Selección manual</option></select>
+          </div>
+          <div class="fgg" style="margin-bottom:10px">
+            <label class="fl">Mensaje</label>
+            <textarea class="fi" id="wa-msg" style="height:90px">🎉 ¡Hola! Te tenemos una oferta especial en Bodega Coriva.
+
+🛍️ Hoy: Agua Mineral x3 por S/ 6.50 (ahorra S/ 1!)
+
+Escríbenos o visita tu tienda online:
+👉 coriva.app/tienda/tu-negocio
+
+¡Válido solo hoy! ⏰</textarea>
+          </div>
+          <div class="preview-msg">
+            <div style="font-size:11px;color:var(--sub);margin-bottom:8px;font-weight:600">VISTA PREVIA</div>
+            <div class="wa-bubble" id="wa-preview">🎉 ¡Hola! Te tenemos una oferta especial en Bodega Coriva.
+
+🛍️ Hoy: Agua Mineral x3 por S/ 6.50 (ahorra S/ 1!)
+
+Escríbenos o visita tu tienda online:
+👉 coriva.app/tienda/tu-negocio
+
+¡Válido solo hoy! ⏰</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-p" onclick="genMsgIA()">✨ Mejorar con IA</button>
+            <button class="btn" style="background:rgba(37,211,102,.1);color:#25D366;border-color:rgba(37,211,102,.3);flex:1" onclick="sendCampaign('WhatsApp')">📱 Enviar por WhatsApp</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="sec" style="margin-bottom:12px">
+        <div class="sec-head"><div class="sec-title">📧 Nueva Campaña Email</div></div>
+        <div class="sec-body">
+          <div class="fgg" style="margin-bottom:8px">
+            <label class="fl">Asunto</label>
+            <input class="fi" value="🎁 Oferta especial de hoy — Bodega Coriva">
+          </div>
+          <div class="fgg" style="margin-bottom:8px">
+            <label class="fl">Destinatarios</label>
+            <select class="fs"><option>Todos los clientes (142)</option><option>Clientes inactivos (8)</option></select>
+          </div>
+          <div class="email-preview">
+            <div class="email-head">
+              <div>De: Bodega Coriva &lt;hola@coriva.pe&gt;</div>
+              <div>Para: [cliente@email.com]</div>
+              <div>Asunto: 🎁 Oferta especial de hoy</div>
+            </div>
+            <div class="email-body">
+              <div style="font-size:18px;font-weight:800;color:var(--text);margin-bottom:12px">¡Hola, Juan! 👋</div>
+              Tenemos una oferta que no puedes perderte:<br><br>
+              <div style="background:var(--surface);border-radius:8px;padding:12px;margin:8px 0;border-left:3px solid var(--accent)">
+                <strong style="color:var(--accent2)">Agua Mineral x3 por S/ 6.50</strong><br>
+                <span style="font-size:11px;color:var(--muted)">Precio normal: S/ 7.50 · Ahorras S/ 1.00</span>
+              </div>
+              <div style="margin-top:12px">
+                <a href="#" style="background:var(--gradient);color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:700;font-size:13px;display:inline-block">Ver Catálogo Completo →</a>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-p" onclick="genMsgIA()">✨ IA redacta</button>
+            <button class="btn btn-c" style="flex:1" onclick="sendCampaign('Email')">📧 Enviar Email</button>
+          </div>
+        </div>
+      </div>
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">📊 Historial</div></div>
+        <div class="tw"><table class="dt"><thead><tr><th>Fecha</th><th>Tipo</th><th>Enviados</th><th>Leídos</th><th>Estado</th></tr></thead><tbody>
+          <tr><td>Hoy</td><td><span class="tag" style="background:rgba(37,211,102,.1);color:#25D366">WhatsApp</span></td><td>35</td><td style="color:var(--green)">28</td><td><span class="tag t-green">Enviado</span></td></tr>
+          <tr><td>Ayer</td><td><span class="tag t-blue">Email</span></td><td>142</td><td style="color:var(--green)">89</td><td><span class="tag t-green">Enviado</span></td></tr>
+          <tr><td>Lun</td><td><span class="tag" style="background:rgba(37,211,102,.1);color:#25D366">WhatsApp</span></td><td>20</td><td style="color:var(--green)">18</td><td><span class="tag t-green">Enviado</span></td></tr>
+        </tbody></table></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ CLIENTES ══════════ -->
+<div class="screen" id="screen-clientes">
+  <div class="mg mg4">
+    <div class="mc mc-blue mc-glow"><div class="ml">Total Clientes</div><div class="mv mv-blue">142</div></div>
+    <div class="mc mc-green mc-glow"><div class="ml">Activos</div><div class="mv mv-green">118</div></div>
+    <div class="mc mc-amber mc-glow"><div class="ml">Inactivos +30d</div><div class="mv mv-amber">8</div><div class="mt"><em class="neg">Atención IA</em></div></div>
+    <div class="mc mc-purple mc-glow"><div class="ml">LTV Promedio</div><div class="mv mv-purple">S/ 340</div></div>
+  </div>
+  <div class="ai-banner">
+    <div class="ai-banner-icon">🤖</div>
+    <div class="ai-banner-text">
+      <strong>IA: 8 clientes no compran hace más de 30 días</strong>
+      <span>Recomendamos enviar una campaña de reactivación con 10% de descuento</span>
+    </div>
+    <div class="ai-banner-actions">
+      <button class="btn btn-p" onclick="showScreen('comunicaciones');toast('📱 Plantilla cargada','i')">Crear campaña</button>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-title">Base de Clientes CRM</div>
+      <div class="sec-actions">
+        <div class="srch" style="width:200px"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="var(--sub)" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="4.5"/><path d="M11 11l3 3"/></svg><input placeholder="Buscar…"></div>
+        <button class="btn">📥 Exportar</button>
+        <button class="btn btn-p">+ Agregar</button>
+      </div>
+    </div>
+    <div class="tw"><table class="dt"><thead><tr><th>Cliente</th><th>Documento</th><th>Contacto</th><th>Total Compras</th><th>Última Compra</th><th>Seg. IA</th><th>Acción</th></tr></thead><tbody>
+      <tr><td style="font-weight:700">Juan García</td><td class="mono">DNI 45621890</td><td style="color:var(--muted)">987654321</td><td style="color:var(--green);font-weight:700">S/ 1,240</td><td>Hoy</td><td><span class="tag t-green">🏆 VIP</span></td><td><button class="btn btn-g" style="padding:3px 8px;font-size:10px" onclick="toast('📱 Mensaje enviado','s')">WhatsApp</button></td></tr>
+      <tr><td style="font-weight:700">Empresa ABC S.A.C.</td><td class="mono">RUC 20512345678</td><td style="color:var(--muted)">01 234 5678</td><td style="color:var(--green);font-weight:700">S/ 8,500</td><td>Ayer</td><td><span class="tag t-purple">🏢 Corporativo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">Email</button></td></tr>
+      <tr><td style="font-weight:700">María Torres</td><td class="mono">DNI 33218904</td><td style="color:var(--muted)">956123789</td><td style="color:var(--green);font-weight:700">S/ 340</td><td>Hace 2d</td><td><span class="tag t-blue">🔄 Regular</span></td><td><button class="btn btn-g" style="padding:3px 8px;font-size:10px" onclick="toast('📱 Mensaje enviado','s')">WhatsApp</button></td></tr>
+      <tr style="background:rgba(239,68,68,.03)"><td style="font-weight:700">Carlos Quispe</td><td class="mono">DNI 71234567</td><td style="color:var(--muted)">—</td><td style="color:var(--muted)">S/ 45</td><td style="color:var(--red)">Hace 35d</td><td><span class="tag t-red">💤 Inactivo</span></td><td><button class="btn btn-a" style="padding:3px 8px;font-size:10px" onclick="toast('✨ IA generó mensaje','i')">Reactivar IA</button></td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- ══════════ REPORTES ══════════ -->
+<div class="screen" id="screen-reportes">
+  <div class="ai-banner">
+    <div class="ai-banner-icon">📊</div>
+    <div class="ai-banner-text">
+      <strong>Resumen semanal generado por IA</strong>
+      <span>Crecimiento de 12% vs semana pasada · Martes es tu mejor día · Agua Mineral lidera ventas</span>
+    </div>
+    <div class="ai-banner-actions">
+      <button class="btn btn-p" onclick="toast('📄 Reporte generado','s')">📄 Exportar reporte IA</button>
+    </div>
+  </div>
+  <div class="mg mg4">
+    <div class="mc mc-green mc-glow"><div class="ml">Ventas Semana</div><div class="mv mv-green">S/ 7,284</div><div class="mt"><em>+12%</em> vs semana pasada</div></div>
+    <div class="mc mc-blue mc-glow"><div class="ml">Transacciones</div><div class="mv mv-blue">152</div><div class="mt"><em>+8</em> vs promedio</div></div>
+    <div class="mc mc-amber mc-glow"><div class="ml">Ticket Promedio</div><div class="mv mv-amber">S/ 47.9</div></div>
+    <div class="mc mc-purple mc-glow"><div class="ml">Ventas Online</div><div class="mv mv-purple">S/ 1,240</div><div class="mt"><em>17%</em> del total</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px">
+    <div class="sec" style="margin:0">
+      <div class="sec-head"><div class="sec-title">💳 Métodos de Pago</div></div>
+      <div class="sec-body">
+        <div class="fs"><div class="fl2">💵 Efectivo</div><div class="fb"><div class="fb-inner" style="width:62%;background:var(--green)"></div></div><div class="fp">62%</div></div>
+        <div class="fs"><div class="fl2">💳 Tarjeta</div><div class="fb"><div class="fb-inner" style="width:18%;background:var(--blue)"></div></div><div class="fp">18%</div></div>
+        <div class="fs"><div class="fl2">📱 Yape</div><div class="fb"><div class="fb-inner" style="width:13%;background:var(--accent)"></div></div><div class="fp">13%</div></div>
+        <div class="fs"><div class="fl2">🌐 Online</div><div class="fb"><div class="fb-inner" style="width:7%;background:var(--accent2)"></div></div><div class="fp">7%</div></div>
+      </div>
+    </div>
+    <div class="sec" style="margin:0">
+      <div class="sec-head"><div class="sec-title">🤖 Insights IA</div></div>
+      <div style="padding:14px;display:flex;flex-direction:column;gap:7px">
+        <div class="ai-sug"><div class="ai-sug-title">📈 Pico de ventas: Martes 11am</div><div class="ai-sug-desc">Asegura tener suficiente stock y personal disponible en ese horario.</div></div>
+        <div class="ai-sug"><div class="ai-sug-title">💡 Producto con mejor margen: Detergente 38%</div><div class="ai-sug-desc">Considera destacarlo en el catálogo digital para más ventas online.</div></div>
+        <div class="ai-sug"><div class="ai-sug-title">🛍️ Online creció 24% esta semana</div><div class="ai-sug-desc">Invertir en WhatsApp Business API puede duplicar pedidos online.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec">
+    <div class="sec-head"><div class="sec-title">Historial de Ventas</div><div class="sec-actions"><input type="date" class="fi" style="width:130px;padding:6px 10px"><input type="date" class="fi" style="width:130px;padding:6px 10px"><button class="btn btn-p">📥 Excel</button></div></div>
+    <div class="tw"><table class="dt"><thead><tr><th>Nº</th><th>Fecha</th><th>Cliente</th><th>Tipo</th><th>Pago</th><th>Canal</th><th>Total</th><th>Estado</th></tr></thead><tbody>
+      <tr><td class="mono">#0152</td><td>Hoy 14:20</td><td>Juan García</td><td><span class="tag t-blue">Boleta</span></td><td>Efectivo</td><td><span class="tag t-gray">POS</span></td><td style="color:var(--green);font-weight:700">S/ 45.50</td><td><span class="tag t-green">OK</span></td></tr>
+      <tr><td class="mono">#0151</td><td>Hoy 11:30</td><td>Empresa ABC</td><td><span class="tag t-purple">Factura</span></td><td>Tarjeta</td><td><span class="tag t-gray">POS</span></td><td style="color:var(--green);font-weight:700">S/ 280</td><td><span class="tag t-green">OK</span></td></tr>
+      <tr><td class="mono">#W004</td><td>Hoy 10:15</td><td>Rosa Mamani</td><td><span class="tag t-cyan">Pedido</span></td><td>Yape</td><td><span class="tag" style="background:rgba(37,211,102,.1);color:#25D366">WA</span></td><td style="color:var(--green);font-weight:700">S/ 22.60</td><td><span class="tag t-purple">En camino</span></td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- ══════════ USUARIOS ══════════ -->
+<div class="screen" id="screen-usuarios">
+  <div class="mg mg3">
+    <div class="mc mc-blue mc-glow"><div class="ml">Total Usuarios</div><div class="mv mv-blue">4</div></div>
+    <div class="mc mc-green mc-glow"><div class="ml">Activos</div><div class="mv mv-green">4</div></div>
+    <div class="mc mc-amber mc-glow"><div class="ml">Admins</div><div class="mv mv-amber">1</div></div>
+  </div>
+  <div class="sec">
+    <div class="sec-head"><div class="sec-title">Gestión de Usuarios</div><button class="btn btn-p">+ Agregar</button></div>
+    <div class="tw"><table class="dt"><thead><tr><th>Usuario</th><th>Nombre</th><th>Rol</th><th>Permisos</th><th>Último acceso</th><th>Estado</th><th>Acciones</th></tr></thead><tbody>
+      <tr><td class="mono">admin</td><td style="font-weight:700">Administrador</td><td><span class="tag t-amber">👑 Admin</span></td><td style="font-size:10px;color:var(--muted)">Completo</td><td>Hoy 08:30</td><td><span class="tag t-green">Activo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+      <tr><td class="mono">cajero1</td><td style="font-weight:700">María López</td><td><span class="tag t-blue">🏪 Cajero</span></td><td style="font-size:10px;color:var(--muted)">POS, Caja</td><td>Ayer 18:00</td><td><span class="tag t-green">Activo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+      <tr><td class="mono">almacen</td><td style="font-weight:700">Rosa Mamani</td><td><span class="tag t-purple">📦 Almacén</span></td><td style="font-size:10px;color:var(--muted)">Inventario</td><td>Hoy 07:15</td><td><span class="tag t-green">Activo</span></td><td><button class="btn" style="padding:3px 8px;font-size:10px">✏</button></td></tr>
+    </tbody></table></div>
+  </div>
+</div>
+
+<!-- ══════════ CONFIGURACIÓN ══════════ -->
+<div class="screen" id="screen-config">
+  <div style="display:grid;grid-template-columns:1fr 280px;gap:14px">
+    <div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">🏪 Información del Negocio</div></div>
+        <div class="sec-body">
+          <div class="fg">
+            <div class="fgg"><label class="fl">Nombre</label><input class="fi" value="Bodega Coriva"></div>
+            <div class="fgg"><label class="fl">Tipo de Negocio</label><select class="fs"><option>🛒 Tienda / Bodega</option><option>🍽️ Restaurante</option><option>💊 Farmacia</option></select></div>
+            <div class="fgg"><label class="fl">RUC</label><input class="fi" placeholder="20XXXXXXXXX"></div>
+            <div class="fgg"><label class="fl">Teléfono / WhatsApp</label><input class="fi" value="+51 972 163 576"></div>
+            <div class="fgg full"><label class="fl">Dirección</label><input class="fi" value="Jr. Santo Toribio 261, Comas"></div>
+            <div class="fgg"><label class="fl">Email</label><input class="fi" value="Anthonyjcsa@gmail.com"></div>
+            <div class="fgg"><label class="fl">Web / Instagram</label><input class="fi" placeholder="@tubodega"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">⚙️ Sistema</div></div>
+        <div class="sec-body">
+          <div class="fg">
+            <div class="fgg"><label class="fl">Moneda</label><select class="fs"><option>S/ Soles (PEN)</option><option>$ Dólares (USD)</option></select></div>
+            <div class="fgg"><label class="fl">IGV (%)</label><input class="fi" value="18"></div>
+            <div class="fgg full"><label class="fl">Pie de comprobante</label><input class="fi" value="Gracias por su compra · Coriva POS"></div>
+            <div class="fgg full">
+              <label class="fl">Color del Sistema</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px">
+                <div style="width:28px;height:28px;border-radius:7px;background:#6366F1;cursor:pointer;border:2px solid #fff;outline:2px solid #6366F1" onclick="setColor(this,'#6366F1')"></div>
+                <div style="width:28px;height:28px;border-radius:7px;background:#06B6D4;cursor:pointer;border:2px solid transparent" onclick="setColor(this,'#06B6D4')"></div>
+                <div style="width:28px;height:28px;border-radius:7px;background:#10B981;cursor:pointer;border:2px solid transparent" onclick="setColor(this,'#10B981')"></div>
+                <div style="width:28px;height:28px;border-radius:7px;background:#F59E0B;cursor:pointer;border:2px solid transparent" onclick="setColor(this,'#F59E0B')"></div>
+                <div style="width:28px;height:28px;border-radius:7px;background:#EF4444;cursor:pointer;border:2px solid transparent" onclick="setColor(this,'#EF4444')"></div>
+                <div style="width:28px;height:28px;border-radius:7px;background:#EC4899;cursor:pointer;border:2px solid transparent" onclick="setColor(this,'#EC4899')"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-head"><div class="sec-title">🤖 Configuración IA</div></div>
+        <div class="sec-body">
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:600;color:var(--text)">Alertas automáticas de stock</div><div style="font-size:11px;color:var(--muted)">IA te avisa cuando un producto está por agotarse</div></div>
+              <div style="width:38px;height:22px;border-radius:99px;background:var(--green);cursor:pointer;position:relative;flex-shrink:0"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:600;color:var(--text)">Predicción de ventas</div><div style="font-size:11px;color:var(--muted)">Proyecciones para los próximos 7 días</div></div>
+              <div style="width:38px;height:22px;border-radius:99px;background:var(--green);cursor:pointer;position:relative;flex-shrink:0"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:600;color:var(--text)">Sugerencias de mensajes IA</div><div style="font-size:11px;color:var(--muted)">Genera textos para WhatsApp y email</div></div>
+              <div style="width:38px;height:22px;border-radius:99px;background:var(--green);cursor:pointer;position:relative;flex-shrink:0"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px"></div></div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div><div style="font-size:13px;font-weight:600;color:var(--text)">Segmentación automática de clientes</div><div style="font-size:11px;color:var(--muted)">VIP, Regular, Inactivo, Corporativo</div></div>
+              <div style="width:38px;height:22px;border-radius:99px;background:var(--green);cursor:pointer;position:relative;flex-shrink:0"><div style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;right:2px"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-p btn-block btn-lg" onclick="toast('✅ Configuración guardada','s')">💾 Guardar todo</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">📊 Tu Plan</div></div>
+        <div style="padding:14px;text-align:center">
+          <div style="font-size:28px;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent">PRO</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:14px">Plan activo · $29/mes</div>
+          <div style="display:flex;flex-direction:column;gap:5px;text-align:left;margin-bottom:14px">
+            <div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between"><span>Usuarios</span><span style="color:var(--green)">5 incluidos</span></div>
+            <div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between"><span>Productos</span><span style="color:var(--green)">Ilimitados</span></div>
+            <div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between"><span>Tienda virtual</span><span style="color:var(--green)">✅</span></div>
+            <div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between"><span>WhatsApp</span><span style="color:var(--green)">✅</span></div>
+            <div style="font-size:12px;color:var(--muted);display:flex;justify-content:space-between"><span>IA completa</span><span style="color:var(--green)">✅</span></div>
+          </div>
+          <button class="up-btn">⚡ Enterprise →</button>
+        </div>
+      </div>
+      <div class="sec" style="margin:0">
+        <div class="sec-head"><div class="sec-title">💬 Soporte</div></div>
+        <div style="padding:12px;display:flex;flex-direction:column;gap:8px">
+          <button class="btn btn-block" style="background:rgba(37,211,102,.1);color:#25D366;border-color:rgba(37,211,102,.3)" onclick="shareWA()">📱 WhatsApp directo</button>
+          <div style="font-size:11px;color:var(--muted);line-height:1.9">✅ Respuesta &lt;1 hora<br>✅ Soporte técnico incluido<br>✅ Lun–Sáb 8am–8pm</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div><!-- end content -->
+  </div><!-- end main -->
+</div><!-- end shell -->
+
+<script>
+// ═══ PRODUCTS ═══
+const products=[
+  {code:'AQ001',name:'Agua Mineral 1L',price:2.50,stock:32,cat:'bebidas',icon:'🥤',hot:true},
+  {code:'GA002',name:'Gaseosa 500ml',price:3.00,stock:18,cat:'bebidas',icon:'🥤'},
+  {code:'GA003',name:'Galletas Soda',price:1.50,stock:4,cat:'snacks',icon:'🍪'},
+  {code:'DT004',name:'Detergente 500g',price:8.90,stock:25,cat:'limpieza',icon:'🧹'},
+  {code:'LE005',name:'Leche Gloria 400g',price:4.20,stock:11,cat:'lacteos',icon:'🥛'},
+  {code:'AC006',name:'Aceite Vegetal 1L',price:9.50,stock:7,cat:'abarrotes',icon:'🫙'},
+  {code:'AR007',name:'Arroz Extra 1kg',price:4.50,stock:40,cat:'abarrotes',icon:'🌾'},
+  {code:'AZ008',name:'Azúcar Blanca 1kg',price:3.20,stock:22,cat:'abarrotes',icon:'🫙'},
+  {code:'JB009',name:'Jabón de Tocador',price:1.80,stock:35,cat:'limpieza',icon:'🧼'},
+  {code:'JG010',name:'Jugo Naranja 1L',price:5.50,stock:14,cat:'bebidas',icon:'🍊'},
+  {code:'CH011',name:'Chocolate 100g',price:2.80,stock:20,cat:'snacks',icon:'🍫'},
+  {code:'YO012',name:'Yogurt Natural 1L',price:6.90,stock:8,cat:'lacteos',icon:'🥛'},
+];
+
+let cart={};
+let catFilter='';
+let cajaOpen=true;
+
+// ═══ RENDER PRODUCTS ═══
+function renderProds(list){
+  const g=document.getElementById('pgrid');
+  if(!list.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--sub);font-size:13px">Sin resultados</div>';return;}
+  g.innerHTML=list.map(p=>{
+    const sc=p.stock>10?'sok':p.stock>3?'slow':'sout';
+    const sl=p.stock>10?p.stock+' uds':p.stock>3?'⚠️ '+p.stock+' uds':'🚨 '+p.stock+' uds';
+    return`<div class="pcard" onclick="addItem('${p.code}')">
+      ${p.hot?'<div class="ai-rec">🔥 TOP</div>':''}
+      <div class="pc">${p.code}</div>
+      <div style="font-size:22px;margin:6px 0">${p.icon}</div>
+      <div class="pn">${p.name}</div>
+      <div class="pp">S/ ${p.price.toFixed(2)}</div>
+      <div class="ps"><span class="${sc}">${sl}</span></div>
+    </div>`;
+  }).join('');
+}
+
+function setCat(el,cat){
+  catFilter=cat;
+  document.querySelectorAll('.cp').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  applyFilter();
+}
+
+function filterProds(){applyFilter()}
+
+function applyFilter(){
+  const q=document.getElementById('pos-q').value.toLowerCase();
+  let l=products;
+  if(catFilter)l=l.filter(p=>p.cat===catFilter);
+  if(q)l=l.filter(p=>p.name.toLowerCase().includes(q)||p.code.toLowerCase().includes(q));
+  renderProds(l);
+}
+
+// ═══ CART ═══
+function addItem(code){
+  const p=products.find(x=>x.code===code);if(!p)return;
+  if(cart[code])cart[code].qty++;
+  else cart[code]={...p,qty:1};
+  renderCart();
+}
+
+function chQty(code,d){
+  if(!cart[code])return;
+  cart[code].qty+=d;
+  if(cart[code].qty<=0)delete cart[code];
+  renderCart();
+}
+
+function renderCart(){
+  const body=document.getElementById('cart-body');
+  const empty=document.getElementById('cart-empty');
+  const keys=Object.keys(cart);
+  document.getElementById('cart-cnt').textContent=keys.length+' items';
+  if(!keys.length){
+    empty.style.display='flex';
+    document.getElementById('sub-t').textContent='S/ 0.00';
+    document.getElementById('igv-t').textContent='S/ 0.00';
+    document.getElementById('total-t').textContent='S/ 0.00';
+    return;
+  }
+  empty.style.display='none';
+  const sub=keys.reduce((s,k)=>s+cart[k].price*cart[k].qty,0);
+  const igv=sub*0.18;const total=sub+igv;
+  body.innerHTML=keys.map(k=>{const it=cart[k];return`<div class="ci">
+    <div class="ci-inf"><div class="ci-n">${it.icon} ${it.name}</div><div class="ci-p">S/${it.price.toFixed(2)} × ${it.qty} = <b>S/${(it.price*it.qty).toFixed(2)}</b></div></div>
+    <div class="qc"><div class="qb" onclick="chQty('${k}',-1)">−</div><span class="qn">${it.qty}</span><div class="qb" onclick="chQty('${k}',1)">+</div></div>
+  </div>`}).join('');
+  document.getElementById('sub-t').textContent='S/ '+(sub).toFixed(2);
+  document.getElementById('igv-t').textContent='S/ '+igv.toFixed(2);
+  document.getElementById('total-t').textContent='S/ '+total.toFixed(2);
+}
+
+function procesarVenta(){
+  if(!Object.keys(cart).length){toast('Agrega productos primero','e');return;}
+  const t=document.getElementById('total-t').textContent;
+  document.getElementById('venta-total-modal').textContent=t;
+  openModal('modal-venta');
+  cart={};renderCart();
+}
+
+function limpiarCart(){cart={};renderCart()}
+
+function selOpt(el,g){
+  el.closest('.po').querySelectorAll('.pop').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ═══ CAJA ═══
+function toggleCaja(){
+  cajaOpen=!cajaOpen;
+  const ic=document.getElementById('caja-icon');
+  const tl=document.getElementById('caja-title');
+  const pl=document.getElementById('caja-pill');
+  if(cajaOpen){ic.className='caja-icon-wrap ci-open';ic.textContent='🔓';tl.style.color='var(--green)';tl.textContent='Caja Abierta';pl.className='status-badge sb-green';pl.textContent='● Caja Abierta';event.target.textContent='🔒 Cerrar Caja';event.target.className='btn btn-r';}
+  else{ic.className='caja-icon-wrap ci-closed';ic.textContent='🔒';tl.style.color='var(--red)';tl.textContent='Caja Cerrada';pl.className='status-badge sb-red';pl.textContent='● Caja Cerrada';event.target.textContent='🔓 Abrir Caja';event.target.className='btn btn-g';}
+}
+
+// ═══ NAVIGATION ═══
+const screenTitles={
+  dashboard:'Dashboard IA',asistente:'Asistente IA',pos:'Punto de Venta',
+  caja:'Gestión de Caja',inventario:'Inventario + IA',tienda:'Tienda Virtual',
+  catalogo:'Catálogo Digital',comunicaciones:'Email & WhatsApp',
+  clientes:'CRM Clientes',reportes:'Reportes IA',usuarios:'Usuarios',config:'Configuración'
+};
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const sc=document.getElementById('screen-'+id);
+  if(sc)sc.classList.add('active');
+  document.querySelectorAll('[data-screen]').forEach(el=>el.classList.toggle('active',el.dataset.screen===id));
+  document.getElementById('pg-title').textContent=screenTitles[id]||id;
+  document.getElementById('pg-crumb').textContent='Coriva → '+(screenTitles[id]||id);
+  if(window.innerWidth<=900)closeSidebar();
+}
+document.querySelectorAll('[data-screen]').forEach(el=>el.addEventListener('click',()=>showScreen(el.dataset.screen)));
+
+// ═══ SIDEBAR ═══
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('overlay').classList.toggle('show')}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('show')}
+
+// ═══ MODALS ═══
+function openModal(id){document.getElementById(id).classList.add('show')}
+function closeModal(id){document.getElementById(id).classList.remove('show')}
+document.querySelectorAll('.modal-wrap').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')}));
+
+// ═══ TOAST ═══
+function toast(msg,type='i'){
+  const t=document.createElement('div');
+  t.className=`toast-item t-${type}`;
+  t.innerHTML=msg;
+  document.getElementById('toast').appendChild(t);
+  setTimeout(()=>t.style.animation='slideIn .2s ease reverse',2500);
+  setTimeout(()=>t.remove(),2800);
+}
+
+// ═══ AI CHAT ═══
+const aiResponses={
+  'más vendido':'📊 Tu producto más vendido esta semana es **Agua Mineral 1L** con 78 unidades vendidas (S/ 195). Le siguen Leche Gloria (S/ 134) y Detergente (S/ 98).',
+  'reabastecer':'🚨 Tienes 2 productos críticos:\n• **Galletas Soda** — 4 uds (≈2 días de stock)\n• **Leche Gloria** — 3 uds (≈3 días)\n\nRecomiendo pedir hoy mismo.',
+  'inactivos':'📱 Aquí tienes un mensaje para clientes inactivos:\n\n*"Hola [nombre] 👋 Hace tiempo no te vemos por Bodega Coriva. Esta semana tenemos Agua Mineral x3 por S/ 6.50 ¡Solo para clientes VIP como tú! 🎁 coriva.app/tienda"*',
+  'ticket promedio':'💡 Para subir tu ticket promedio de S/ 37.8 a S/ 45:\n• Crea combos (Agua + Galletas + Gaseosa)\n• Ofrece descuento por volumen desde 3 unidades\n• Sugiere productos complementarios en el POS',
+  'predicción':'🔮 **Predicción IA para este fin de semana:**\n• Viernes: S/ 1,420 (+10%)\n• Sábado: S/ 1,650 (+12%)\n\nBasa en las últimas 8 semanas. Asegura stock de Agua y Galletas.',
+  'clientes valiosos':'🏆 **Top 3 clientes por valor:**\n1. Empresa ABC — S/ 8,500 (Corporativo)\n2. Juan García — S/ 1,240 (VIP)\n3. María Torres — S/ 340 (Regular)\n\nRecomiendo fidelizar a Empresa ABC con una cuenta crédito.',
+};
+
+function sendChat(){
+  const inp=document.getElementById('chat-in');
+  const msg=inp.value.trim();if(!msg)return;
+  const body=document.getElementById('chat-body');
+  body.innerHTML+=`<div class="msg msg-user">${msg}<div class="msg-time">Ahora</div></div>`;
+  inp.value='';
+  setTimeout(()=>{
+    let resp='🤔 Estoy analizando los datos de tu negocio... Dame un momento.\n\nEsta función se conecta a la API de IA para darte respuestas personalizadas basadas en tus datos reales.';
+    const low=msg.toLowerCase();
+    for(const[k,v] of Object.entries(aiResponses)){if(low.includes(k)){resp=v;break;}}
+    body.innerHTML+=`<div class="msg msg-ai">${resp.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}<div class="msg-time">Coriva IA</div></div>`;
+    body.scrollTop=body.scrollHeight;
+  },800);
+  body.scrollTop=body.scrollHeight;
+}
+
+function askAI(q){
+  document.getElementById('chat-in').value=q;
+  sendChat();
+}
+
+function clearChat(){
+  document.getElementById('chat-body').innerHTML=`<div class="msg msg-ai">Chat limpiado. ¿En qué te ayudo?<div class="msg-time">Ahora</div></div>`;
+}
+
+// ═══ COMMUNICATIONS ═══
+const templates={
+  'wa-promo':'🎉 ¡Hola [nombre]! Te tenemos una oferta especial en Bodega Coriva.\n\n🛍️ Hoy: Agua Mineral x3 por S/ 6.50 (ahorra S/ 1!)\n\nVisita tu tienda online:\n👉 coriva.app/tienda/tu-negocio\n\n¡Válido solo hoy! ⏰',
+  'wa-inactive':'👋 Hola [nombre], hace tiempo no te vemos.\n\nTe tenemos un regalo especial para que vuelvas: 10% OFF en tu próxima compra. 🎁\n\nPide en línea: coriva.app/tienda',
+  'wa-stock':'📦 ¡Hola [nombre]! Ya llegó [producto] que tenías pendiente.\n\nHaz tu pedido ahora antes que se agote:\n👉 coriva.app/tienda\n\n📱 O escríbenos directamente.',
+  'wa-catalog':'🛍️ Hola [nombre]! Ya puedes ver y pedir desde nuestro catálogo digital:\n\n👉 coriva.app/tienda/tu-negocio\n\nProductos frescos todos los días. Delivery disponible. 🚚',
+};
+
+function setTemplate(el,id){
+  document.querySelectorAll('.template-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const msg=templates[id];
+  if(msg){
+    document.getElementById('wa-msg').value=msg;
+    document.getElementById('wa-preview').innerHTML=msg.replace(/\n/g,'<br>');
+  }
+}
+
+function genMsgIA(){
+  toast('✨ IA generando mensaje personalizado…','i');
+  setTimeout(()=>{
+    const msg='🎁 ¡Hola [nombre]! 👋\n\nSolo para clientes especiales como tú:\n✅ Agua Mineral x3 = S/ 6.50\n✅ Leche + Galletas = S/ 5.50\n\n🚚 Delivery gratis por tu primera compra online.\n\n👉 coriva.app/tienda\n\n¡Oferta válida hoy! ⏰';
+    document.getElementById('wa-msg').value=msg;
+    document.getElementById('wa-preview').innerHTML=msg.replace(/\n/g,'<br>');
+    toast('✅ Mensaje generado por IA','s');
+  },1200);
+}
+
+function sendCampaign(ch){
+  toast(`📨 Enviando campaña por ${ch}…`,'i');
+  setTimeout(()=>toast(`✅ Campaña enviada por ${ch} a 142 contactos`,'s'),2000);
+}
+
+// ═══ DASHBOARD CHART ═══
+function buildChart(){
+  const vals=[820,1140,760,980,1050,900,1284];
+  const max=Math.max(...vals);
+  const wrap=document.getElementById('sales-chart');
+  if(!wrap)return;
+  wrap.innerHTML=vals.map((v,i)=>{
+    const h=Math.round((v/max)*100);
+    const cls=i===6?'today':v===max?'high':'';
+    return`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:2px">
+      <div style="font-size:9px;color:var(--sub)">${i===6?'Hoy':v>=1000?'1k+':''}</div>
+      <div class="spark-bar ${cls}" style="height:${h}%;min-height:4px"></div>
+    </div>`;
+  }).join('');
+}
+
+// ═══ MISC ═══
+function setColor(el,color){
+  document.querySelectorAll('[onclick*="setColor"]').forEach(e=>{e.style.border='2px solid transparent';e.style.outline='none'});
+  el.style.border='2px solid #fff';el.style.outline='2px solid '+color;
+  document.documentElement.style.setProperty('--accent',color);
+  document.documentElement.style.setProperty('--gradient',`linear-gradient(135deg,${color},${color}bb)`);
+}
+
+function saveProduct(){
+  closeModal('modal-product');
+  toast('✅ Producto guardado correctamente','s');
+  document.getElementById('inv-badge').textContent='3';
+}
+
+function shareWA(){
+  const msg=encodeURIComponent('¡Hola! Te comparto el catálogo de Bodega Coriva 🛍️\nhttps://coriva.app/tienda/tu-negocio');
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
+}
+
+function toggleFS(){
+  if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});
+  else document.exitFullscreen();
+}
+
+// ═══ KEYBOARD ═══
+document.addEventListener('keydown',e=>{
+  if(e.key==='F1'){e.preventDefault();showScreen('pos')}
+  if(e.key==='F2'){e.preventDefault();procesarVenta()}
+  if(e.key==='Escape'){limpiarCart();document.querySelectorAll('.modal-wrap.show').forEach(m=>m.classList.remove('show'))}
+});
+
+// ═══ INIT ═══
+renderProds(products);
+buildChart();
+document.getElementById('wa-msg').addEventListener('input',function(){
+  document.getElementById('wa-preview').innerHTML=this.value.replace(/\n/g,'<br>');
+});
+</script>
+</body>
+</html>

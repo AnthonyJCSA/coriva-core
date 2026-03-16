@@ -6,8 +6,8 @@ import GoogleAnalytics from '@/components/GoogleAnalytics'
 import MetaPixel from '@/components/MetaPixel'
 
 export const metadata: Metadata = {
-  title: 'Coriva Core - Sistema POS Multi-Tenant',
-  description: 'Sistema POS adaptable para cualquier tipo de negocio',
+  title: 'Coriva Core — SaaS IA para Negocios',
+  description: 'Sistema POS con IA para cualquier tipo de negocio',
   metadataBase: new URL('https://coriva-core.vercel.app'),
 }
 
