@@ -404,7 +404,7 @@ SELECT
   i.invoice_number,
   i.sunat_status  AS invoice_sunat_status
 FROM corivacore_sales s
-LEFT JOIN corivacore_customers c ON c.id::TEXT = s.customer_id
+LEFT JOIN corivacore_customers c ON c.id::TEXT = s.customer_id::TEXT
 LEFT JOIN corivacore_invoices  i ON i.sale_id  = s.id;
 
 -- ─────────────────────────────────────────────────────────────
