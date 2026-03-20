@@ -25,6 +25,7 @@ import CustomersModule from '@/app/CustomersModule'
 import ReportsModule from '@/app/ReportsModule'
 import UsersModule from '@/app/UsersModule'
 import SettingsModule from '@/app/SettingsModule'
+import BillingModule from '@/app/BillingModule'
 
 const tabs = [
   'dashboard', 'asistente', 'pos', 'cash', 'inventory',
@@ -315,6 +316,8 @@ export default function DashboardPage() {
         return <ReportsModule sales={sales} currentUser={currentUser} />
       case 'users':
         return <UsersModule currentUser={currentUser!} organizationId={currentOrg!.id} />
+      case 'billing':
+        return <BillingModule currentOrg={currentOrg} />
       case 'settings':
         return <SettingsModule currentOrg={currentOrg!} onUpdate={updateOrganization} />
       default:
@@ -348,27 +351,6 @@ export default function DashboardPage() {
           onCatalogClick={() => setShowCatalogModal(true)}
           lowStockCount={lowStockCount}
         />
-
-        {/* Tabs — ocultos en móvil */}
-        <div
-          className="hidden sm:flex gap-[1px] px-5 overflow-x-auto flex-shrink-0"
-          style={{ background: 'var(--sidebar)', borderBottom: '1px solid var(--border)' }}
-        >
-          {tabs.map(tab => (
-            <button
-              key={tab}
-              onClick={() => setActiveModule(tab)}
-              className="px-[14px] py-[9px] text-[11px] font-semibold whitespace-nowrap border-b-2 transition-all"
-              style={{
-                color: activeModule === tab ? 'var(--accent)' : 'var(--sub)',
-                borderBottomColor: activeModule === tab ? 'var(--accent)' : 'transparent',
-                background: 'transparent',
-              }}
-            >
-              {tabLabels[tab]}
-            </button>
-          ))}
-        </div>
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto touch-scroll" style={{ background: 'var(--bg)' }}>

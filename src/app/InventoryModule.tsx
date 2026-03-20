@@ -5,7 +5,12 @@ import { exportInventoryToCSV } from '../lib/export'
 
 interface Product {
   id: string; code: string; name: string; category?: string
-  price: number; cost?: number; stock: number; min_stock: number; icon?: string
+  price: number; cost?: number; stock: number; min_stock: number
+  // Farmacia
+  laboratory?: string; brand?: string; active_ingredient?: string
+  expiry_date?: string; supplier?: string
+  // General
+  unit?: string; description?: string
 }
 
 interface InventoryProps {
@@ -16,7 +21,8 @@ interface InventoryProps {
   currentUser: any
 }
 
-const emptyProduct = { code: '', name: '', category: 'General', price: 0, cost: 0, stock: 0, min_stock: 5, icon: '📦' }
+const emptyProduct = { code: '', name: '', category: 'General', price: 0, cost: 0, stock: 0, min_stock: 5,
+  laboratory: '', brand: '', active_ingredient: '', expiry_date: '', supplier: '', unit: 'unidad', description: '' }
 
 export default function InventoryModule({ products: initial, onUpdateProduct, onAddProduct, onDeleteProduct, currentUser }: InventoryProps) {
   const [products, setProducts] = useState<Product[]>(initial)
@@ -141,7 +147,7 @@ export default function InventoryModule({ products: initial, onUpdateProduct, on
                 return (
                   <tr key={p.id} style={{ borderBottom: '1px solid rgba(30,45,69,.5)' }}>
                     <td className="px-[14px] py-[10px] font-mono text-[11px]" style={{ color: 'var(--muted)' }}>{p.code}</td>
-                    <td className="px-[14px] py-[10px] font-bold" style={{ color: 'var(--text)' }}>{p.icon || '📦'} {p.name}</td>
+                    <td className="px-[14px] py-[10px] font-bold" style={{ color: 'var(--text)' }}>{p.name}</td>
                     <td className="px-[14px] py-[10px]">
                       <span className="px-2 py-[2px] rounded-full text-[10px] font-semibold"
                         style={{ background: 'rgba(6,182,212,.1)', color: 'var(--accent2)' }}>{p.category || 'General'}</span>
@@ -188,12 +194,19 @@ export default function InventoryModule({ products: initial, onUpdateProduct, on
             <div className="grid grid-cols-2 gap-3">
               <FI label="Código *"><input className="fi-dark" value={newP.code} onChange={e => setNewP(p => ({ ...p, code: e.target.value }))} required /></FI>
               <FI label="Nombre *"><input className="fi-dark" value={newP.name} onChange={e => setNewP(p => ({ ...p, name: e.target.value }))} required /></FI>
+              <FI label="Categoría"><input className="fi-dark" value={newP.category} onChange={e => setNewP(p => ({ ...p, category: e.target.value }))} /></FI>
+              <FI label="Unidad"><input className="fi-dark" value={newP.unit} onChange={e => setNewP(p => ({ ...p, unit: e.target.value }))} placeholder="unidad, caja, frasco..." /></FI>
               <FI label="Precio Venta *"><input type="number" step="0.01" className="fi-dark" value={newP.price} onChange={e => setNewP(p => ({ ...p, price: parseFloat(e.target.value) || 0 }))} required /></FI>
               <FI label="Costo"><input type="number" step="0.01" className="fi-dark" value={newP.cost} onChange={e => setNewP(p => ({ ...p, cost: parseFloat(e.target.value) || 0 }))} /></FI>
               <FI label="Stock Inicial"><input type="number" className="fi-dark" value={newP.stock} onChange={e => setNewP(p => ({ ...p, stock: parseInt(e.target.value) || 0 }))} /></FI>
               <FI label="Stock Mínimo"><input type="number" className="fi-dark" value={newP.min_stock} onChange={e => setNewP(p => ({ ...p, min_stock: parseInt(e.target.value) || 5 }))} /></FI>
-              <FI label="Categoría" full><input className="fi-dark" value={newP.category} onChange={e => setNewP(p => ({ ...p, category: e.target.value }))} /></FI>
-              <FI label="Emoji / Icono" full><input className="fi-dark" value={newP.icon} onChange={e => setNewP(p => ({ ...p, icon: e.target.value }))} placeholder="📦" /></FI>
+              <FI label="Proveedor" full><input className="fi-dark" value={newP.supplier} onChange={e => setNewP(p => ({ ...p, supplier: e.target.value }))} /></FI>
+              {/* Campos farmacia */}
+              <FI label="Laboratorio"><input className="fi-dark" value={newP.laboratory} onChange={e => setNewP(p => ({ ...p, laboratory: e.target.value }))} /></FI>
+              <FI label="Marca"><input className="fi-dark" value={newP.brand} onChange={e => setNewP(p => ({ ...p, brand: e.target.value }))} /></FI>
+              <FI label="Principio Activo" full><input className="fi-dark" value={newP.active_ingredient} onChange={e => setNewP(p => ({ ...p, active_ingredient: e.target.value }))} placeholder="Paracetamol 500mg..." /></FI>
+              <FI label="Fecha de Vencimiento"><input type="date" className="fi-dark" value={newP.expiry_date} onChange={e => setNewP(p => ({ ...p, expiry_date: e.target.value }))} /></FI>
+              <FI label="Descripción" full><input className="fi-dark" value={newP.description} onChange={e => setNewP(p => ({ ...p, description: e.target.value }))} /></FI>
             </div>
             <ModalActions onCancel={() => setShowAdd(false)} loading={loading} label="Guardar Producto" />
           </form>

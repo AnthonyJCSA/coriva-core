@@ -12,6 +12,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     { module: 'pos', actions: ['view', 'create', 'cancel'] },
     { module: 'cash', actions: ['view', 'open', 'close'] },
     { module: 'inventory', actions: ['view', 'create', 'edit', 'delete'] },
+    { module: 'billing', actions: ['view', 'create', 'cancel'] },
     { module: 'reports', actions: ['view', 'export'] },
     { module: 'customers', actions: ['view', 'create', 'edit', 'delete'] },
     { module: 'settings', actions: ['view', 'edit'] },
@@ -21,6 +22,7 @@ export const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     { module: 'pos', actions: ['view', 'create', 'cancel'] },
     { module: 'cash', actions: ['view', 'open', 'close'] },
     { module: 'inventory', actions: ['view', 'edit'] },
+    { module: 'billing', actions: ['view', 'create'] },
     { module: 'reports', actions: ['view'] },
     { module: 'customers', actions: ['view', 'create', 'edit'] }
   ],

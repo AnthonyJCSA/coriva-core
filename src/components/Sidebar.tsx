@@ -24,6 +24,7 @@ const navSections = [
     items: [
       { id: 'pos', icon: <POSIcon />, label: 'Punto de Venta', badge: null, badgeColor: null },
       { id: 'cash', icon: <CashIcon />, label: 'Caja', badge: null, badgeColor: null },
+      { id: 'billing', icon: <BillingIcon />, label: 'Facturación SUNAT', badge: 'SUNAT', badgeColor: 'amber' },
     ],
   },
   {
@@ -230,6 +231,9 @@ export default function Sidebar({ currentUser, currentOrg, activeModule, setActi
 }
 
 // ── Icons ──
+function BillingIcon() {
+  return <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full"><rect x="2" y="1" width="12" height="14" rx="1.5"/><path d="M5 5h6M5 8h6M5 11h3"/></svg>
+}
 function GridIcon() {
   return <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
 }

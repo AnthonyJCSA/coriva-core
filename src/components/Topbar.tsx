@@ -22,6 +22,7 @@ const screenTitles: Record<string, string> = {
   reports: 'Reportes IA',
   users: 'Usuarios',
   settings: 'Configuración',
+  billing: 'Facturación Electrónica SUNAT',
 }
 
 export default function Topbar({ activeModule, cajaOpen, onHamburger, onAIClick, onCatalogClick, lowStockCount }: TopbarProps) {
