@@ -1,4 +1,4 @@
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured } from '../supabase'
 import { DBSale, DBSaleItem, SalesDayRow, TopProductRow } from '@/types/database.types'
 import { Sale, CartItem } from '@/types'
 

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { authService } from '@/lib/services'
-import { useSessionStore } from '@/state/session.store'
 
 const C = {
   ink: '#0C0E12', ink2: '#2D3142', muted: '#6B7280',
@@ -14,7 +13,6 @@ const C = {
 
 export default function LoginPage() {
   const router = useRouter()
-  const setSession = useSessionStore((s) => s.setSession)
   const [form, setForm] = useState({ username: '', password: '' })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,7 +25,8 @@ export default function LoginPage() {
     try {
       const result = await authService.login(form.username, form.password)
       if (result) {
-        setSession(result.user, result.org)
+        sessionStorage.setItem('coriva_user', JSON.stringify(result.user))
+        sessionStorage.setItem('coriva_org', JSON.stringify(result.org))
         router.push('/dashboard')
       } else {
         setError('Usuario o contraseña incorrectos')
